@@ -17,10 +17,7 @@ public class LanguagePreprocessor
 	{
 		if (language == null || language.equals("")) return text;
 		
-		char c1 = language.charAt(0);
-		char c2 = language.charAt(1);
-		
-		//System.out.print("Language preprocessing...");
+		System.out.print("Language preprocessing... ");
 
 		char[] newText = new char[text.length()];
 		int k = 0;
@@ -29,14 +26,14 @@ public class LanguagePreprocessor
 		{
 			char c = text.charAt(i);
 
-			if (c == '[' && text.charAt(i + 1) == c1 && text.charAt(i + 2) == c2)
+			if (c == '[' && text.substring(i + 1).startsWith(language))
 			{
-				i++; i++; // two language characters deleting
+				i += language.length();
 				i++; // space deleting
 				continue;
 			}
 			if (c == ']') continue;
-			if (c == '[' && (text.charAt(i + 1) != c1 || text.charAt(i + 2) != c2))
+			if (c == '[' && !text.substring(i + 1).startsWith(language))
 			{
 				while (text.charAt(i) != ']')
 					i++;
@@ -50,6 +47,8 @@ public class LanguagePreprocessor
 		
 		char[] newNewText;
 		newNewText = Arrays.copyOf(newText, k);
+        
+        System.out.println("done.");
 		
 		return new String(newNewText);
 	}
