@@ -49,7 +49,7 @@ public class Reader
 		{
 			input = new CommentPreprocessor().preprocess(input);
 		}
-        input = new LanguagePreprocessor().preprocess(input, Options.language);
+        input = new LanguagePreprocessor().preprocess(input, Options.language, Options.to);
 
         Document document = new Document(input);
 

@@ -1,8 +1,7 @@
 package enzet.moire.core;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import enzet.moire.util.Util;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Language preprocessor
@@ -11,12 +10,24 @@ import java.util.Arrays;
  */
 public class LanguagePreprocessor
 {
-	static String BEGIN = "[", END = "]";
+	private static char BEGIN = '[';
+    private static char END = ']';
 	
-	public String preprocess(String text, String language)
+    /**
+     * Preprocessor detects character sequences with syntax
+     * <code>BEGIN language_name non-letter_symbol text END</code>,
+     * removes sequences where <code>language_name</code> is not included in
+     * <code>languages</code> and is not equals <code>format</code> and remains
+     * <code>text</code> otherwise. <code>non-letter_symbol</code> will be 
+     * deleted.
+     * 
+     * @param text input text
+     * @param languages list of language names
+     * @param format current format name (e. g. HTML)
+     * @return preprocessed text
+     */
+	public String preprocess(String text, List<String> languages, String format)
 	{
-		if (language == null || language.equals("")) return text;
-		
 		System.out.print("Language preprocessing... ");
 
 		char[] newText = new char[text.length()];
@@ -26,70 +37,48 @@ public class LanguagePreprocessor
 		{
 			char c = text.charAt(i);
 
-			if (c == '[' && text.substring(i + 1).startsWith(language))
+			if (c == BEGIN)
 			{
-				i += language.length();
-				i++; // space deleting
+                String begin = text.substring(i + 1);
+                
+                if (begin.startsWith(format) && 
+                    !Util.isLetter(text.charAt(i + 1 + format.length())))
+                {
+                    i += format.length() + 1;
+                    continue;                    
+                }
+                boolean matched = false;
+                
+                if (languages != null)
+                {
+                    for (String language : languages)
+                    {
+                        if (begin.startsWith(language) && 
+                            !Util.isLetter(text.charAt(i + 1 + language.length())))
+                        {
+                            i += language.length() + 1;
+                            matched = true;
+                            break;
+                        }
+                    }
+                }
+                if (!matched)
+                {
+                    while (text.charAt(i) != END)
+                    i++;
+                }
 				continue;
 			}
-			if (c == ']') continue;
-			if (c == '[' && !text.substring(i + 1).startsWith(language))
-			{
-				while (text.charAt(i) != ']')
-					i++;
-				continue;
-			}
+			if (c == END) continue;
 			k++;
 
-			if (k < text.length()) newText[k] = c;
+			newText[k] = c;
 		}
-		newText[k] = '\0';
-		
 		char[] newNewText;
 		newNewText = Arrays.copyOf(newText, k);
         
         System.out.println("done.");
 		
 		return new String(newNewText);
-	}
-	
-	public String preprocess_old(String content, String language) throws IOException
-	{
-		BufferedReader reader = new BufferedReader(new StringReader(content));
-
-		boolean isLang = false, isOther = true;
-
-		String line;
-		StringBuilder result = new StringBuilder();
-
-		while ((line = reader.readLine()) != null)
-		{
-			String line1 = line.trim();
-
-			if (line1.equals(BEGIN + language))
-			{
-				isLang = true;
-				isOther = false;
-			}
-			else if (line1.startsWith(BEGIN))
-			{
-				isLang = false;
-				isOther = false;
-			}
-			else if (line1.equals(END))
-			{
-				isLang = false;
-				isOther = true;
-			}
-			else
-			{
-				if (isOther || isLang)
-				{
-					result.append(line).append("\n");
-					continue;
-				}
-			}
-		}
-		return result.toString();
 	}
 }

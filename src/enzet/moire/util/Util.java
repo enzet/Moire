@@ -47,4 +47,10 @@ public class Util
 		}
 		return null;
 	}
+    
+    public static boolean isLetter(char character)
+    {
+        return (character >= 'a' && character <= 'z') ||
+            (character >= 'A' && character <= 'Z');
+    }
 }

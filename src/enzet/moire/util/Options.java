@@ -1,5 +1,6 @@
 package enzet.moire.util;
 
+import java.util.List;
 import org.kohsuke.args4j.Option;
 
 /**
@@ -19,7 +20,7 @@ public class Options
 	public static String to;
 
 	@Option(name = "-l", aliases = "--language", usage = "Language preprocessing")
-	public static String language;
+	public static List<String> language;
 
 	@Option(name = "-c", aliases = "--comments", usage = "Preprocess comments")
 	public static boolean isComments = false;
