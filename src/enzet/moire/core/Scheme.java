@@ -19,15 +19,27 @@ public class Scheme
     public class Section
     {
         private String name;
-        private Map<String, String> relations;
+        private List<Relation> relations;
         private Section parent;
         private List<Section> children;
         private int level;
         
+        class Relation
+        {
+            public String from;
+            public String to;
+            
+            Relation(String from, String to)
+            {
+                this.from = from;
+                this.to = to;
+            }
+        }
+        
         Section(Section parent, String name, int level)
         {
             children = new ArrayList<Section>();
-            relations = new HashMap<String, String>();
+            relations = new ArrayList<Relation>();
             this.parent = parent;
             this.name = name;
             this.level = level;
@@ -40,7 +52,7 @@ public class Scheme
         
         void addRelation(String from, String to)
         {
-            relations.put(from, to);
+            relations.add(new Relation(from, to));
         }
         
         public void print()
@@ -66,7 +78,7 @@ public class Scheme
             return name;
         }
         
-        public Map<String, String> getRelations()
+        public List<Relation> getRelations()
         {
             return relations;
         }

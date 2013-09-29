@@ -1,6 +1,7 @@
 package enzet.moire.core;
 
 import enzet.moire.core.Scheme.Section;
+import enzet.moire.core.Scheme.Section.Relation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class Format
     String name;
     
     List<Rule> rules;
-    Map<String, String> symbols;
+    List<Relation> symbols;
     
     public Format(String name)
     {
@@ -30,17 +31,17 @@ public class Format
             Section currentFormat = scheme.getRoot().getChild("formats").getChild(name);
             
             Section tagsSection = currentFormat.getChild("tags");
-            Map<String, String> relations = tagsSection.getRelations();
+            List<Relation> relations = tagsSection.getRelations();
             
-            for (String k : relations.keySet())
+            for (Relation r : relations)
             {
                 try
                 {
-                    rules.add(new Rule(k, relations.get(k)));
+                    rules.add(new Rule(r.from, r.to));
                 }
                 catch (Exception e)
                 {
-                    System.err.println("irregular rule for " + k);
+                    System.err.println("irregular rule for " + r);
                 }
             }
             Section symbolsSection = currentFormat.getChild("symbols");
@@ -64,7 +65,7 @@ public class Format
         return null;
     }
     
-    public Map<String, String> getSymbols()
+    public List<Relation> getSymbols()
     {
         return symbols;
     }

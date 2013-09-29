@@ -1,7 +1,8 @@
 package enzet.moire.core;
 
+import enzet.moire.core.Scheme.Section.Relation;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 public class Word
 {
@@ -90,12 +91,12 @@ public class Word
 	{
 		if (type == WordType.SIMPLE_WORD)
 		{
-            Map<String, String> symbols = format.getSymbols();
+            List<Relation> symbols = format.getSymbols();
             String converted = value;
             
-            for (String symbol : symbols.keySet())
+            for (Relation symbol : symbols)
             {
-                converted = converted.replaceAll(symbol, symbols.get(symbol));
+                converted = converted.replaceAll(symbol.from, symbol.to);
             }
             return converted;
 		}

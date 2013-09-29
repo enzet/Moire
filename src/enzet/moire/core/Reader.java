@@ -1,6 +1,5 @@
 package enzet.moire.core;
 
-import enzet.moire.core.Scheme.Section;
 import java.io.IOException;
 
 import org.kohsuke.args4j.CmdLineParser;
@@ -9,9 +8,7 @@ import enzet.moire.util.Options;
 import enzet.moire.util.Util;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Moire reader
