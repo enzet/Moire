@@ -5,6 +5,8 @@ import java.util.List;
 
 /**
  * Language preprocessor
+ * 
+ * @see LanguagePreprocessor#preprocess(String, List, String) 
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */

@@ -41,7 +41,9 @@ public class Reader
 			return;
 		}
         Scheme scheme = new Scheme(new BufferedReader(new FileReader("scheme")));
-        readRules(scheme, Options.to.toLowerCase());
+        
+        Format format = new Format(Options.to.toLowerCase());
+        format.readFormat(scheme);
             
 		String input = Util.get(Options.input);
 
@@ -53,49 +55,9 @@ public class Reader
 
         Document document = new Document(input);
 
-        String formatted = document.convert();
+        String formatted = document.convert(format);
         
 		System.out.println(String.format("Document converted from Moire markup (%d bytes) to %s (%d bytes): %s.", input.length(), Options.to, formatted.length(), Options.output));
         Util.write(Options.output, formatted);
 	}
-    
-    private static void readRules(Scheme scheme, String format) throws IOException
-    {
-        Section root = scheme.getRoot();
-        rules = new ArrayList<Rule>();
-        
-        try
-        {
-            Section tags = root.getChild("formats").getChild(format).getChild("tags");
-            Map<String, String> relations = tags.getRelations();
-            
-            for (String k : relations.keySet())
-            {
-                try
-                {
-                    rules.add(new Rule(k, relations.get(k)));
-                }
-                catch (Exception e)
-                {
-                    System.err.println("irregular rule for " + k);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            System.err.println("irregular scheme file");
-        }
-    }
-    
-    public static Rule getRule(String name, int parameters)
-    {
-        for (Rule r : rules)
-        {
-            if (r.getName().equals(name) && r.getParameters() == parameters)
-            {
-                return r;
-            }
-        }
-        return null;
-    }
 }

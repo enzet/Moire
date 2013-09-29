@@ -14,11 +14,11 @@ public class Document
 		this.text = text;
 	}
 
-	public String convert()
+	public String convert(Format format)
 	{
 		Lexer lexer = new Lexer(text);
 
-		String result = lexer.convert();
+		String result = lexer.convert(format);
 
 		return result;
 	}

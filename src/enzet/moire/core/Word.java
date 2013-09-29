@@ -1,21 +1,13 @@
 package enzet.moire.core;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import enzet.moire.util.Options;
+import java.util.Map;
 
 public class Word
 {
 	public WordType type;
 	public String value;
 	public java.util.List<Word> children;
-
-	// Static fields
-
-	static boolean isRussian;
-
-	static String[] id = {"", "", "", "", "", "", "", "", ""};
 
 	public Word(String s, WordType wordType)
 	{
@@ -33,50 +25,27 @@ public class Word
 	{
 		children.addAll(words);
 	}
+    
+    public String getParameter(int i, Format format, boolean isClear)
+    {
+        Word branch = children.get(i);
 
-	public Word getChild1()
-	{
-		try
-		{
-			Word w = children.remove(0);
+        if (branch.type != WordType.BRANCH)
+        {
+            System.out.println("Warning: is no branch");
+            return "?";
+        }
+        else
+        {
+            String s = "";
 
-			return w;
-		}
-		catch (Exception e)
-		{
-			//Logger.error("tag " + value + " has no more children");
-			//Logger.log(id[0] + " " + id[1] + " " + id[2] + " " + id[3] + " " + id[4] + " " + id[5]);
-			return new Word("NOTHING", WordType.SIMPLE_WORD);
-		}
-	}
-
-	public String getb(int i)
-	{
-		try
-		{
-			Word branch = children.get(i);
-
-			if (branch.type != WordType.BRANCH)
-			{
-				System.out.println("Warning: is no branch");
-				return "?";
-			}
-			else
-			{
-				String s = "";
-
-				for (Word w : branch.children)
-				{
-					s += w.convert();
-				}
-				return s;
-			}
-		}
-		catch (Exception e)
-		{
-			return "?";
-		}
-	}
+            for (Word w : branch.children)
+            {
+                s += (isClear ? w.value : w.convert(format));
+            }
+            return s;
+        }
+    }
 
 	public void print(int level)
 	{
@@ -112,19 +81,23 @@ public class Word
 		return "<" + s + ">";
 	}
 
-	public boolean hasChild(int i)
-	{
-		return children.size() > i;
-	}
-
     /**
-     * Convert word with all subwords into the text representation
+     * Word to text translation.
+     * 
+     * Convert word with all subwords into the text representation.
      */
-	public String convert() 
+	public String convert(Format format) 
 	{
 		if (type == WordType.SIMPLE_WORD)
 		{
-            return value; // TODO: with convertion
+            Map<String, String> symbols = format.getSymbols();
+            String converted = value;
+            
+            for (String symbol : symbols.keySet())
+            {
+                converted = converted.replaceAll(symbol, symbols.get(symbol));
+            }
+            return converted;
 		}
 		else if (type == WordType.FORMULA)
 		{
@@ -136,16 +109,16 @@ public class Word
 
 			for (Word w : children)
 			{
-				builder.append(w.convert());
+				builder.append(w.convert(format));
 			}
 			return builder.toString();
 		}
 		else if (type == WordType.TAG)
 		{
-            Rule rule = Reader.getRule(value, children.size());
+            Rule rule = format.getRule(value, children.size());
             
             if (rule == null) return value;
-            return rule.convert(this);
+            return rule.convert(this, format);
 		}
 		return value;
 	}

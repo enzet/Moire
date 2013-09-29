@@ -137,13 +137,13 @@ public class Lexer
 		}
 	}
 
-	public String convert()
+	public String convert(Format format)
 	{
 		String result = "";
 
 		for (Word w : words)
 		{
-			result += w.convert();
+			result += w.convert(format);
 		}
 		return result;
 	}

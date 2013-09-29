@@ -23,6 +23,7 @@ rs 0:]
 5 1:<h5>\1</h5>
 6 1:<h6>\1</h6>
 b 1:<b>\1</b>
+code 1:<pre><tt>\c1</tt></pre>
 href 1:<a href = "\1">\1</a>
 href 2:<a href = "\1">\2</a>
 i 1:<i>\1</i>
@@ -40,3 +41,12 @@ td 1:<td>\1</td>
 tr 1:<tr>\1</tr>
 tt 1:<tt>\1</tt>
 u 1:<u>\1</u>
+
+::: symbols
+
+---:&mdash;
+--:&ndash;
+<<:&laquo;
+>>:&raquo;
+\(c\):&copy;
+\(C\):&copy;

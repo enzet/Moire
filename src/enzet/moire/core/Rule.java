@@ -19,38 +19,18 @@ public class Rule
         rule = value;
     }
     
-    public String convert(Word word)
+    public String convert(Word word, Format format)
     {
         String returned = rule;
         
         for (int i = 0; i < parameters; i++)
         {
-            returned = returned.replaceAll("\\\\" + (i + 1), getWordParameter(word, i));
+            returned = returned.replaceAll("\\\\" + (i + 1), word.getParameter(i, format, false));
+            returned = returned.replaceAll("\\\\c" + (i + 1), word.getParameter(i, format, true));
         }
         return returned;
     }
 
-    private String getWordParameter(Word word, int i)
-    {
-        Word branch = word.children.get(i);
-
-        if (branch.type != WordType.BRANCH)
-        {
-            System.out.println("Warning: is no branch");
-            return "?";
-        }
-        else
-        {
-            String s = "";
-
-            for (Word w : branch.children)
-            {
-                s += w.convert();
-            }
-            return s;
-        }
-    }
-    
     // Getters and setters
     
     public String getName()
