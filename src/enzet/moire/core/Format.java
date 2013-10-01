@@ -4,7 +4,6 @@ import enzet.moire.core.Scheme.Section;
 import enzet.moire.core.Scheme.Section.Relation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Format
@@ -49,7 +48,7 @@ public class Format
         }
         catch (Exception e)
         {
-            System.err.println("irregular scheme file");
+            System.err.println("Error: irregular scheme file.");
         }
     }
     
@@ -69,4 +68,19 @@ public class Format
     {
         return symbols;
     }
+	
+	public String generateClass()
+	{
+		StringBuilder clazz = new StringBuilder();
+		
+		clazz.append("\tpublic static class " + name.toUpperCase() + "\n\t{\n");
+		
+		for (Rule r : rules)
+		{
+			clazz.append(r.generateMethods());
+		}
+		clazz.append("\t}\n\n");
+		
+		return clazz.toString();
+	}
 }

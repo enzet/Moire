@@ -8,12 +8,6 @@
 
 begin 0:<html><body>
 end 0:</body></html>
-d 0:;
-s 0:\\
-l 0:{
-r 0:}
-ls 0:[
-rs 0:]
 \ 0:<br />
 0 1:<title>\1</title>
 1 1:<h1>\1</h1>
@@ -24,6 +18,7 @@ rs 0:]
 6 1:<h6>\1</h6>
 b 1:<b>\1</b>
 code 1:<pre><tt>\c1</tt></pre>
+code 2:<pre><tt>\c1</tt></pre>{warning("code language skipped");}
 href 1:<a href = "\1">\1</a>
 href 2:<a href = "\1">\2</a>
 i 1:<i>\1</i>
@@ -50,3 +45,4 @@ u 1:<u>\1</u>
 >>:&raquo;
 \(c\):&copy;
 \(C\):&copy;
+

@@ -1,5 +1,6 @@
 package enzet.moire.core;
 
+import enzet.moire.core.Scheme.Section;
 import java.io.IOException;
 
 import org.kohsuke.args4j.CmdLineParser;
@@ -37,8 +38,20 @@ public class Reader
 			System.out.println("Error: unknown options.");
 			return;
 		}
-        Scheme scheme = new Scheme(new BufferedReader(new FileReader("scheme")));
-        
+        Scheme scheme = new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
+		
+		if (!Options.isGenerate)
+		{
+			read(scheme);
+		}
+		else
+		{
+			generateInner(scheme);
+		}
+    }
+    
+	public static void read(Scheme scheme)
+    {
         Format format = new Format(Options.to.toLowerCase());
         format.readFormat(scheme);
             
@@ -56,5 +69,26 @@ public class Reader
         
 		System.out.println(String.format("Document converted from Moire markup (%d bytes) to %s (%d bytes): %s.", input.length(), Options.to, formatted.length(), Options.output));
         Util.write(Options.output, formatted);
+	}
+
+	public static void generateInner(Scheme scheme) throws IOException
+	{
+		Section formats = scheme.getRoot().getChild("formats");
+		
+		StringBuilder innerClass = new StringBuilder();
+		
+		innerClass.append("package enzet.moire;\n\npublic class Inner\n{\n");
+		innerClass.append(Util.get("part"));
+		
+		for (Section formatSection : formats.getChildren())
+		{
+			Format format = new Format(formatSection.getName());
+			format.readFormat(scheme);
+			
+			innerClass.append(format.generateClass());
+		}
+		innerClass.append("}\n");
+		
+		Util.write(Options.innerClassFileName, innerClass.toString());
 	}
 }

@@ -3,9 +3,7 @@ package enzet.moire.core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Scheme
@@ -82,6 +80,11 @@ public class Scheme
         {
             return relations;
         }
+			
+		public List<Section> getChildren()
+		{
+			return children;
+		}
     }
     
     public Scheme(BufferedReader input) throws IOException

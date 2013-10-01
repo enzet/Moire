@@ -33,7 +33,7 @@ public class Word
 
         if (branch.type != WordType.BRANCH)
         {
-            System.out.println("Warning: is no branch");
+            System.err.println("Warning: is no branch");
             return "?";
         }
         else

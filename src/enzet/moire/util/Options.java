@@ -27,4 +27,9 @@ public class Options
 
 	@Option(name = "-s", aliases = "--scheme", usage = "Scheme file")
 	public static String schemeFileName = "";
+
+	@Option(name = "-g", aliases = "--generate", usage = "Generate inner class")
+	public static boolean isGenerate = false;
+
+	public static String innerClassFileName = "src/enzet/moire/Inner.java";
 }
