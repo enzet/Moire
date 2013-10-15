@@ -108,10 +108,6 @@ public class Rule
 				}
 			}
 		}
-		
-        for (int i = 0; i < parameters; i++)
-        {
-        }
         return returned.toString();
     }
 	
@@ -168,6 +164,7 @@ public class Rule
 						i++;
 					}
 					elements.add(new Function(l, false));
+					l = "";
 					break;
 				case '[':
 					if (l.length() > 0)
@@ -181,6 +178,7 @@ public class Rule
 						l += c;
 						i++;
 					}
+					l = "";
 					elements.add(new Function(l, true));
 					break;
 				default:
