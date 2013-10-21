@@ -6,7 +6,7 @@
 
 ::: tags
 
-begin 0:<html><body>
+begin 0:<html><link rel = "stylesheet" href = "style.css"><body>
 end 0:</body></html>
 \ 0:<br />
 0 1:<title>\1</title>
