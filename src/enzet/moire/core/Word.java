@@ -1,8 +1,8 @@
 package enzet.moire.core;
 
-import enzet.moire.core.Scheme.Section.Relation;
 import java.util.ArrayList;
-import java.util.List;
+
+import enzet.moire.core.Scheme.Section.Relation;
 
 public class Word
 {
@@ -26,7 +26,7 @@ public class Word
 	{
 		children.addAll(words);
 	}
-    
+
     public String getParameter(int i, Format format, boolean isClear)
     {
         Word branch = children.get(i);
@@ -42,7 +42,7 @@ public class Word
 
             for (Word w : branch.children)
             {
-                s += (isClear ? w.value : w.convert(format));
+                s += (isClear ? w.screen(format) : w.convert(format));
             }
             return s;
         }
@@ -84,17 +84,20 @@ public class Word
 
     /**
      * Word to text translation.
-     * 
+     *
      * Convert word with all subwords into the text representation.
      */
-	public String convert(Format format) 
+	public String convert(Format format)
 	{
 		if (type == WordType.SIMPLE_WORD)
 		{
-            List<Relation> symbols = format.getSymbols();
             String converted = value;
-            
-            for (Relation symbol : symbols)
+
+			for (Relation symbol : format.getScreen())
+			{
+				converted = converted.replaceAll(symbol.from, symbol.to);
+			}
+            for (Relation symbol : format.getSymbols())
             {
                 converted = converted.replaceAll(symbol.from, symbol.to);
             }
@@ -117,10 +120,28 @@ public class Word
 		else if (type == WordType.TAG)
 		{
             Rule rule = format.getRule(value, children.size());
-            
+
             if (rule == null) return value;
             return rule.convert(this, format);
 		}
 		return value;
+	}
+
+	/**
+	 * Do nothing but screen all symbols if type is simple word
+	 */
+	public String screen(Format format)
+	{
+		if (type == WordType.SIMPLE_WORD)
+		{
+            String converted = value;
+
+			for (Relation symbol : format.getScreen())
+			{
+				converted = converted.replaceAll(symbol.from, symbol.to);
+			}
+			return converted;
+		}
+		return null;
 	}
 }
