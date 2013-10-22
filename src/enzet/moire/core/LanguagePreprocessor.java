@@ -14,6 +14,7 @@ public class LanguagePreprocessor
 {
 	private static char BEGIN = '[';
     private static char END = ']';
+	private static char SCREEN = '\\';
 	
     /**
      * Preprocessor detects character sequences with syntax
@@ -37,9 +38,10 @@ public class LanguagePreprocessor
 
 		for (int i = 0; i < text.length(); i++)
 		{
+			char cp = i > 0 ? text.charAt(i - 1) : ' ';
 			char c = text.charAt(i);
 
-			if (c == BEGIN)
+			if (c == BEGIN && cp != SCREEN)
 			{
                 String begin = text.substring(i + 1);
                 
@@ -66,12 +68,12 @@ public class LanguagePreprocessor
                 }
                 if (!matched)
                 {
-                    while (text.charAt(i) != END)
+                    while (!(text.charAt(i) == END && text.charAt(i - 1) != SCREEN))
                     i++;
                 }
 				continue;
 			}
-			if (c == END) continue;
+			if (c == END && cp != SCREEN) continue;
 			k++;
 
 			newText[k] = c;

@@ -8,7 +8,6 @@
 
 begin 0:<html><body>
 end 0:</body></html>
-\ 0:<br />
 0 1:<title>\1</title>
 1 1:<h1>\1</h1>
 2 1:<h2>\1</h2>

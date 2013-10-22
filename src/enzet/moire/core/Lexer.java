@@ -3,23 +3,36 @@ package enzet.moire.core;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Moire markup lexer
+ *
+ * @author Sergey Vartanov
+ */
 public class Lexer
 {
-	List<Word> words;
+	int i;
+	char[] text;
+
+	public Lexer(String text)
+	{
+		this.text = text.toCharArray();
+	}
 
 	/**
 	 * @see #parse(char[], int)
 	 */
-	public Lexer(String text)
+	public List<Word> parse()
 	{
-		System.out.print("Parsing " + text.length() + " bytes... ");
-		
-		words = parse(text.toCharArray(), 0);
-		
-		System.out.println("done.");
-	}
+		List<Word> words;
 
-	int i;
+		System.out.print("Parsing " + text.length + " bytes... ");
+
+		words = parse(text, 0);
+
+		System.out.println("done.");
+
+		return words;
+	}
 
 	/**
 	 * Parse text into list of words
@@ -47,9 +60,9 @@ public class Lexer
 					ws.add(new Word(simple.toString(), WordType.SIMPLE_WORD));
 					simple = new StringBuffer("");
 				}
-				if (!isLetter(s[i + 1]))
+				if (!isTagLetter(s[i + 1]))
 				{
-					ws.add(new Word(s[i + 1] + "", WordType.TAG));
+					ws.add(new Word(Character.toString(s[i + 1]), WordType.TAG));
 					i++;
 				}
 				else
@@ -57,7 +70,7 @@ public class Lexer
 					i++;
 					String tagName = "";
 
-					while (isLetter(s[i]))
+					while (isTagLetter(s[i]))
 					{
 						tagName += s[i];
 						i++;
@@ -111,40 +124,13 @@ public class Lexer
 		return ws;
 	}
 
-	private boolean isLetter(char c)
-	{
-		return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '[' || c == ']';
-	}
-
-	public boolean hasWords()
-	{
-		return words.size() > 0;
-	}
-
-	public Word getWord()
-	{
-		return words.remove(0);
-	}
-
 	/**
-	 * Print graphic representation of words
+	 * If tag value may contains that letter
+	 * 
+	 * @param c letter
 	 */
-	public void print()
+	public static boolean isTagLetter(char c)
 	{
-		for (Word w : words)
-		{
-			w.print(0);
-		}
-	}
-
-	public String convert(Format format)
-	{
-		String result = "";
-
-		for (Word w : words)
-		{
-			result += w.convert(format);
-		}
-		return result;
+		return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
 	}
 }

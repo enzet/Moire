@@ -23,7 +23,7 @@ public class Reader
     public static String PROGRAM_NAME = "Moire";
 
     public static List<Rule> rules;
-        
+
 	public static void main(String[] args) throws IOException
 	{
 		System.out.println(PROGRAM_NAME + ".");

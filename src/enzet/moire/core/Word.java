@@ -116,6 +116,10 @@ public class Word
 		}
 		else if (type == WordType.TAG)
 		{
+			if (value.length() == 1 && !Lexer.isTagLetter(value.charAt(0)))
+			{
+				return value;
+			}
             Rule rule = format.getRule(value, children.size());
             
             if (rule == null) return value;
