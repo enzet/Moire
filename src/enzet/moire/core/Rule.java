@@ -11,11 +11,11 @@ import java.util.List;
  */
 public class Rule
 {
-    private String name;
-    private int parameters;
-    
-    private Object[] elements;
-	
+	private String name;
+	private int parameters;
+
+	private Object[] elements;
+
 	class Parameter
 	{
 		int number;
@@ -27,7 +27,7 @@ public class Rule
 			this.isClear = isClear;
 		}
 	}
-	
+
 	class Function
 	{
 		String text;
@@ -39,22 +39,22 @@ public class Rule
 			this.isReturn = isReturn;
 		}
 	}
-    
-    public Rule(String key, String value)
-    {
-        name = key.substring(0, key.indexOf(" "));
-        parameters = Integer.parseInt(key.substring(key.indexOf(" ")).trim());
-        elements = parseElements(value);
-    }
-    
-    public String convert(Word word, Format format)
-    {
-        StringBuilder returned = new StringBuilder();
-        
+
+	public Rule(String key, String value)
+	{
+		name = key.substring(0, key.indexOf(" "));
+		parameters = Integer.parseInt(key.substring(key.indexOf(" ")).trim());
+		elements = parseElements(value);
+	}
+
+	public String convert(Word word, Format format)
+	{
+		StringBuilder returned = new StringBuilder();
+
 		int methods = 0;
-		
+
 		String[] param = new String[parameters];
-		
+
 		for (int i = 0; i < parameters; i++)
 		{
 			param[i] = word.getParameter(i, format, false);
@@ -79,7 +79,7 @@ public class Rule
 			else if (element instanceof Function)
 			{
 				methods++;
-				
+
 				try
 				{
 					Class c = Class.forName("enzet.moire.Inner$" + format.name.toUpperCase());
@@ -91,7 +91,7 @@ public class Rule
 						p[i] = s;
 					}
 					Method m = c.getMethod("method_" + name + "_" + parameters + "_" + methods, p);
-					
+
 					if (((Function) element).isReturn)
 					{
 						returned.append(m.invoke(null, (Object[]) param));
@@ -108,19 +108,19 @@ public class Rule
 				}
 			}
 		}
-        return returned.toString();
-    }
-	
+		return returned.toString();
+	}
+
 	private Object[] parseElements(String text)
 	{
 		List<Object> elements = new ArrayList<Object>();
-		
+
 		String l = "";
-		
+
 		for (int i = 0; i < text.length(); i++)
 		{
 			char c = text.charAt(i);
-			
+
 			switch (c)
 			{
 				case '\\':
@@ -148,7 +148,7 @@ public class Rule
 						i += 2;
 						break;
 					}
-					
+
 					break;
 				}
 				case '{':
@@ -190,15 +190,15 @@ public class Rule
 		{
 			elements.add(l);
 		}
-		
+
 		return elements.toArray(new Object[elements.size()]);
 	}
-	
+
 	public String generateMethods()
 	{
 		String returned = "";
 		int methods = 0;
-		
+
 		for (Object element : elements)
 		{
 			if (element instanceof Function)
@@ -208,7 +208,7 @@ public class Rule
 				returned += "\t\tpublic static ";
 				returned += f.isReturn ? "String" : "void";
 				returned += " method_" + name + "_" + parameters + "_" + ++methods + "(";
-				
+
 				for (int i = 0; i < parameters; i++)
 				{
 					returned += "String arg" + (i + 1);
@@ -218,7 +218,7 @@ public class Rule
 					}
 				}
 				returned += ")\n\t\t{\n\t\t\t";
-				
+
 				if (f.isReturn)
 				{
 					returned += "return " + f.text + ";";
@@ -233,25 +233,25 @@ public class Rule
 		return returned;
 	}
 
-    // Getters and setters
-    
-    public String getName()
-    {
-        return name;
-    }
+	// Getters and setters
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+	public String getName()
+	{
+		return name;
+	}
 
-    public int getParameters()
-    {
-        return parameters;
-    }
+	public void setName(String name)
+	{
+		this.name = name;
+	}
 
-    public void setParameters(int parameters)
-    {
-        this.parameters = parameters;
-    }
+	public int getParameters()
+	{
+		return parameters;
+	}
+
+	public void setParameters(int parameters)
+	{
+		this.parameters = parameters;
+	}
 }

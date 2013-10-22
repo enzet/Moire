@@ -5,7 +5,7 @@ import org.kohsuke.args4j.Option;
 
 /**
  * Options
- * 
+ *
  * @author Sergey Vartanov (me@enzet.ru)
  */
 public class Options

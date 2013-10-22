@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Moire markup lexer
  *
- * @author Sergey Vartanov
+ * @author Sergey Vartanov (me@enzet.ru)
  */
 public class Lexer
 {
@@ -130,7 +130,7 @@ public class Lexer
 
 	/**
 	 * If tag value may contains that letter
-	 * 
+	 *
 	 * @param c letter
 	 */
 	public static boolean isTagLetter(char c)

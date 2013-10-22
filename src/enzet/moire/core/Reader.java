@@ -19,13 +19,13 @@ import enzet.moire.util.Util;
  */
 public class Reader
 {
-    public static String PROGRAM_NAME = "Moire";
+	public static String PROGRAM_NAME = "Moire";
 
 	public static void main(String[] args) throws IOException
 	{
 		System.out.println(PROGRAM_NAME + ".");
 
-        try
+		try
 		{
 			CmdLineParser parser = new CmdLineParser(new Options());
 			parser.parseArgument(args);
@@ -35,7 +35,7 @@ public class Reader
 			System.out.println("Error: unknown options.");
 			return;
 		}
-        Scheme scheme = new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
+		Scheme scheme = new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
 
 		if (!Options.isGenerate)
 		{
@@ -45,12 +45,12 @@ public class Reader
 		{
 			generateInner(scheme);
 		}
-    }
+	}
 
 	public static void read(Scheme scheme)
-    {
-        Format format = new Format(Options.to.toLowerCase());
-        format.readFormat(scheme);
+	{
+		Format format = new Format(Options.to.toLowerCase());
+		format.readFormat(scheme);
 
 		String input = Util.get(Options.input);
 
@@ -58,14 +58,14 @@ public class Reader
 		{
 			input = new CommentPreprocessor().preprocess(input);
 		}
-        input = new LanguagePreprocessor().preprocess(input, Options.language, Options.to);
+		input = new LanguagePreprocessor().preprocess(input, Options.language, Options.to);
 
-        Document document = new Document(input);
+		Document document = new Document(input);
 
-        String formatted = document.convert(format);
+		String formatted = document.convert(format);
 
 		System.out.println(String.format("Document converted from Moire markup (%d bytes) to %s (%d bytes): %s.", input.length(), Options.to, formatted.length(), Options.output));
-        Util.write(Options.output, formatted);
+		Util.write(Options.output, formatted);
 	}
 
 	public static void generateInner(Scheme scheme) throws IOException

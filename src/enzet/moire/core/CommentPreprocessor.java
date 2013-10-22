@@ -34,10 +34,10 @@ public class CommentPreprocessor
 			if (k < text.length()) newText[k] = c;
 		}
 		newText[k] = '\0';
-		
+
 		char[] newNewText = new char[k];
 		newNewText = Arrays.copyOf(newText, k);
-		
+
 		System.out.println(" done.");
 
 		return new String(newNewText);

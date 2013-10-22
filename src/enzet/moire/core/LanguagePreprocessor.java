@@ -5,30 +5,30 @@ import java.util.List;
 
 /**
  * Language preprocessor
- * 
- * @see LanguagePreprocessor#preprocess(String, List, String) 
+ *
+ * @see LanguagePreprocessor#preprocess(String, List, String)
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
 public class LanguagePreprocessor
 {
 	private static char BEGIN = '[';
-    private static char END = ']';
+	private static char END = ']';
 	private static char SCREEN = '\\';
-	
-    /**
-     * Preprocessor detects character sequences with syntax
-     * <code>BEGIN language_name non-letter_symbol text END</code>,
-     * removes sequences where <code>language_name</code> is not included in
-     * <code>languages</code> and is not equals <code>format</code> and remains
-     * <code>text</code> otherwise. <code>non-letter_symbol</code> will be 
-     * deleted.
-     * 
-     * @param text input text
-     * @param languages list of language names
-     * @param format current format name (e. g. HTML)
-     * @return preprocessed text
-     */
+
+	/**
+	 * Preprocessor detects character sequences with syntax
+	 * <code>BEGIN language_name non-letter_symbol text END</code>,
+	 * removes sequences where <code>language_name</code> is not included in
+	 * <code>languages</code> and is not equals <code>format</code> and remains
+	 * <code>text</code> otherwise. <code>non-letter_symbol</code> will be
+	 * deleted.
+	 *
+	 * @param text input text
+	 * @param languages list of language names
+	 * @param format current format name (e. g. HTML)
+	 * @return preprocessed text
+	 */
 	public String preprocess(String text, List<String> languages, String format)
 	{
 		System.out.print("Language preprocessing... ");
@@ -43,34 +43,34 @@ public class LanguagePreprocessor
 
 			if (c == BEGIN && cp != SCREEN)
 			{
-                String begin = text.substring(i + 1);
-                
-                if (begin.startsWith(format) && 
-                    !Util.isLetter(text.charAt(i + 1 + format.length())))
-                {
-                    i += format.length() + 1;
-                    continue;                    
-                }
-                boolean matched = false;
-                
-                if (languages != null)
-                {
-                    for (String language : languages)
-                    {
-                        if (begin.startsWith(language) && 
-                            !Util.isLetter(text.charAt(i + 1 + language.length())))
-                        {
-                            i += language.length() + 1;
-                            matched = true;
-                            break;
-                        }
-                    }
-                }
-                if (!matched)
-                {
-                    while (!(text.charAt(i) == END && text.charAt(i - 1) != SCREEN))
-                    i++;
-                }
+				String begin = text.substring(i + 1);
+
+				if (begin.startsWith(format) &&
+					!Util.isLetter(text.charAt(i + 1 + format.length())))
+				{
+					i += format.length() + 1;
+					continue;
+				}
+				boolean matched = false;
+
+				if (languages != null)
+				{
+					for (String language : languages)
+					{
+						if (begin.startsWith(language) &&
+							!Util.isLetter(text.charAt(i + 1 + language.length())))
+						{
+							i += language.length() + 1;
+							matched = true;
+							break;
+						}
+					}
+				}
+				if (!matched)
+				{
+					while (!(text.charAt(i) == END && text.charAt(i - 1) != SCREEN))
+					i++;
+				}
 				continue;
 			}
 			if (c == END && cp != SCREEN) continue;
@@ -80,9 +80,9 @@ public class LanguagePreprocessor
 		}
 		char[] newNewText;
 		newNewText = Arrays.copyOf(newText, k);
-        
-        System.out.println("done.");
-		
+
+		System.out.println("done.");
+
 		return new String(newNewText);
 	}
 }

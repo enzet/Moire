@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Document
- * 
+ *
  * @author Sergey Vartanov (me@enzet.ru)
  */
 public class Document

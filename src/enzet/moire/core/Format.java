@@ -13,56 +13,56 @@ import enzet.moire.core.Scheme.Section.Relation;
  */
 public class Format
 {
-    String name;
+	String name;
 
-    List<Rule> rules;
-    List<Relation> symbols;
-    List<Relation> screen;
+	List<Rule> rules;
+	List<Relation> symbols;
+	List<Relation> screen;
 
-    public Format(String name)
-    {
-        this.name = name;
-        rules = new ArrayList<Rule>();
-    }
+	public Format(String name)
+	{
+		this.name = name;
+		rules = new ArrayList<Rule>();
+	}
 
-    public void readFormat(Scheme scheme)
-    {
-        try
-        {
-            Section currentFormat = scheme.getRoot().getChild("formats").getChild(name);
+	public void readFormat(Scheme scheme)
+	{
+		try
+		{
+			Section currentFormat = scheme.getRoot().getChild("formats").getChild(name);
 			List<Relation> relations = currentFormat.getChild("tags").getRelations();
 
-            for (Relation r : relations)
-            {
-                try
-                {
-                    rules.add(new Rule(r.from, r.to));
-                }
-                catch (Exception e)
-                {
-                    System.err.println("irregular rule for " + r);
-                }
-            }
+			for (Relation r : relations)
+			{
+				try
+				{
+					rules.add(new Rule(r.from, r.to));
+				}
+				catch (Exception e)
+				{
+					System.err.println("irregular rule for " + r);
+				}
+			}
 			symbols = currentFormat.getChild("symbols").getRelations();
 			screen = currentFormat.getChild("screen").getRelations();
-        }
-        catch (Exception e)
-        {
-            System.err.println("Error: irregular scheme file.");
-        }
-    }
+		}
+		catch (Exception e)
+		{
+			System.err.println("Error: irregular scheme file.");
+		}
+	}
 
-    public Rule getRule(String name, int parameters)
-    {
-        for (Rule rule : rules)
-        {
-            if (rule.getName().equals(name) && rule.getParameters() == parameters)
-            {
-                return rule;
-            }
-        }
-        return null;
-    }
+	public Rule getRule(String name, int parameters)
+	{
+		for (Rule rule : rules)
+		{
+			if (rule.getName().equals(name) && rule.getParameters() == parameters)
+			{
+				return rule;
+			}
+		}
+		return null;
+	}
 
 	public String generateClass()
 	{
@@ -81,10 +81,10 @@ public class Format
 
 	// Getters and setters
 
-    public List<Relation> getSymbols()
-    {
-        return symbols;
-    }
+	public List<Relation> getSymbols()
+	{
+		return symbols;
+	}
 
 	public List<Relation> getScreen()
 	{

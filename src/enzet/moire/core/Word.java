@@ -4,6 +4,11 @@ import java.util.ArrayList;
 
 import enzet.moire.core.Scheme.Section.Relation;
 
+/**
+ * Word
+ *
+ * @author Sergey Vartanov (me@enzet.ru)
+ */
 public class Word
 {
 	public WordType type;
@@ -27,26 +32,26 @@ public class Word
 		children.addAll(words);
 	}
 
-    public String getParameter(int i, Format format, boolean isClear)
-    {
-        Word branch = children.get(i);
+	public String getParameter(int i, Format format, boolean isClear)
+	{
+		Word branch = children.get(i);
 
-        if (branch.type != WordType.BRANCH)
-        {
-            System.err.println("Warning: is no branch");
-            return "?";
-        }
-        else
-        {
-            String s = "";
+		if (branch.type != WordType.BRANCH)
+		{
+			System.err.println("Warning: is no branch");
+			return "?";
+		}
+		else
+		{
+			String s = "";
 
-            for (Word w : branch.children)
-            {
-                s += (isClear ? w.screen(format) : w.convert(format));
-            }
-            return s;
-        }
-    }
+			for (Word w : branch.children)
+			{
+				s += (isClear ? w.screen(format) : w.convert(format));
+			}
+			return s;
+		}
+	}
 
 	public void print(int level)
 	{
@@ -60,7 +65,7 @@ public class Word
 
 		for (int i = 0; i < level; i++)
 		{
-			s = "    " + s;
+			s = "	" + s;
 		}
 
 		System.out.println(s);
@@ -82,30 +87,30 @@ public class Word
 		return "<" + s + ">";
 	}
 
-    /**
-     * Word to text translation.
-     *
-     * Convert word with all subwords into the text representation.
-     */
+	/**
+	 * Word to text translation.
+	 *
+	 * Convert word with all subwords into the text representation.
+	 */
 	public String convert(Format format)
 	{
 		if (type == WordType.SIMPLE_WORD)
 		{
-            String converted = value;
+			String converted = value;
 
 			for (Relation symbol : format.getScreen())
 			{
 				converted = converted.replaceAll(symbol.from, symbol.to);
 			}
-            for (Relation symbol : format.getSymbols())
-            {
-                converted = converted.replaceAll(symbol.from, symbol.to);
-            }
-            return converted;
+			for (Relation symbol : format.getSymbols())
+			{
+				converted = converted.replaceAll(symbol.from, symbol.to);
+			}
+			return converted;
 		}
 		else if (type == WordType.FORMULA)
 		{
-            return "$" +  value + "$";
+			return "$" +  value + "$";
 		}
 		else if (type == WordType.BRANCH)
 		{
@@ -123,10 +128,10 @@ public class Word
 			{
 				return value;
 			}
-            Rule rule = format.getRule(value, children.size());
+			Rule rule = format.getRule(value, children.size());
 
-            if (rule == null) return value;
-            return rule.convert(this, format);
+			if (rule == null) return value;
+			return rule.convert(this, format);
 		}
 		return value;
 	}
@@ -138,7 +143,7 @@ public class Word
 	{
 		if (type == WordType.SIMPLE_WORD)
 		{
-            String converted = value;
+			String converted = value;
 
 			for (Relation symbol : format.getScreen())
 			{

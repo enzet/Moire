@@ -6,6 +6,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Utility functions
+ *
+ * @author Sergey Vartanov (me@enzet.ru)
+ */
 public class Util
 {
 	public static void write(String fileName, String text)
@@ -47,10 +52,10 @@ public class Util
 		}
 		return null;
 	}
-    
-    public static boolean isLetter(char character)
-    {
-        return (character >= 'a' && character <= 'z') ||
-            (character >= 'A' && character <= 'Z');
-    }
+
+	public static boolean isLetter(char character)
+	{
+		return (character >= 'a' && character <= 'z') ||
+			(character >= 'A' && character <= 'Z');
+	}
 }
