@@ -1,7 +1,6 @@
 Manifest
 bin
 *.sh
-*.xml
 doc
 nbproject
 test
