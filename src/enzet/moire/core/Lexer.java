@@ -25,9 +25,13 @@ public class Lexer
 	{
 		List<Word> words;
 
+		words = parse(text, 0);
+
 		System.out.print("Parsing " + text.length + " bytes... ");
 
 		words = parse(text, 0);
+		words.add(0, new Word("begin", WordType.TAG));
+		words.add(new Word("end", WordType.TAG));
 
 		System.out.println("done.");
 
@@ -42,7 +46,7 @@ public class Lexer
 	public List<Word> parse(char[] s, int beginIndex)
 	{
 		// Don't put debug printing here. It's very frequent method.
-		
+
 		List<Word> ws = new ArrayList<Word>();
 
 		int length = s.length;

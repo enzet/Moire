@@ -7,33 +7,33 @@ import java.util.List;
 
 /**
  * Scheme
- * 
+ *
  * @author Sergey Vartanov (me@enzet.ru)
  */
 public class Scheme
 {
-    private Section root;
-    
+    private final Section root;
+
     public class Section
     {
-        private String name;
-        private List<Relation> relations;
+        private final String name;
+        private final List<Relation> relations;
         private Section parent;
-        private List<Section> children;
-        private int level;
-        
+        private final List<Section> children;
+        private final int level;
+
         class Relation
         {
             public String from;
             public String to;
-            
+
             Relation(String from, String to)
             {
                 this.from = from;
                 this.to = to;
             }
         }
-        
+
         Section(Section parent, String name, int level)
         {
             children = new ArrayList<Section>();
@@ -42,26 +42,26 @@ public class Scheme
             this.name = name;
             this.level = level;
         }
-        
+
         void addSection(Section section)
         {
             children.add(section);
         }
-        
+
         void addRelation(String from, String to)
         {
             relations.add(new Relation(from, to));
         }
-        
-        public void print()
+
+        public void print(int level)
         {
             for (int i = 0; i < level; i++) System.err.print("  ");
             System.out.println(name);
             for (int i = 0; i < level; i++) System.err.print("  ");
             System.err.println(relations);
-            for (Section s : children) s.print();
+            for (Section s : children) s.print(level + 2);
         }
-        
+
         public Section getChild(String name)
         {
             for (Section c : children)
@@ -70,29 +70,29 @@ public class Scheme
             }
             return null;
         }
-        
+
         public String getName()
         {
             return name;
         }
-        
+
         public List<Relation> getRelations()
         {
             return relations;
         }
-			
+
 		public List<Section> getChildren()
 		{
 			return children;
 		}
     }
-    
+
     public Scheme(BufferedReader input) throws IOException
     {
         root = new Section(null, "root", 0);
-        
+
         Section current = root;
-        
+
         String l;
         while ((l = input.readLine()) != null)
         {
@@ -105,7 +105,7 @@ public class Scheme
                     level++;
                 }
                 l = l.substring(level).trim();
-                
+
                 Section n = new Section(current, l, level);
                 if (current.level < level)
                 {
@@ -113,10 +113,12 @@ public class Scheme
                 }
                 else if (current.level == level)
                 {
+					n.parent = current.parent;
                     current.parent.addSection(n);
                 }
                 else
                 {
+					n.parent = current.parent.parent;
                     current.parent.parent.addSection(n);
                 }
                 current = n;
@@ -127,12 +129,12 @@ public class Scheme
             }
         }
     }
-    
+
     public void print()
     {
-        root.print();
+        root.print(0);
     }
-    
+
     public Section getRoot()
     {
         return root;

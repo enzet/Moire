@@ -6,7 +6,7 @@
 
 ::: tags
 
-begin 0:<html><body>
+begin 0:<html><link rel = "stylesheet" href = "style.css"><body>
 end 0:</body></html>
 0 1:<title>\1</title>
 1 1:<h1>\1</h1>
@@ -44,4 +44,8 @@ u 1:<u>\1</u>
 >>:&raquo;
 \(c\):&copy;
 \(C\):&copy;
+
+::: screen
+
+<:&lt;
 
