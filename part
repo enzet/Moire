@@ -1,7 +1,7 @@
 	// Build-in methods
 
 	/**
-	 * 
+	 * Warning message
 	 */
 	public static void warning(String message)
 	{

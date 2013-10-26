@@ -18,6 +18,7 @@ public class Scheme
 	{
 		private final String name;
 		private final List<Relation> relations;
+		private final List<String> strings;
 		private Section parent;
 		private final List<Section> children;
 		private final int level;
@@ -32,12 +33,19 @@ public class Scheme
 				this.from = from;
 				this.to = to;
 			}
+
+			@Override
+			public String toString()
+			{
+				return from + ": " + to;
+			}
 		}
 
 		Section(Section parent, String name, int level)
 		{
 			children = new ArrayList<Section>();
 			relations = new ArrayList<Relation>();
+			strings = new ArrayList<String>();
 			this.parent = parent;
 			this.name = name;
 			this.level = level;
@@ -51,6 +59,11 @@ public class Scheme
 		void addRelation(String from, String to)
 		{
 			relations.add(new Relation(from, to));
+		}
+
+		public void addString(String string)
+		{
+			strings.add(string);
 		}
 
 		public void print(int level)
@@ -84,6 +97,17 @@ public class Scheme
 		public List<Section> getChildren()
 		{
 			return children;
+		}
+
+		public String getString()
+		{
+			StringBuilder builder = new StringBuilder();
+
+			for (String s : strings)
+			{
+				builder.append(s).append("\n");
+			}
+			return builder.toString();
 		}
 	}
 
@@ -123,9 +147,17 @@ public class Scheme
 				}
 				current = n;
 			}
-			else if (!l.equals("") && !l.startsWith("#") && l.contains(":"))
+			else if (!l.equals("") && !l.startsWith("#"))
 			{
-				current.addRelation(l.substring(0, l.indexOf(":")), l.substring(l.indexOf(":") + 1));
+				int index;
+				if ((index = l.indexOf(':')) != -1 && l.charAt(index) != '\\')
+				{
+					current.addRelation(l.substring(0, l.indexOf(":")), l.substring(l.indexOf(":") + 1));
+				}
+				else
+				{
+					current.addString(l);
+				}
 			}
 		}
 	}

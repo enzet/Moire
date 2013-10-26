@@ -4,15 +4,17 @@
 	</description>
 
 	<property name = "src" location = "src" />
-	<property name = "build" location = "build" />
+	<property name = "build" location = "bin" />
 	<property name = "dist" location = "dist" />
 
 	<target name = "init">
 		<mkdir dir = "${build}" />
 	</target>
 
-	<target name = "compile-moire" depends = "init" description = "compile the source">
+	<target name = "compile-moire" depends = "init" description = "compile the source without Inner class">
 		<javac includeantruntime = "false" srcdir = "${src}" destdir = "${build}">
+			<include name = "enzet/moire/*/*.java" />
+			<exclude name = "enzet/moire/Inner.java" />
 			<classpath>
 				<fileset dir = "lib">
 					<include name = "**/*.jar"/>

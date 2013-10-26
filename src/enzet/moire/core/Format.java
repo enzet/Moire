@@ -18,6 +18,8 @@ public class Format
 	List<Rule> rules;
 	List<Relation> symbols;
 	List<Relation> screen;
+	String header;
+	String initialActions;
 
 	public Format(String name)
 	{
@@ -40,15 +42,21 @@ public class Format
 				}
 				catch (Exception e)
 				{
-					System.err.println("irregular rule for " + r);
+					System.err.println("Error: irregular rule for " + r + ".");
 				}
 			}
 			symbols = currentFormat.getChild("symbols").getRelations();
 			screen = currentFormat.getChild("screen").getRelations();
+
+			Section headerSection = currentFormat.getChild("header");
+			if (headerSection != null) header = headerSection.getString();
+			Section initSection = currentFormat.getChild("init");
+			if (initSection != null) initialActions = initSection.getString();
 		}
 		catch (Exception e)
 		{
 			System.err.println("Error: irregular scheme file.");
+			e.printStackTrace();
 		}
 	}
 
@@ -69,6 +77,11 @@ public class Format
 		StringBuilder clazz = new StringBuilder();
 
 		clazz.append("\tpublic static class " + name.toUpperCase() + "\n\t{\n");
+
+		if (initialActions != null)
+		{
+			clazz.append(initialActions).append("\n");
+		}
 
 		for (Rule r : rules)
 		{

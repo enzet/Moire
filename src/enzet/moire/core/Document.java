@@ -2,6 +2,8 @@ package enzet.moire.core;
 
 import java.util.List;
 
+import enzet.moire.util.Options;
+
 /**
  * Document
  *
@@ -34,6 +36,13 @@ public class Document
 	{
 		parse();
 
+		if (Options.printStructure)
+		{
+			for (Word word : words)
+			{
+				word.print(0);
+			}
+		}
 		String result = "";
 
 		for (Word w : words)

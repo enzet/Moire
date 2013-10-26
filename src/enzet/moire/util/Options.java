@@ -1,6 +1,7 @@
 package enzet.moire.util;
 
 import java.util.List;
+
 import org.kohsuke.args4j.Option;
 
 /**
@@ -10,6 +11,8 @@ import org.kohsuke.args4j.Option;
  */
 public class Options
 {
+	// Main options
+
 	@Option(name = "-i", aliases = "--input", usage = "Input file with Moire syntax")
 	public static String input;
 
@@ -30,6 +33,11 @@ public class Options
 
 	@Option(name = "-g", aliases = "--generate", usage = "Generate inner class")
 	public static boolean isGenerate = false;
+
+	// Debug printing options
+
+	@Option(name = "--print-structure", usage = "Generate inner class")
+	public static boolean printStructure = false;
 
 	public static String innerClassFileName = "src/enzet/moire/Inner.java";
 }

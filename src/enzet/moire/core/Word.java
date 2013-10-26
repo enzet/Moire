@@ -53,6 +53,9 @@ public class Word
 		}
 	}
 
+	/**
+	 * Print word text representation
+	 */
 	public void print(int level)
 	{
 		String s = "\"" + value + "\"";
@@ -124,13 +127,28 @@ public class Word
 		}
 		else if (type == WordType.TAG)
 		{
+			if (value == null)
+			{
+				System.err.println("Error: value for tag is null.");
+				System.exit(0);
+			}
 			if (value.length() == 1 && !Lexer.isTagLetter(value.charAt(0)))
 			{
+				if (children.size() > 0)
+				{
+					System.err.println("Warning: screened letter has argument(s). " +
+						"Argument(s) skipped.");
+				}
 				return value;
 			}
 			Rule rule = format.getRule(value, children.size());
 
-			if (rule == null) return value;
+			if (rule == null)
+			{
+				System.err.println("Error: no rule for " + value + " tag with " +
+					children.size() + " argument(s) in scheme. Tag skipped.");
+				return value;
+			}
 			return rule.convert(this, format);
 		}
 		return value;

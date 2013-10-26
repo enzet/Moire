@@ -1,8 +1,20 @@
 # Moire scheme file
 
+: tag-constraint
+
+list:item,list,ordered
+ordered:item,list,ordered
+
+
+
 : formats
 
+
+
 :: html
+
+name:"HTML"
+extension:"html"
 
 ::: tags
 
@@ -49,3 +61,55 @@ u 1:<u>\1</u>
 
 <:&lt;
 
+
+
+:: markdown
+
+name:"Markdown"
+extension:"md"
+
+::: header
+
+import java.util.ArrayList;
+import java.util.List;
+
+::: init
+
+		static boolean isOrdered;
+		static List<Integer> counter;
+
+::: tags
+
+begin 0:{counter = new ArrayList<Integer>();}
+end 0:
+0 1:
+1 1:\1\n[multiline(\1.length(), "=")]
+2 1:\1\n[multiline(\1.length(), "-")]
+3 1:### \1 ###
+4 1:#### \1 ####
+5 1:##### \1 #####
+6 1:###### \1 ######
+b 1:**\1**
+code 1:[carg1.replaceAll("\n", "\n    ")]
+href 1:\[\1\](\1)
+href 2:\[\2\](\1)
+i 1:*\1*
+image 1:![\1](\1)
+image 2:![\2](\1)
+item 1:\n[multiline(counter.size() - 1, "    ")][isOrdered ? counter.get(counter.size() - 1) + ".  " : "*   "]\1{counter.set(counter.size() - 1, 1);}
+list 1:{isOrdered = false; counter.add(1);}\1{counter.remove(counter.size() - 1);}
+ordered 1:{isOrdered = true; counter.add(1);}\1{counter.remove(counter.size() - 1);}
+size 2:\1{warning("font size skipped");}
+strike 1:\1{warning("strike format skipped");}
+sub 1:\1{warning("sub text skipped");}
+sup 1:\1{warning("super text skipped");}
+table 1:{warning("table skipped");}
+td 1:
+tr 1:
+tt 1:``\1``
+u 1:\1{warning("underline text skipped");}
+quote 1:>\1
+
+::: symbols
+
+::: screen

@@ -3,6 +3,8 @@ package enzet.moire.core;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kohsuke.args4j.CmdLineParser;
 
@@ -68,20 +70,41 @@ public class Reader
 		Util.write(Options.output, formatted);
 	}
 
+	/**
+	 * Generate source code for <code>enzet.moire.Inner</code> class. It
+	 * contains methods with Java code inserted into scheme.
+	 *
+	 * @param scheme scheme file with input information
+	 */
 	public static void generateInner(Scheme scheme) throws IOException
 	{
-		Section formats = scheme.getRoot().getChild("formats");
+		Section formatsSection = scheme.getRoot().getChild("formats");
 
 		StringBuilder innerClass = new StringBuilder();
 
-		innerClass.append("package enzet.moire;\n\npublic class Inner\n{\n");
-		innerClass.append(Util.get("part"));
+		List<Format> formats = new ArrayList<Format>();
 
-		for (Section formatSection : formats.getChildren())
+		for (Section formatSection : formatsSection.getChildren())
 		{
 			Format format = new Format(formatSection.getName());
 			format.readFormat(scheme);
 
+			formats.add(format);
+		}
+		innerClass.append("package enzet.moire;\n\n");
+
+		for (Format format : formats)
+		{
+			if (format.header != null)
+			{
+				innerClass.append(format.header).append("\n");
+			}
+		}
+		innerClass.append("public class Inner\n{\n");
+		innerClass.append(Util.get("part"));
+
+		for (Format format : formats)
+		{
 			innerClass.append(format.generateClass());
 		}
 		innerClass.append("}\n");
