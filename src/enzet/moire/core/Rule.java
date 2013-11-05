@@ -26,6 +26,12 @@ public class Rule
 			this.number = number;
 			this.isClear = isClear;
 		}
+
+		@Override
+		public String toString()
+		{
+			return "argument " + number + ", " + (isClear ? "" : "not") + " clear";
+		}
 	}
 
 	class Function
@@ -41,6 +47,12 @@ public class Rule
 			}
 			this.text = text;
 			this.isReturn = isReturn;
+		}
+
+		@Override
+		public String toString()
+		{
+			return (isReturn ? "" : "not ") + "returned: " + text;
 		}
 	}
 
@@ -304,6 +316,12 @@ public class Rule
 	@Override
 	public String toString()
 	{
-		return name;
+		StringBuilder returned = new StringBuilder(name).append("\n");
+
+		for (Object element : elements)
+		{
+			returned.append("    ").append(element).append("\n");
+		}
+		return returned.toString();
 	}
 }

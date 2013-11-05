@@ -25,8 +25,6 @@ public class Lexer
 	{
 		List<Word> words;
 
-		words = parse(text, 0);
-
 		System.out.print("Parsing " + text.length + " bytes... ");
 
 		words = parse(text, 0);
@@ -59,7 +57,7 @@ public class Lexer
 
 			if (c == '\\')
 			{
-				if (!simple.toString().equals(""))
+				if (!simple.toString().equals("") && !simple.toString().equals("\0"))
 				{
 					ws.add(new Word(simple.toString(), WordType.SIMPLE_WORD));
 					simple = new StringBuffer("");

@@ -43,21 +43,13 @@ public class Document
 				word.print(0);
 			}
 		}
-		String result = "";
+		StringBuilder returned = new StringBuilder();
 
 		for (Word w : words)
 		{
-			result += w.convert(format);
+			returned.append(w.convert(format));
 		}
-		return result;
-	}
-
-	/**
-	 * Returns word from the main list
-	 */
-	public Word getWord(int number)
-	{
-		return words.remove(0);
+		return returned.toString();
 	}
 
 	/**

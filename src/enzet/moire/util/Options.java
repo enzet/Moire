@@ -34,10 +34,13 @@ public class Options
 	@Option(name = "-g", aliases = "--generate", usage = "Generate inner class")
 	public static boolean isGenerate = false;
 
+	public static String innerClassFileName = "src/enzet/moire/Inner.java";
+
 	// Debug printing options
 
-	@Option(name = "--print-structure", usage = "Generate inner class")
+	@Option(name = "--print-structure", usage = "Print input file structure.")
 	public static boolean printStructure = false;
 
-	public static String innerClassFileName = "src/enzet/moire/Inner.java";
+	@Option(name = "--print-scheme", usage = "Print scheme file structure.")
+	public static boolean printScheme = false;
 }

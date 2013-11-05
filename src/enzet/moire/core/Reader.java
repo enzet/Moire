@@ -38,7 +38,10 @@ public class Reader
 			return;
 		}
 		Scheme scheme = new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
-
+		if (Options.printScheme)
+		{
+			scheme.print();
+		}
 		if (!Options.isGenerate)
 		{
 			read(scheme);

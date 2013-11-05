@@ -15,10 +15,10 @@ public class Word
 	public String value;
 	public java.util.List<Word> children;
 
-	public Word(String s, WordType wordType)
+	public Word(String value, WordType wordType)
 	{
 		type = wordType;
-		value = s;
+		this.value = value;
 		children = new ArrayList<Word>();
 	}
 
@@ -32,9 +32,9 @@ public class Word
 		children.addAll(words);
 	}
 
-	public String getParameter(int i, Format format, boolean isClear)
+	public String getParameter(int number, Format format, boolean isClear)
 	{
-		Word branch = children.get(i);
+		Word branch = children.get(number);
 
 		if (branch.type != WordType.BRANCH)
 		{

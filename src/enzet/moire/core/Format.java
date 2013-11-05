@@ -76,7 +76,7 @@ public class Format
 	{
 		StringBuilder clazz = new StringBuilder();
 
-		clazz.append("\tpublic static class " + name.toUpperCase() + "\n\t{\n");
+		clazz.append("\tpublic static class ").append(name.toUpperCase()).append("\n\t{\n");
 
 		if (initialActions != null)
 		{
@@ -90,6 +90,14 @@ public class Format
 		clazz.append("\t}\n\n");
 
 		return clazz.toString();
+	}
+
+	public void print()
+	{
+		for (Rule rule : rules)
+		{
+			System.out.println(rule.toString());
+		}
 	}
 
 	// Getters and setters
