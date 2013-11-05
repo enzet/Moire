@@ -25,11 +25,11 @@ public class Options
 	@Option(name = "-l", aliases = "--language", usage = "Language preprocessing")
 	public static List<String> language;
 
-	@Option(name = "-c", aliases = "--comments", usage = "Preprocess comments")
-	public static boolean isComments = false;
+	@Option(name = "-kc", aliases = "--keep-comments", usage = "Don't preprocess comments")
+	public static boolean isKeepComments = false;
 
 	@Option(name = "-s", aliases = "--scheme", usage = "Scheme file")
-	public static String schemeFileName = "";
+	public static String schemeFileName;
 
 	@Option(name = "-g", aliases = "--generate", usage = "Generate inner class")
 	public static boolean isGenerate = false;

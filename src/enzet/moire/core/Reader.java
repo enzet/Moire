@@ -1,10 +1,17 @@
 package enzet.moire.core;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.kohsuke.args4j.CmdLineParser;
 
@@ -23,10 +30,10 @@ public class Reader
 {
 	public static String PROGRAM_NAME = "Moire";
 
+	static Map<String, Format> formats;
+
 	public static void main(String[] args) throws IOException
 	{
-		System.out.println(PROGRAM_NAME + ".");
-
 		try
 		{
 			CmdLineParser parser = new CmdLineParser(new Options());
@@ -37,11 +44,14 @@ public class Reader
 			System.out.println("Error: unknown options.");
 			return;
 		}
-		Scheme scheme = new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
+		Scheme scheme = createScheme();
+
 		if (Options.printScheme)
 		{
 			scheme.print();
 		}
+		readFormats(scheme);
+
 		if (!Options.isGenerate)
 		{
 			read(scheme);
@@ -52,6 +62,62 @@ public class Reader
 		}
 	}
 
+	private static Scheme createScheme() throws IOException, FileNotFoundException
+	{
+		if (Options.schemeFileName != null)
+		{
+			File schemeFile = new File(Options.schemeFileName);
+
+			if (!schemeFile.exists())
+			{
+				System.err.println("Error: scheme file \"" + Options.schemeFileName + "\" does not exist.");
+				return null;
+			}
+			if (!schemeFile.isFile())
+			{
+				System.err.println("Error: scheme file \"" + Options.schemeFileName + "\" is not file.");
+				return null;
+			}
+			if (!schemeFile.canRead())
+			{
+				System.err.println("Error: cannot read from scheme file \"" + Options.schemeFileName + "\".");
+				return null;
+			}
+		}
+		URL mainClassURL = Reader.class.getResource("Reader.class");
+		String path = mainClassURL.getFile();
+
+		// Running from JAR file
+
+		if (path.indexOf(':') != -1 && path.indexOf('!') != -1)
+		{
+			String jarFilePath = path.substring(path.indexOf(':') + 1, path.indexOf('!'));
+			JarFile jar = new JarFile(jarFilePath);
+			JarEntry file = jar.getJarEntry("scheme");
+
+			if (file != null)
+			{
+				InputStream is = jar.getInputStream(file);
+				StringWriter writer = new StringWriter();
+
+				while (is.available() > 0)
+				{
+					writer.write(is.read());
+				}
+				writer.close();
+				is.close();
+				return new Scheme(writer);
+			}
+			else
+			{
+				System.err.println("Error: scheme file is not found in JAR.");
+			}
+		}
+		System.out.println(path);
+
+		return new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
+	}
+
 	public static void read(Scheme scheme)
 	{
 		Format format = new Format(Options.to.toLowerCase());
@@ -59,7 +125,7 @@ public class Reader
 
 		String input = Util.get(Options.input);
 
-		if (Options.isComments)
+		if (!Options.isKeepComments)
 		{
 			input = new CommentPreprocessor().preprocess(input);
 		}
@@ -73,6 +139,26 @@ public class Reader
 		Util.write(Options.output, formatted);
 	}
 
+	private static void readFormats(Scheme scheme)
+	{
+		Section formatsSection = scheme.getRoot().getChild("formats");
+
+		formats = new HashMap<String, Format>();
+
+		for (Section formatSection : formatsSection.getChildren())
+		{
+			Format format = new Format(formatSection.getName());
+			format.readFormat(scheme);
+
+			formats.put(formatSection.getName(), format);
+		}
+	}
+
+	public static Format getFormat(String formatName)
+	{
+		return formats.get(formatName);
+	}
+
 	/**
 	 * Generate source code for <code>enzet.moire.Inner</code> class. It
 	 * contains methods with Java code inserted into scheme.
@@ -81,22 +167,13 @@ public class Reader
 	 */
 	public static void generateInner(Scheme scheme) throws IOException
 	{
-		Section formatsSection = scheme.getRoot().getChild("formats");
-
 		StringBuilder innerClass = new StringBuilder();
 
-		List<Format> formats = new ArrayList<Format>();
-
-		for (Section formatSection : formatsSection.getChildren())
-		{
-			Format format = new Format(formatSection.getName());
-			format.readFormat(scheme);
-
-			formats.add(format);
-		}
 		innerClass.append("package enzet.moire;\n\n");
+		innerClass.append("import enzet.moire.core.Reader;\n\n");
+		innerClass.append("import enzet.moire.core.Word;\n\n");
 
-		for (Format format : formats)
+		for (Format format : formats.values())
 		{
 			if (format.header != null)
 			{
@@ -106,7 +183,7 @@ public class Reader
 		innerClass.append("public class Inner\n{\n");
 		innerClass.append(Util.get("part"));
 
-		for (Format format : formats)
+		for (Format format : formats.values())
 		{
 			innerClass.append(format.generateClass());
 		}

@@ -1,7 +1,9 @@
 package enzet.moire.core;
-import enzet.moire.util.Util;
+
 import java.util.Arrays;
 import java.util.List;
+
+import enzet.moire.util.Util;
 
 /**
  * Language preprocessor
@@ -74,9 +76,8 @@ public class LanguagePreprocessor
 				continue;
 			}
 			if (c == END && cp != SCREEN) continue;
-			k++;
 
-			newText[k] = c;
+			newText[k++] = c;
 		}
 		char[] newNewText;
 		newNewText = Arrays.copyOf(newText, k);

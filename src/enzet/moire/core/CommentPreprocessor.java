@@ -9,37 +9,39 @@ import java.util.Arrays;
  */
 public class CommentPreprocessor
 {
+	private static char FIRST = '/';
+	private static char SECOND = '*';
+	private static char SCREEN = '\\';
+
 	public String preprocess(String text)
 	{
 		System.out.print("Comment preprocessing...");
 
-		char[] newText = new char[text.length()];
+		char[] array = new char[text.length()];
 		int k = 0;
 
 		for (int i = 0; i < text.length(); i++)
 		{
-			char c = text.charAt(i);
+			char pc = i == 0 ? ' ' : text.charAt(i - 1);
+			char c1 = text.charAt(i);
+			char c2 = i == text.length() - 1 ? ' ' : text.charAt(i);
 
-			if (c == '/' && text.charAt(i + 1) == '*')
+			if (pc != SCREEN && c1 == FIRST && c2 == SECOND)
 			{
-				while (!(text.charAt(i) == '*' && text.charAt(i + 1) == '/'))
+				while (!(text.charAt(i) == SECOND && text.charAt(i + 1) == FIRST))
+				{
 					i++;
-
-				i++;
-				i++;
-				c = text.charAt(i);
+				}
+				i += 2;
+				c1 = text.charAt(i);
 			}
-			k++;
-
-			if (k < text.length()) newText[k] = c;
+			if (k < text.length())
+			{
+				array[k++] = c1;
+			}
 		}
-		newText[k] = '\0';
-
-		char[] newNewText = new char[k];
-		newNewText = Arrays.copyOf(newText, k);
-
 		System.out.println(" done.");
 
-		return new String(newNewText);
+		return new String(Arrays.copyOf(array, k));
 	}
 }
