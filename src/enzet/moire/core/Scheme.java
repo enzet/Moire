@@ -2,6 +2,8 @@ package enzet.moire.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,6 +162,11 @@ public class Scheme
 				}
 			}
 		}
+	}
+
+	public Scheme(StringWriter writer) throws IOException
+	{
+		this(new BufferedReader(new StringReader(writer.toString())));
 	}
 
 	public void print()

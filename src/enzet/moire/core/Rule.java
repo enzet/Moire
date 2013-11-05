@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Rule
+ * Rule. Tag to format translation
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
@@ -65,21 +65,33 @@ public class Rule
 			if (((Function) elements[0]).isReturn == false)
 			{
 				methods++;
-				invoke(elements[0], new String[parameters * 2], format, methods, returned);
+				invoke(elements[0], new Object[parameters * 2 + 1], format, methods, returned);
 				isFirst = true;
 			}
 		}
 		// Parameters reading
 
-		String[] param = new String[parameters * 2];
+		Object[] param = new Object[parameters * 2 + 1];
+
+		if (word.children != null && word.children.size() > 0 && word.children.get(0) != null)
+		{
+			try {
+				param[0] = word.children.get(0).children;
+			} catch (Exception e) {
+				param[0] = new ArrayList();
+			}
+		}
+		else
+		{
+			param[0] = new ArrayList();
+		}
 
 		for (int i = 0; i < parameters; i++)
 		{
-			param[2 * i] = word.getParameter(i, format, false); // converted: 0, 2, 4...
-			param[2 * i + 1] = word.getParameter(i, format, true); // clear: 1, 3, 5...
+			param[2 * i + 1] = word.getParameter(i, format, false); // converted: 1, 3, 5...
+			param[2 * i + 2] = word.getParameter(i, format, true); // clear: 2, 4, 6...
 		}
-
-		// Processing other elements
+		// Processing elements
 
 		for (int i = 0; i < elements.length; i++)
 		{
@@ -95,11 +107,11 @@ public class Rule
 			{
 				if (((Parameter) element).isClear)
 				{
-					returned.append(param[2 * ((Parameter) element).number - 1]);
+					returned.append(param[2 * ((Parameter) element).number]);
 				}
 				else
 				{
-					returned.append(param[2 * ((Parameter) element).number - 2]);
+					returned.append(param[2 * ((Parameter) element).number - 1]);
 				}
 			}
 			else if (element instanceof Function)
@@ -112,28 +124,29 @@ public class Rule
 		return returned.toString();
 	}
 
-	private void invoke(Object element, String[] param, Format format, int methods, StringBuilder returned)
+	private void invoke(Object element, Object[] param, Format format, int methods, StringBuilder returned)
 	{
 		try
 		{
 			Class<?> c = Class.forName("enzet.moire.Inner$" + format.name.toUpperCase());
-			Class<String> s = String.class;
-			Class<?>[] p = new Class[parameters * 2];
+			Class<?>[] p = new Class[parameters * 2 + 1];
 
-			for (int i = 0; i < parameters * 2; i++)
+			p[0] = List.class;
+
+			for (int i = 1; i < parameters * 2 + 1; i++)
 			{
-				p[i] = s;
+				p[i] = String.class;
 			}
 			Method m = c.getMethod("method_" + name + "_" + parameters + "_" + methods, p);
 
 			if (((Function) element).isReturn)
 			{
-				String result = (String) m.invoke(null, (Object[]) param);
+				String result = (String) m.invoke(null, param);
 				returned.append(result);
 			}
 			else
 			{
-				m.invoke(null, (Object[]) param);
+				m.invoke(null, param);
 			}
 		}
 		catch (Exception ex)
@@ -189,44 +202,54 @@ public class Rule
 						}
 						else
 						{
-							if (c2 == 'n') {l += '\n'; i++;}
-							else if (c2 == 't') {l += '\t'; i++;}
-							else if (c2 == 'r') {l += '\r'; i++;}
-							else if (c2 == 'b') {l += '\b'; i++;}
-							else {l += c2; i++;}
+							if (c2 == 'n') {l += '\n';}
+							else if (c2 == 't') {l += '\t';}
+							else if (c2 == 'r') {l += '\r';}
+							else if (c2 == 'b') {l += '\b';}
+							else {l += c2;}
+							i++;
 						}
 						break;
 					}
 					case '{':
-						if (l.length() > 0)
+						if (i == 0 || text.charAt(i - 1) != '\\')
 						{
-							elements.add(l);
-							l = "";
-						}
-						i++;
-						while ((c = text.charAt(i)) != '}')
-						{
-							l += c;
+							if (l.length() > 0)
+							{
+								elements.add(l);
+								l = "";
+							}
 							i++;
+							int k = 0;
+							while (!(k == 0 && (c = text.charAt(i)) == '}' && text.charAt(i - 1) != '\\'))
+							{
+								if (c == '{') k++;
+								if (c == '}') k--;
+								l += c;
+								i++;
+							}
+							elements.add(new Function(l, false));
+							l = "";
+							break;
 						}
-						elements.add(new Function(l, false));
-						l = "";
-						break;
 					case '[':
-						if (l.length() > 0)
+						if (i == 0 || text.charAt(i - 1) != '\\')
 						{
-							elements.add(l);
-							l = "";
-						}
-						i++;
-						while ((c = text.charAt(i)) != ']')
-						{
-							l += c;
+							if (l.length() > 0)
+							{
+								elements.add(l);
+								l = "";
+							}
 							i++;
+							while (!((c = text.charAt(i)) == ']' && text.charAt(i - 1) != '\\'))
+							{
+								l += c;
+								i++;
+							}
+							elements.add(new Function(l, true));
+							l = "";
+							break;
 						}
-						elements.add(new Function(l, true));
-						l = "";
-						break;
 					default:
 						l += c;
 						break;
@@ -254,6 +277,7 @@ public class Rule
 				returned += "\t\tpublic static ";
 				returned += f.isReturn ? "String" : "void";
 				returned += " method_" + name + "_" + parameters + "_" + ++methods + "(";
+				returned += "List<Word> words" + (parameters == 0 ? "" : ", ");
 
 				for (int i = 0; i < parameters; i++)
 				{
@@ -263,17 +287,7 @@ public class Rule
 						returned += ", ";
 					}
 				}
-				returned += ")\n\t\t{\n\t\t\t";
-
-				if (f.isReturn)
-				{
-					returned += "return " + f.text + ";";
-				}
-				else
-				{
-					returned += f.text;
-				}
-				returned += "\n\t\t}\n\n";
+				returned += ")\n\t\t{\n\t\t\t" + f.text + "\n\t\t}\n\n";
 			}
 		}
 		return returned;

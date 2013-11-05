@@ -61,14 +61,14 @@ public class Word
 		String s = "\"" + value + "\"";
 
 		s = s.replaceAll("\n", "").trim();
-		if (s.length() > 50) s = s.substring(0, 50);
+		if (s.length() > 50 - level * 4) s = s.substring(0, 50 - level * 4);
 
 		if (type == WordType.TAG) s = "tag " + s;
 		if (type == WordType.BRANCH) s = "branch " + s;
 
 		for (int i = 0; i < level; i++)
 		{
-			s = "	" + s;
+			s = "    " + s;
 		}
 
 		System.out.println(s);
@@ -166,6 +166,10 @@ public class Word
 			for (Relation symbol : format.getScreen())
 			{
 				converted = converted.replaceAll(symbol.from, symbol.to);
+			}
+			if (converted.startsWith("\n"))
+			{
+				return converted.substring(1);
 			}
 			return converted;
 		}

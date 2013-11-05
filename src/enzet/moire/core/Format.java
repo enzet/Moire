@@ -43,6 +43,7 @@ public class Format
 				catch (Exception e)
 				{
 					System.err.println("Error: irregular rule for " + r + ".");
+					e.printStackTrace();
 				}
 			}
 			symbols = currentFormat.getChild("symbols").getRelations();
