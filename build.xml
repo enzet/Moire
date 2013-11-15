@@ -38,13 +38,13 @@
 					<include name = "**/*.jar"/>
 				</fileset>
 			</classpath>
-			<arg line = "-s scheme -g" />
+			<arg line = "-s default.moirescheme -g" />
 		</java>
 	</target>
 
 	<target name = "dist" depends = "compile-inner" description = "generate the distribution">
 		<mkdir dir = "${dist}" />
-		<jar jarfile = "${dist}/Moire-${DSTAMP}.jar" basedir = "${build}" />
+		<jar jarfile = "${dist}/Moire.jar" basedir = "${build}" />
 	</target>
 
 	<target name = "clean" description = "clean up">

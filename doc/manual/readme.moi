@@ -1,24 +1,28 @@
-\i {Moire} is a simple multipurpose markup.
+\i {Moiré} is a simple multipurpose markup.
 
-\3 {Requirments}
+\2 {Writing on \i {Moiré}}
 
-For conversion: Java.
+Syntax definition of \i {Moiré} is \href {http://enzet.ru/en/program/moire} {here}.
 
-For convertor modification: \tt {javac}, Apache Ant.
+\2 {Conversion \i {Moiré} code into other formats}
 
-\3 {Conversion}
+Requirements: Java.
 
 \code
 {
-java -jar Moire.jar -i <Moire input file> -o <output file> -t <output format> -s <scheme file>
+java -jar Moire.jar -i <Moiré input file> -t <output format> -o <output file> <other options>
 }
 
-\4 {Options}
+\3 {Options}
 
-\tt {-i} or \tt {\--input}---input file in Moire format;
+\tt {-i} or \tt {\--input}---input file in \i {Moiré} format;
 
 \tt {-o} or \tt {\--output}---output file;
 
 \tt {-t} or \tt {\--to}---format of output file. May be \tt {html}, \tt {text} or \tt {markdown};
 
 \tt {-s} or \tt {\--scheme}---scheme file name.
+
+\2 {Writing scheme files for conversion into new formats}
+
+Requirements: \tt {javac}, Apache Ant.
