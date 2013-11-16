@@ -17,6 +17,7 @@ public class LanguagePreprocessor
 	private static char BEGIN = '[';
 	private static char END = ']';
 	private static char SCREEN = '\\';
+	private static String CODE_BEGIN = "\\code";
 
 	/**
 	 * Preprocessor detects character sequences with syntax
@@ -37,13 +38,33 @@ public class LanguagePreprocessor
 
 		char[] newText = new char[text.length()];
 		int k = 0;
+		boolean inCodeSection = false;
+		int tagLevel = 0;
 
 		for (int i = 0; i < text.length(); i++)
 		{
 			char cp = i > 0 ? text.charAt(i - 1) : ' ';
 			char c = text.charAt(i);
 
-			if (c == BEGIN && cp != SCREEN)
+			if (text.substring(i).startsWith(CODE_BEGIN))
+			{
+				inCodeSection = true;
+				tagLevel = 0;
+			}
+			if (c == '{' && cp != SCREEN)
+			{
+				tagLevel++;
+			}
+			if (c == '}' && cp != SCREEN)
+			{
+				tagLevel--;
+
+				if (tagLevel == 0 && inCodeSection)
+				{
+					inCodeSection = false;
+				}
+			}
+			if (c == BEGIN && cp != SCREEN && !inCodeSection)
 			{
 				String begin = text.substring(i + 1);
 
@@ -75,7 +96,7 @@ public class LanguagePreprocessor
 				}
 				continue;
 			}
-			if (c == END && cp != SCREEN) continue;
+			if (c == END && cp != SCREEN && !inCodeSection) continue;
 
 			newText[k++] = c;
 		}
