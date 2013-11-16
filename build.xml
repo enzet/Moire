@@ -14,7 +14,8 @@
 		<description>
 			Compile all Moire classfiles expect Inner.class
 		</description>
-		<javac includeantruntime="false" srcdir="${src}" destdir="${build}">
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}"
+			encoding="utf8">
 			<include name="enzet/moire/*/*.java" />
 			<exclude name="enzet/moire/Inner.java" />
 			<classpath>
@@ -29,7 +30,7 @@
 		<description>
 			Compile Inner.class
 		</description>
-		<javac includeantruntime="false" destdir="${build}">
+		<javac includeantruntime="false" destdir="${build}" encoding="utf8">
 			<src path="${src}/enzet/moire" />
 			<include name="Inner.java" />
 		</javac>
@@ -47,6 +48,7 @@
 				</fileset>
 			</classpath>
 			<arg line="-s default.moirescheme -g" />
+			<jvmarg line="-Dfile.encoding=UTF-8" />
 		</java>
 	</target>
 
