@@ -93,7 +93,7 @@ public class Reader
 		{
 			String jarFilePath = path.substring(path.indexOf(':') + 1, path.indexOf('!'));
 			JarFile jar = new JarFile(jarFilePath);
-			JarEntry file = jar.getJarEntry("scheme");
+			JarEntry file = jar.getJarEntry(Options.defaultSchemeFileName);
 
 			if (file != null)
 			{
@@ -181,7 +181,7 @@ public class Reader
 			}
 		}
 		innerClass.append("public class Inner\n{\n");
-		innerClass.append(Util.get("part"));
+		innerClass.append(Util.get(Options.partFileName));
 
 		for (Format format : formats.values())
 		{

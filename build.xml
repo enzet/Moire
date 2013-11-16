@@ -46,7 +46,7 @@
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
-			<arg line="-s scheme -g" />
+			<arg line="-s default.moirescheme -g" />
 		</java>
 	</target>
 
@@ -57,7 +57,7 @@
 		<jar destfile="Moire.jar">
 			<fileset dir="${build}" />
 			<fileset dir=".">
-				<include name="scheme" />
+				<include name="default.moirescheme" />
 			</fileset>
 			<restrict>
 				<name name="**/*.class" />

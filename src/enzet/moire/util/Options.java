@@ -11,6 +11,9 @@ import org.kohsuke.args4j.Option;
  */
 public class Options
 {
+	public static String partFileName = "part.java";
+    public static String defaultSchemeFileName = "default.moirescheme";
+
 	// Main options
 
 	@Option(name = "-i", aliases = "--input", usage = "Input file with Moire syntax")
