@@ -1,12 +1,14 @@
-\i {Moiré} is a simple multipurpose markup.
+Moiré is a simple multipurpose markup.
 
-\2 {Writing on \i {Moiré}}
+\2 {Writing on Moiré}
 
-Syntax definition of \i {Moiré} is \href {http://enzet.ru/en/program/moire} {here}.
+Moiré syntax definition is \href {http://enzet.ru/en/program/moire} {here}.
 
-\2 {Conversion \i {Moiré} code into other formats}
+\2 {Conversion Moiré code into other formats}
 
-Requirements: Java.
+Requirements: Java, \tt {javac}, Apache Ant.
+
+Build Moiré: \tt {ant dist} and run it:
 
 \code
 {
@@ -23,6 +25,3 @@ java -jar Moire.jar -i <Moiré input file> -t <output format> -o <output file> <
 
 \tt {-s} or \tt {\--scheme}---scheme file name.
 
-\2 {Writing scheme files for conversion into new formats}
-
-Requirements: \tt {javac}, Apache Ant.

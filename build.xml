@@ -1,54 +1,81 @@
-<project name = "Moire" default = "compile-inner" basedir = ".">
+<project name="Moire" default="compile-inner" basedir=".">
 	<description>
 		Moire project building script.
 	</description>
 
-	<property name = "src" location = "src" />
-	<property name = "build" location = "bin" />
-	<property name = "dist" location = "dist" />
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
 
-	<target name = "init">
-		<mkdir dir = "${build}" />
+	<target name="init" description="Initialization">
+		<mkdir dir="${build}" />
 	</target>
 
-	<target name = "compile-moire" depends = "init" description = "compile the source without Inner class">
-		<javac includeantruntime = "false" srcdir = "${src}" destdir = "${build}">
-			<include name = "enzet/moire/*/*.java" />
-			<exclude name = "enzet/moire/Inner.java" />
+	<target name="compile-moire" depends="init">
+		<description>
+			Compile all Moire classfiles expect Inner.class
+		</description>
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}"
+			encoding="utf8">
+			<include name="enzet/moire/*/*.java" />
+			<exclude name="enzet/moire/Inner.java" />
 			<classpath>
-				<fileset dir = "lib">
-					<include name = "**/*.jar"/>
+				<fileset dir="lib">
+					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
 		</javac>
 	</target>
 
-	<target name = "compile-inner" depends = "generate-inner" description = "compile Inner class">
-		<javac includeantruntime = "false" destdir = "${build}">
-			<src path = "${src}/enzet/moire" />
-			<include name = "Inner.java" />
+	<target name="compile-inner" depends="generate-inner">
+		<description>
+			Compile Inner.class
+		</description>
+		<javac includeantruntime="false" destdir="${build}" encoding="utf8">
+			<src path="${src}/enzet/moire" />
+			<include name="Inner.java" />
 		</javac>
 	</target>
 
-	<target name = "generate-inner" depends = "compile-moire" description = "generate Inner class">
-		<java classname = "enzet.moire.core.Reader"> 
+	<target name="generate-inner" depends="compile-moire">
+		<description>
+			Generate Inner.java file using precompiled Moire
+		</description>
+		<java classname="enzet.moire.core.Reader">
 			<classpath>
-				<pathelement path = "${build}" />
-				<fileset dir = "lib">
-					<include name = "**/*.jar"/>
+				<pathelement path="${build}" />
+				<fileset dir="lib">
+					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
-			<arg line = "-s default.moirescheme -g" />
+			<arg line="-s default.moirescheme -g" />
+			<jvmarg line="-Dfile.encoding=UTF-8" />
 		</java>
 	</target>
 
-	<target name = "dist" depends = "compile-inner" description = "generate the distribution">
-		<mkdir dir = "${dist}" />
-		<jar jarfile = "${dist}/Moire.jar" basedir = "${build}" />
+	<target name="dist" depends="compile-inner">
+		<description>
+			Build JAR file
+		</description>
+		<jar destfile="Moire.jar">
+			<fileset dir="${build}" />
+			<fileset dir=".">
+				<include name="default.moirescheme" />
+			</fileset>
+			<restrict>
+				<name name="**/*.class" />
+				<archives>
+					<zips>
+						<fileset dir="lib" includes="**/*.jar" />
+					</zips>
+				</archives>
+			</restrict>
+			<manifest>
+				<attribute name="Main-Class" value="enzet.moire.core.Reader" />
+			</manifest>
+		</jar>
 	</target>
 
-	<target name = "clean" description = "clean up">
-		<delete dir = "${build}" />
-		<delete dir = "${dist}" />
+	<target name="clean" description="clean up">
+		<delete dir="${build}" />
 	</target>
 </project>

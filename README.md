@@ -1,14 +1,16 @@
-*Moiré* is a simple multipurpose markup.
+Moiré is a simple multipurpose markup.
 
-Writing on *Moiré*
--------------------
+Writing on Moiré
+----------------
 
-Syntax definition of *Moiré* is [here](http://enzet.ru/en/program/moire).
+Moiré syntax definition is [here](http://enzet.ru/en/program/moire).
 
-Conversion *Moiré* code into other formats
--------------------------------------------
+Conversion Moiré code into other formats
+----------------------------------------
 
-Requirements: Java.
+Requirements: Java, ``javac``, Apache Ant.
+
+Build Moiré: ``ant dist`` and run it:
 
     java -jar Moire.jar -i <Moiré input file> -t <output format> -o <output file> <other options>
     
@@ -23,7 +25,3 @@ Requirements: Java.
 
 ``-s`` or ``--scheme``—scheme file name.
 
-Writing scheme files for conversion into new formats
-----------------------------------------------------
-
-Requirements: ``javac``, Apache Ant.
