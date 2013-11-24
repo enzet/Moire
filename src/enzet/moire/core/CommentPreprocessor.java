@@ -24,7 +24,7 @@ public class CommentPreprocessor
 		{
 			char pc = i == 0 ? ' ' : text.charAt(i - 1);
 			char c1 = text.charAt(i);
-			char c2 = i == text.length() - 1 ? ' ' : text.charAt(i);
+			char c2 = i == text.length() - 1 ? ' ' : text.charAt(i + 1);
 
 			if (pc != SCREEN && c1 == FIRST && c2 == SECOND)
 			{

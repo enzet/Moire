@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Language name -->
+
+	<key>name</key>
+	<string>Moire</string>
+
+	<key>scopeName</key>
+	<string>text.moire</string>
+
+	<!-- File extensions -->
+
+	<key>fileTypes</key>
+	<array>
+		<string>moi</string>
+	</array>
+	
+	<!-- Patterns -->
+
+	<key>patterns</key>
+	<array>
+		
+		<dict>
+			<key>name</key>
+			<string>comment.moire</string>
+			<key>begin</key>
+			<string>\/\*</string>
+			<key>end</key>
+			<string>\*\/</string>
+		</dict>
+
+        <!-- Language -->
+
+        <dict>
+            <key>match</key>
+            <string>\[[A-Za-z0-6@]+</string>
+            <key>name</key>
+            <string>constant.language.moire</string>
+        </dict>
+        <dict>
+            <key>match</key>
+            <string>\]</string>
+            <key>name</key>
+            <string>constant.language.moire</string>
+        </dict>
+
+        <!-- Keywords -->
+		
+		<dict>
+			<key>name</key>
+			<string>keywords.moire</string>
+			<key>begin</key>
+			<string>\\[A-Za-z0-6@]+[ \n\t\r]*\{</string>
+			<key>end</key>
+			<string>\}</string>
+			<key>captures</key>
+			<dict>
+				<key>0</key>
+				<dict>
+					<key>name</key>
+					<string>support.function.general.moire</string>
+				</dict>
+			</dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>$self</string>
+				</dict>
+				<dict>
+					<key>name</key>
+					<string>string.moire</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>.</string>
+				</dict>
+			</array>
+		</dict>
+
+        <!-- Escape -->
+
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.keyword.moire</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(\\)[^a-zA-Z0-6@]</string>
+			<key>name</key>
+			<string>constant.character.escape.moire</string>
+		</dict>
+	</array>
+	<key>uuid</key>
+	<string>42b43120-5230-11e3-8f96-0800200c9a66</string>
+</dict>
+</plist>

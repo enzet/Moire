@@ -62,7 +62,7 @@ public class Reader
 		}
 	}
 
-	private static Scheme createScheme() throws IOException, FileNotFoundException
+	public static Scheme createScheme() throws IOException, FileNotFoundException
 	{
 		if (Options.schemeFileName != null)
 		{
