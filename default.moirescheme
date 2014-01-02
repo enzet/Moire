@@ -38,7 +38,7 @@ image 2:<img src = "\1" alt = "\2"/>
 item 1:<li>\1</li>
 list 1:<ul>\1</ul>
 ordered 1:<ol>\1</ol>
-size 2:<span sytle = "font-size = \1">\2</span>
+size 2:<span style = "font-size = \1">\2</span>
 strike 1:<s>\1</s>
 sub 1:<sub>\1</sub>
 sup 1:<sup>\1</sup>

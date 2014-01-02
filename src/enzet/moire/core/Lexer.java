@@ -21,13 +21,11 @@ public class Lexer
 	/**
 	 * @see #parse(char[], int)
 	 */
-	public List<Word> parse()
+	public Words parse()
 	{
-		List<Word> words;
-
 		System.out.print("Parsing " + text.length + " bytes... ");
 
-		words = parse(text, 0);
+		Words words = parse(text, 0);
 		words.add(0, new Word("begin", WordType.TAG));
 		words.add(new Word("end", WordType.TAG));
 
@@ -36,20 +34,29 @@ public class Lexer
 		return words;
 	}
 
+    /**
+     * @see #parse(char[], int)
+     */
+    public Words parseInner()
+    {
+        return parse(text, 0);
+    }
+
 	/**
 	 * Parse text into list of words
 	 *
 	 * @see Word
 	 */
-	public List<Word> parse(char[] s, int beginIndex)
+	public Words parse(char[] s, int beginIndex)
 	{
 		// Don't put debug printing here. It's very frequent method.
 
-		List<Word> ws = new ArrayList<Word>();
+		Words ws = new Words();
 
 		int length = s.length;
 		StringBuffer simple = new StringBuffer("");
 		Word currentParent = null;
+        boolean isIgnoreSyntax = false;
 
 		for (i = beginIndex; i < length; i++)
 		{
@@ -80,14 +87,21 @@ public class Lexer
 					if (s[i] != ';') i--;
 
 					Word tag = new Word(tagName, WordType.TAG);
+                    for (String ign : LanguagePreprocessor.IGNORE_BEGIN)
+                    {
+                        if (tagName.equals(ign.substring(1)))
+                        {
+                            isIgnoreSyntax = true;
+                            break;
+                        }
+                        isIgnoreSyntax = false;
+                    }
 					ws.add(tag);
 					currentParent = tag;
 				}
 			}
 			else if (c == '{')
 			{
-				// Don't add white spaces before tag arguments
-
 				if (!simple.toString().trim().equals(""))
 				{
 					ws.add(new Word(simple.toString(), WordType.SIMPLE_WORD));
@@ -95,8 +109,22 @@ public class Lexer
 				simple = new StringBuffer("");
 
 				Word branch = new Word("", WordType.BRANCH);
-				branch.addChildren(parse(s, i + 1));
 
+                if (isIgnoreSyntax)
+                {
+                    i++;
+                    while (!(s[i] == '}' && s[i - 1] != '\\'))
+                    {
+                        simple.append(s[i]);
+                        i++;
+                    }
+                    branch.addChild(new Word(simple.toString(), WordType.SIMPLE_WORD));
+                    simple = new StringBuffer("");
+                }
+                else
+                {
+				    branch.addChildren(parse(s, i + 1));
+                }
 				if (currentParent != null)
 				{
 					currentParent.addChild(branch);

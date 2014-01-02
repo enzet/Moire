@@ -41,7 +41,7 @@ public class Reader
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error: unknown options.");
+			System.out.println("Error: unknown options." + e.getMessage());
 			return;
 		}
 		Scheme scheme = createScheme();

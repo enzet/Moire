@@ -12,7 +12,7 @@ import enzet.moire.util.Options;
 public class Document
 {
 	String text;
-	List<Word> words;
+	Words words;
 
 	public Document(String text)
 	{
@@ -30,7 +30,9 @@ public class Document
 	}
 
 	/**
-	 * Conversion
+	 * Conversion to specified format. Includes parsing
+     *
+     * @param format resulted format
 	 */
 	public String convert(Format format)
 	{
@@ -38,18 +40,9 @@ public class Document
 
 		if (Options.printStructure)
 		{
-			for (Word word : words)
-			{
-				word.print(0);
-			}
+            words.print();
 		}
-		StringBuilder returned = new StringBuilder();
-
-		for (Word w : words)
-		{
-			returned.append(w.convert(format));
-		}
-		return returned.toString();
+        return words.convert(format);
 	}
 
 	/**

@@ -5,7 +5,6 @@ bin
 doc/javadoc
 doc/scheme
 nbproject
-test
 *.css
 *.html
 format

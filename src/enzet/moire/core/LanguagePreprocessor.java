@@ -17,7 +17,7 @@ public class LanguagePreprocessor
 	private static char BEGIN = '[';
 	private static char END = ']';
 	private static char SCREEN = '\\';
-	private static String CODE_BEGIN = "\\code";
+	public static String[] IGNORE_BEGIN = {"\\code", "\\math", "\\ignore"};
 
 	/**
 	 * Preprocessor detects character sequences with syntax
@@ -46,11 +46,16 @@ public class LanguagePreprocessor
 			char cp = i > 0 ? text.charAt(i - 1) : ' ';
 			char c = text.charAt(i);
 
-			if (text.substring(i).startsWith(CODE_BEGIN))
-			{
-				inCodeSection = true;
-				tagLevel = 0;
-			}
+            for (String s : IGNORE_BEGIN)
+            {
+                // TODO: optimize
+
+                if (text.substring(i).startsWith(s))
+                {
+                    inCodeSection = true;
+                    tagLevel = 0;
+                }
+            }
 			if (c == '{' && cp != SCREEN)
 			{
 				tagLevel++;

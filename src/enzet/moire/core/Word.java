@@ -163,10 +163,10 @@ public class Word
 		{
 			String converted = value;
 
-			for (Relation symbol : format.getScreen())
+			/*for (Relation symbol : format.getScreen())
 			{
 				converted = converted.replaceAll(symbol.from, symbol.to);
-			}
+			}*/
 			if (converted.startsWith("\n"))
 			{
 				return converted.substring(1);
