@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Moire markup lexer
+ * Moire markup parser
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
-public class Lexer
+public class Parser
 {
 	int i;
 	char[] text;
 
-	public Lexer(String text)
+	public Parser(String text)
 	{
 		this.text = text.toCharArray();
 	}

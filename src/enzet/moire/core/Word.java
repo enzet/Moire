@@ -132,7 +132,7 @@ public class Word
 				System.err.println("Error: value for tag is null.");
 				System.exit(0);
 			}
-			if (value.length() == 1 && !Lexer.isTagLetter(value.charAt(0)))
+			if (value.length() == 1 && !Parser.isTagLetter(value.charAt(0)))
 			{
 				if (children.size() > 0)
 				{

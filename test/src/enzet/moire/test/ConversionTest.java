@@ -1,8 +1,7 @@
 package enzet.moire.test;
 
-import enzet.moire.core.Document;
 import enzet.moire.core.Format;
-import enzet.moire.core.Lexer;
+import enzet.moire.core.Parser;
 import enzet.moire.core.Scheme;
 
 import junit.framework.Assert;
@@ -40,8 +39,8 @@ public class ConversionTest
 		Scheme scheme = new Scheme(new BufferedReader(new FileReader(new File("default.moirescheme"))));
 		format.readFormat(scheme);
 
-        Lexer lexer = new Lexer(input);
-		String result = lexer.parseInner().convert(format);
+        Parser parser = new Parser(input);
+		String result = parser.parseInner().convert(format);
 		
         Assert.assertEquals(result, output);
     }

@@ -24,9 +24,9 @@ public class Document
 	 */
 	public void parse()
 	{
-		Lexer lexer = new Lexer(text);
+		Parser parser = new Parser(text);
 
-		words = lexer.parse();
+		words = parser.parse();
 	}
 
 	/**
