@@ -17,10 +17,10 @@ import enzet.moire.core.Scheme.Section.Relation;
  */
 public class Format
 {
-	String name;
+	private String name;
 
-	String caption;
-	String extension;
+	private String caption;
+	private String extension;
 
 	/**
 	 * Super format.
@@ -114,7 +114,7 @@ public class Format
 			{
 				symbols = symbolsSection.getRelations();
 			}
-			Section screenSection = currentFormat.getChild("symbols");
+			Section screenSection = currentFormat.getChild("screen");
 			if (screenSection != null)
 			{
 				screen = screenSection.getRelations();
@@ -188,6 +188,11 @@ public class Format
 
 	// Getters and setters
 
+	public String getName()
+	{
+		return name;
+	}
+
 	public List<Relation> getSymbols()
 	{
 		if (symbols != null)
@@ -212,5 +217,18 @@ public class Format
 			return null;
 		}
 		return parent.getScreen();
+	}
+
+	public String getCaption()
+	{
+		if (caption != null)
+		{
+			return caption;
+		}
+		if (parent == null)
+		{
+			return null;
+		}
+		return parent.getCaption();
 	}
 }

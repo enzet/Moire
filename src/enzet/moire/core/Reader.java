@@ -129,8 +129,17 @@ public class Reader
 	{
 		Format format = formats.get(Options.to.toLowerCase());
 
-		String input = Util.get(Options.input);
+		String input;
 
+		try
+		{
+			input = Util.get(Options.input);
+		}
+		catch (IOException e)
+		{
+			System.err.println("Fatal: cannot read from " + Options.input);
+			return;
+		}
 		if (!Options.isKeepComments)
 		{
 			input = new CommentPreprocessor().preprocess(input);
@@ -141,11 +150,21 @@ public class Reader
 		Document document = new Document(input);
 
 		String formatted = document.convert(format);
+		String formatName =
+				format.getCaption() != null ? format.getCaption() : Options.to;
 
 		System.out.println(String.format("Document converted from Moire " +
 				"markup (%d bytes) to %s (%d bytes): %s.", input.length(),
-				Options.to, formatted.length(), Options.output));
-		Util.write(Options.output, formatted);
+				formatName, formatted.length(), Options.output));
+
+		try
+		{
+			Util.write(Options.output, formatted);
+		}
+		catch (IOException e)
+		{
+			System.err.println("Fatal: cannot write output.");
+		}
 	}
 
 	/**

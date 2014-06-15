@@ -13,44 +13,30 @@ import java.io.IOException;
  */
 public class Util
 {
-	public static void write(String fileName, String text)
+	public static void write(String fileName, String text) throws IOException
 	{
 		FileWriter writer;
-		try
-		{
-			writer = new FileWriter(new File(fileName));
 
-			writer.write(text);
-			writer.close();
-		}
-		catch (IOException e)
-		{
-			System.out.println("Error: cannot write to " + fileName + ".");
-		}
+		writer = new FileWriter(new File(fileName));
+
+		writer.write(text);
+		writer.close();
 	}
 
-	public static String get(String fileName)
+	public static String get(String fileName) throws IOException
 	{
-		try
+		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+
+		String line;
+		StringBuilder content = new StringBuilder();
+
+		while ((line = reader.readLine()) != null)
 		{
-			BufferedReader reader = new BufferedReader(new FileReader(fileName));
-
-			String line;
-			StringBuilder content = new StringBuilder();
-
-			while ((line = reader.readLine()) != null)
-			{
-				content.append(line).append("\n");
-			}
-			reader.close();
-
-			return content.toString();
+			content.append(line).append("\n");
 		}
-		catch (Exception e)
-		{
-			System.out.println("Error: cannot read from " + fileName + ".");
-		}
-		return null;
+		reader.close();
+
+		return content.toString();
 	}
 
 	public static boolean isLetter(char character)

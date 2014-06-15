@@ -85,14 +85,19 @@ public class Rule
 		}
 		// Parameters reading
 
-		Object[] param = new Object[parameters * 2 + 1];
+		int size = parameters * 2 + 1;
+
+		Object[] param = new Object[size];
 
 		if (word.children != null && word.children.size() > 0 &&
 				word.children.get(0) != null)
 		{
-			try {
+			try
+			{
 				param[0] = word.children.get(0).children;
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				param[0] = new ArrayList();
 			}
 		}
@@ -126,12 +131,30 @@ public class Rule
 			{
 				if (((Parameter) element).isClear)
 				{
-					returned.append(param[2 * ((Parameter) element).number]);
+					if (2 * ((Parameter) element).number < size)
+					{
+						returned.append(
+								param[2 * ((Parameter) element).number]);
+					}
+					else
+					{
+						System.err.println("Error: too many arguments for " +
+								"rule " + name + ": " +
+								((Parameter) element).number);
+					}
 				}
 				else
 				{
-					returned.append(
-							param[2 * ((Parameter) element).number - 1]);
+					if (2 * ((Parameter) element).number - 1 < size)
+					{
+						returned.append(param[2 * ((Parameter) element).number - 1]);
+					}
+					else
+					{
+						System.err.println("Error: too many arguments for " +
+								"rule " + name + ": " +
+								((Parameter) element).number);
+					}
 				}
 			}
 			else if (element instanceof Function)
@@ -149,8 +172,6 @@ public class Rule
 	{
 		try
 		{
-			Class<?> c = Class.forName("enzet.moire.Inner$" +
-					format.name.toUpperCase());
 			Class<?>[] p = new Class[parameters * 2 + 1];
 
 			p[0] = List.class;
@@ -159,8 +180,7 @@ public class Rule
 			{
 				p[i] = String.class;
 			}
-			Method m = c.getMethod("method_" + name + "_" + parameters + "_" +
-					methods, p);
+			Method m = getMethod(format, methods, p);
 
 			if (((Function) element).isReturn)
 			{
@@ -177,6 +197,42 @@ public class Rule
 			System.err.println("Inner class error.");
 			ex.printStackTrace();
 		}
+	}
+
+	private Method getMethod(Format format, int methods, Class<?>[] p)
+	{
+		Method m;
+		Class<?> c;
+
+		try
+		{
+			c = Class.forName("enzet.moire.Inner$" +
+					format.getName().toUpperCase());
+		}
+		catch (ClassNotFoundException e)
+		{
+			System.err.println("Class enzet.moire.Inner$" +
+					format.getName().toUpperCase() + " not found.");
+			return null;
+		}
+		try
+		{
+			m = c.getMethod("method_" + name + "_" + parameters + "_" +
+					methods, p);
+		}
+		catch (NoSuchMethodException e)
+		{
+			if (format.parent != null)
+			{
+				return getMethod(format.parent, methods, p);
+			}
+			System.err.println("Class enzet.moire.Inner$" +
+					format.getName().toUpperCase() + " has no method for " +
+					name + ".");
+
+			return null;
+		}
+		return m;
 	}
 
 	private Object[] parseElements(String text)
