@@ -2,7 +2,6 @@ package enzet.moire.core;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,11 +53,11 @@ public class Reader
 
 		if (!Options.isGenerate)
 		{
-			read(scheme);
+			read();
 		}
 		else
 		{
-			generateInner(scheme);
+			generateInner();
 		}
 	}
 
@@ -123,10 +122,12 @@ public class Reader
 				new FileReader(Options.schemeFileName)));
 	}
 
-	public static void read(Scheme scheme)
+	/**
+	 * Conversion
+	 */
+	public static void read()
 	{
-		Format format = new Format(Options.to.toLowerCase());
-		format.readFormat(scheme);
+		Format format = formats.get(Options.to.toLowerCase());
 
 		String input = Util.get(Options.input);
 
@@ -147,6 +148,9 @@ public class Reader
 		Util.write(Options.output, formatted);
 	}
 
+	/**
+	 * Reading all formats from the scheme file
+	 */
 	private static void readFormats(Scheme scheme)
 	{
 		Section formatsSection = scheme.getRoot().getChild("formats");
@@ -156,24 +160,17 @@ public class Reader
 		for (Section formatSection : formatsSection.getChildren())
 		{
 			Format format = new Format(formatSection.getName());
-			format.readFormat(scheme);
+			format.readFormat(scheme, formats);
 
 			formats.put(formatSection.getName(), format);
 		}
 	}
 
-	public static Format getFormat(String formatName)
-	{
-		return formats.get(formatName);
-	}
-
 	/**
 	 * Generate source code for <code>enzet.moire.Inner</code> class. It
 	 * contains methods with Java code inserted into scheme.
-	 *
-	 * @param scheme scheme file with input information
 	 */
-	public static void generateInner(Scheme scheme) throws IOException
+	public static void generateInner() throws IOException
 	{
 		StringBuilder innerClass = new StringBuilder();
 

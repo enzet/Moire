@@ -18,7 +18,7 @@ extension:"html"
 
 ::: tags
 
-begin 0:<html><link rel = "stylesheet" href = "style.css"><head><style>body \{font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 1.6; padding-top: 10px; padding-bottom: 10px; padding: 30px; width: 800px;\} a \{color: #4183C4;\} tt, table tr td tt \{font-size: 13px; margin: 0 2px; padding: 0 5px; border: 1px solid #eaeaea; background-color: #f8f8f8; border-radius: 3px;\} pre \{background-color: #f8f8f8; border: 1px solid #ccc; font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;\} pre tt \{background-color: transparent; border: none;\} table \{border-collapse: collapse; font-size: inherit; margin-top: 10; margin-bottom: 10;\} table tr:nth-child(2n) \{background-color: #f8f8f8;\} table tr th \{font-weight: bold; border: 1px solid #cccccc; padding: 6px 13px;\} table tr td \{border: 1px solid #cccccc; padding: 6px 13px;\}</style></head><body><p>
+begin 0:<html><head><meta http-equiv = "Content-Type" content = "text/html; charset = utf-8"><link rel = "stylesheet" href = "style.css"></head><body><p>
 end 0:</p></body></html>
 0 1:<title>\1</title>
 1 1:<h1>\1</h1>
@@ -48,17 +48,31 @@ tr 1:<tr>\1</tr>
 tt 1:<tt>\1</tt>
 u 1:<u>\1</u>
 
+::: symbols
+
+---:&mdash;
+--:&ndash;
+<<:&laquo;
+>>:&raquo;
+\(c\):&copy;
+\(C\):&copy;
+~:&nbsp;
+\n\n:</p><p>
+
+::: screen
+
+<:&lt;
 
 
-:: github-style-html
+
+:: githubstylehtml
 
 extends:html
 name:"Github style HTML"
-extension:"html"
 
 ::: tags
 
-begin 0:<html><link rel = "stylesheet" href = "style.css"><head><style>body \{font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 1.6; padding-top: 10px; padding-bottom: 10px; padding: 30px; width: 800px;\} a \{color: #4183C4;\} tt, table tr td tt \{font-size: 13px; margin: 0 2px; padding: 0 5px; border: 1px solid #eaeaea; background-color: #f8f8f8; border-radius: 3px;\} pre \{background-color: #f8f8f8; border: 1px solid #ccc; font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;\} pre tt \{background-color: transparent; border: none;\} table \{border-collapse: collapse; font-size: inherit; margin-top: 10; margin-bottom: 10;\} table tr:nth-child(2n) \{background-color: #f8f8f8;\} table tr th \{font-weight: bold; border: 1px solid #cccccc; padding: 6px 13px;\} table tr td \{border: 1px solid #cccccc; padding: 6px 13px;\}</style></head><body><p>
+begin 0:<html><head><meta http-equiv = "Content-Type" content = "text/html; charset = utf-8"><link rel = "stylesheet" href = "style.css"><style>body \{font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 1.6; padding-top: 10px; padding-bottom: 10px; padding: 30px; width: 800px;\} a \{color: #4183C4;\} tt, table tr td tt \{font-size: 13px; margin: 0 2px; padding: 0 5px; border: 1px solid #eaeaea; background-color: #f8f8f8; border-radius: 3px;\} pre \{background-color: #f8f8f8; border: 1px solid #ccc; font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;\} pre tt \{background-color: transparent; border: none;\} table \{border-collapse: collapse; font-size: inherit; margin-top: 10; margin-bottom: 10;\} table tr:nth-child(2n) \{background-color: #f8f8f8;\} table tr th \{font-weight: bold; border: 1px solid #cccccc; padding: 6px 13px;\} table tr td \{border: 1px solid #cccccc; padding: 6px 13px;\}</style></head><body><p>
 end 0:</p></body></html>
 
 

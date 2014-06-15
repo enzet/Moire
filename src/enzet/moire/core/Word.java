@@ -107,13 +107,19 @@ public class Word
 		{
 			String converted = value;
 
-			for (Relation symbol : format.getScreen())
+			if (format.getScreen() != null)
 			{
-				converted = converted.replaceAll(symbol.from, symbol.to);
+				for (Relation symbol : format.getScreen())
+				{
+					converted = converted.replaceAll(symbol.from, symbol.to);
+				}
 			}
-			for (Relation symbol : format.getSymbols())
+			if (format.getSymbols() != null)
 			{
-				converted = converted.replaceAll(symbol.from, symbol.to);
+				for (Relation symbol : format.getSymbols())
+				{
+					converted = converted.replaceAll(symbol.from, symbol.to);
+				}
 			}
 			return converted;
 		}
@@ -170,9 +176,12 @@ public class Word
 		{
 			String converted = value;
 
-			for (Relation symbol : format.getScreen())
+			if (format.getScreen() != null)
 			{
-				converted = converted.replaceAll(symbol.from, symbol.to);
+				for (Relation symbol : format.getScreen())
+				{
+					converted = converted.replaceAll(symbol.from, symbol.to);
+				}
 			}
 			if (converted.startsWith("\n"))
 			{

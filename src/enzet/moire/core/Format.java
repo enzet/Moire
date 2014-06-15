@@ -1,19 +1,31 @@
 package enzet.moire.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import enzet.moire.core.Scheme.Section;
 import enzet.moire.core.Scheme.Section.Relation;
 
 /**
- * Format
+ * Format.
+ * <br />
+ * E.g. HTML, TeX, Markdown.
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
 public class Format
 {
 	String name;
+
+	String caption;
+	String extension;
+
+	/**
+	 * Super format.
+	 */
+	Format parent;
 
 	List<Rule> rules;
 	List<Relation> symbols;
@@ -27,12 +39,63 @@ public class Format
 		rules = new ArrayList<Rule>();
 	}
 
-	public void readFormat(Scheme scheme)
+	/**
+	 * Reading current format from scheme.
+	 *
+	 * @param scheme Moire scheme
+	 * @param formats currently parsed formats (it means extended format should
+	 *                be defined before format extending it)
+	 */
+	public void readFormat(Scheme scheme, Map<String, Format> formats)
 	{
 		try
 		{
-			Section currentFormat = scheme.getRoot().getChild("formats").getChild(name);
-			List<Relation> relations = currentFormat.getChild("tags").getRelations();
+			Section currentFormat =
+					scheme.getRoot().getChild("formats").getChild(name);
+
+			if (currentFormat == null)
+			{
+				System.err.println("Error: no such format in scheme: " + name);
+			}
+			List<Relation> formatParameters = currentFormat.getRelations();
+
+			if (formatParameters != null)
+			{
+				for (Relation r : formatParameters)
+				{
+					if (r.from.equals("name"))
+					{
+						caption = r.to;
+					}
+					if (r.from.equals("extension"))
+					{
+						extension = r.to;
+					}
+					/* Parent format reading. */
+
+					if (r.from.equals("extends"))
+					{
+						parent = formats.get(r.to);
+
+						if (parent == null)
+						{
+							System.err.println("Error: has no parent format " +
+									r.to + " for format " + name);
+							return;
+						}
+					}
+				}
+			}
+			/* Rules reading. */
+
+			Section tags = currentFormat.getChild("tags");
+
+			if (tags == null)
+			{
+				System.err.println("Error: format " + name + " has no tags.");
+				return;
+			}
+			List<Relation> relations = tags.getRelations();
 
 			for (Relation r : relations)
 			{
@@ -46,13 +109,26 @@ public class Format
 					e.printStackTrace();
 				}
 			}
-			symbols = currentFormat.getChild("symbols").getRelations();
-			screen = currentFormat.getChild("screen").getRelations();
-
+			Section symbolsSection = currentFormat.getChild("symbols");
+			if (symbolsSection != null)
+			{
+				symbols = symbolsSection.getRelations();
+			}
+			Section screenSection = currentFormat.getChild("symbols");
+			if (screenSection != null)
+			{
+				screen = screenSection.getRelations();
+			}
 			Section headerSection = currentFormat.getChild("header");
-			if (headerSection != null) header = headerSection.getString();
+			if (headerSection != null)
+			{
+				header = headerSection.getString();
+			}
 			Section initSection = currentFormat.getChild("init");
-			if (initSection != null) initialActions = initSection.getString();
+			if (initSection != null)
+			{
+				initialActions = initSection.getString();
+			}
 		}
 		catch (Exception e)
 		{
@@ -61,16 +137,24 @@ public class Format
 		}
 	}
 
+	/**
+	 * Returns own rule or parent rule.
+	 */
 	public Rule getRule(String name, int parameters)
 	{
 		for (Rule rule : rules)
 		{
-			if (rule.getName().equals(name) && rule.getParameters() == parameters)
+			if (rule.getName().equals(name) &&
+					rule.getParameters() == parameters)
 			{
 				return rule;
 			}
 		}
-		return null;
+		if (parent == null)
+		{
+			return null;
+		}
+		return parent.getRule(name, parameters);
 	}
 
 	public String generateClass()
@@ -106,11 +190,27 @@ public class Format
 
 	public List<Relation> getSymbols()
 	{
-		return symbols;
+		if (symbols != null)
+		{
+			return symbols;
+		}
+		if (parent == null)
+		{
+			return null;
+		}
+		return parent.getSymbols();
 	}
 
 	public List<Relation> getScreen()
 	{
-		return screen;
+		if (screen != null)
+		{
+			return screen;
+		}
+		if (parent == null)
+		{
+			return null;
+		}
+		return parent.getScreen();
 	}
 }
