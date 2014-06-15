@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Scheme
+ * Moire scheme file format.
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
@@ -154,7 +154,8 @@ public class Scheme
 				int index;
 				if ((index = l.indexOf(':')) != -1 && l.charAt(index) != '\\')
 				{
-					current.addRelation(l.substring(0, l.indexOf(":")), l.substring(l.indexOf(":") + 1));
+					current.addRelation(l.substring(0, l.indexOf(":")),
+							l.substring(l.indexOf(":") + 1));
 				}
 				else
 				{

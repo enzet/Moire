@@ -9,9 +9,9 @@ import java.util.Arrays;
  */
 public class CommentPreprocessor
 {
-	private static char FIRST = '/';
-	private static char SECOND = '*';
-	private static char SCREEN = '\\';
+	public static char FIRST = '/';
+	public static char SECOND = '*';
+	public static char SCREEN = '\\';
 
 	public String preprocess(String text)
 	{
@@ -28,7 +28,8 @@ public class CommentPreprocessor
 
 			if (pc != SCREEN && c1 == FIRST && c2 == SECOND)
 			{
-				while (!(text.charAt(i) == SECOND && text.charAt(i + 1) == FIRST))
+				while (!(text.charAt(i) == SECOND &&
+						text.charAt(i + 1) == FIRST))
 				{
 					i++;
 				}

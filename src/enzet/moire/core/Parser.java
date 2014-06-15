@@ -1,8 +1,5 @@
 package enzet.moire.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Moire markup parser
  *
@@ -64,14 +61,16 @@ public class Parser
 
 			if (c == '\\')
 			{
-				if (!simple.toString().equals("") && !simple.toString().equals("\0"))
+				if (!simple.toString().equals("") &&
+						!simple.toString().equals("\0"))
 				{
 					ws.add(new Word(simple.toString(), WordType.SIMPLE_WORD));
 					simple = new StringBuffer("");
 				}
 				if (!isTagLetter(s[i + 1]))
 				{
-					ws.add(new Word(Character.toString(s[i + 1]), WordType.TAG));
+					ws.add(new Word(Character.toString(s[i + 1]),
+							WordType.TAG));
 					i++;
 				}
 				else
@@ -118,7 +117,8 @@ public class Parser
                         simple.append(s[i]);
                         i++;
                     }
-                    branch.addChild(new Word(simple.toString(), WordType.SIMPLE_WORD));
+                    branch.addChild(new Word(simple.toString(),
+		                    WordType.SIMPLE_WORD));
                     simple = new StringBuffer("");
                 }
                 else

@@ -1,7 +1,5 @@
 package enzet.moire.core;
 
-import java.util.List;
-
 import enzet.moire.util.Options;
 
 /**

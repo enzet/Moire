@@ -14,9 +14,9 @@ import enzet.moire.util.Util;
  */
 public class LanguagePreprocessor
 {
-	private static char BEGIN = '[';
-	private static char END = ']';
-	private static char SCREEN = '\\';
+	public static char BEGIN = '[';
+	public static char END = ']';
+	public static char SCREEN = '\\';
 	public static String[] IGNORE_BEGIN = {"\\code", "\\math", "\\ignore"};
 
 	/**
@@ -32,7 +32,8 @@ public class LanguagePreprocessor
 	 * @param format current format name (e. g. HTML)
 	 * @return preprocessed text
 	 */
-	public String preprocess(String text, List<String> languages, String format)
+	public String preprocess(String text, List<String> languages,
+	                         String format)
 	{
 		System.out.print("Language preprocessing... ");
 
@@ -86,7 +87,8 @@ public class LanguagePreprocessor
 					for (String language : languages)
 					{
 						if (begin.startsWith(language) &&
-							!Util.isLetter(text.charAt(i + 1 + language.length())))
+							!Util.isLetter(text
+									.charAt(i + 1 + language.length())))
 						{
 							i += language.length() + 1;
 							matched = true;
@@ -96,7 +98,8 @@ public class LanguagePreprocessor
 				}
 				if (!matched)
 				{
-					while (!(text.charAt(i) == END && text.charAt(i - 1) != SCREEN))
+					while (!(text.charAt(i) == END &&
+							text.charAt(i - 1) != SCREEN))
 					i++;
 				}
 				continue;

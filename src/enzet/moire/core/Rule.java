@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Rule. Tag to format translation
+ * Rule. Tag to format translation.
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
@@ -30,7 +30,8 @@ public class Rule
 		@Override
 		public String toString()
 		{
-			return "argument " + number + ", " + (isClear ? "" : "not") + " clear";
+			return "argument " + number + ", " + (isClear ? "" : "not") +
+					" clear";
 		}
 	}
 
@@ -74,10 +75,11 @@ public class Rule
 
 		if (elements.length > 0 && elements[0] instanceof Function)
 		{
-			if (((Function) elements[0]).isReturn == false)
+			if (!((Function) elements[0]).isReturn)
 			{
 				methods++;
-				invoke(elements[0], new Object[parameters * 2 + 1], format, methods, returned);
+				invoke(elements[0], new Object[parameters * 2 + 1], format,
+						methods, returned);
 				isFirst = true;
 			}
 		}
@@ -85,7 +87,8 @@ public class Rule
 
 		Object[] param = new Object[parameters * 2 + 1];
 
-		if (word.children != null && word.children.size() > 0 && word.children.get(0) != null)
+		if (word.children != null && word.children.size() > 0 &&
+				word.children.get(0) != null)
 		{
 			try {
 				param[0] = word.children.get(0).children;
@@ -100,11 +103,15 @@ public class Rule
 
 		for (int i = 0; i < parameters; i++)
 		{
-			param[2 * i + 1] = word.getParameter(i, format, false); // converted: 1, 3, 5...
-			param[2 * i + 2] = word.getParameter(i, format, true); // clear: 2, 4, 6...
-		}
-		// Processing elements
+			/* converted: 1, 3, 5... */
+			param[2 * i + 1] = word.getParameter(i, format, false);
 
+			/* clear: 2, 4, 6... */
+			param[2 * i + 2] = word.getParameter(i, format, true);
+		}
+		/*
+		 * Elements processing
+		 */
 		for (int i = 0; i < elements.length; i++)
 		{
 			Object element = elements[i];
@@ -123,7 +130,8 @@ public class Rule
 				}
 				else
 				{
-					returned.append(param[2 * ((Parameter) element).number - 1]);
+					returned.append(
+							param[2 * ((Parameter) element).number - 1]);
 				}
 			}
 			else if (element instanceof Function)
@@ -136,11 +144,13 @@ public class Rule
 		return returned.toString();
 	}
 
-	private void invoke(Object element, Object[] param, Format format, int methods, StringBuilder returned)
+	private void invoke(Object element, Object[] param, Format format,
+			int methods, StringBuilder returned)
 	{
 		try
 		{
-			Class<?> c = Class.forName("enzet.moire.Inner$" + format.name.toUpperCase());
+			Class<?> c = Class.forName("enzet.moire.Inner$" +
+					format.name.toUpperCase());
 			Class<?>[] p = new Class[parameters * 2 + 1];
 
 			p[0] = List.class;
@@ -149,7 +159,8 @@ public class Rule
 			{
 				p[i] = String.class;
 			}
-			Method m = c.getMethod("method_" + name + "_" + parameters + "_" + methods, p);
+			Method m = c.getMethod("method_" + name + "_" + parameters + "_" +
+					methods, p);
 
 			if (((Function) element).isReturn)
 			{
@@ -208,7 +219,8 @@ public class Rule
 						}
 						else if (c2 == 'c')
 						{
-							elements.add(new Parameter(text.charAt(i + 2) - '0', true));
+							elements.add(new Parameter(text.charAt(i + 2) -
+									'0', true));
 							i += 2;
 							break;
 						}
@@ -233,7 +245,8 @@ public class Rule
 							}
 							i++;
 							int k = 0;
-							while (!(k == 0 && (c = text.charAt(i)) == '}' && text.charAt(i - 1) != '\\'))
+							while (!(k == 0 && (c = text.charAt(i)) == '}' &&
+									text.charAt(i - 1) != '\\'))
 							{
 								if (c == '{') k++;
 								if (c == '}') k--;
@@ -253,7 +266,8 @@ public class Rule
 								l = "";
 							}
 							i++;
-							while (!((c = text.charAt(i)) == ']' && text.charAt(i - 1) != '\\'))
+							while (!((c = text.charAt(i)) == ']' &&
+									text.charAt(i - 1) != '\\'))
 							{
 								l += c;
 								i++;
@@ -288,7 +302,8 @@ public class Rule
 
 				returned += "\t\tpublic static ";
 				returned += f.isReturn ? "String" : "void";
-				returned += " method_" + name + "_" + parameters + "_" + ++methods + "(";
+				returned += " method_" + name + "_" + parameters + "_" +
+						++methods + "(";
 				returned += "List<Word> words" + (parameters == 0 ? "" : ", ");
 
 				for (int i = 0; i < parameters; i++)

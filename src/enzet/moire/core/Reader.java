@@ -62,7 +62,7 @@ public class Reader
 		}
 	}
 
-	public static Scheme createScheme() throws IOException, FileNotFoundException
+	public static Scheme createScheme() throws IOException
 	{
 		if (Options.schemeFileName != null)
 		{
@@ -70,17 +70,20 @@ public class Reader
 
 			if (!schemeFile.exists())
 			{
-				System.err.println("Error: scheme file \"" + Options.schemeFileName + "\" does not exist.");
+				System.err.println("Error: scheme file \"" +
+						Options.schemeFileName + "\" does not exist.");
 				return null;
 			}
 			if (!schemeFile.isFile())
 			{
-				System.err.println("Error: scheme file \"" + Options.schemeFileName + "\" is not file.");
+				System.err.println("Error: scheme file \"" +
+						Options.schemeFileName + "\" is not file.");
 				return null;
 			}
 			if (!schemeFile.canRead())
 			{
-				System.err.println("Error: cannot read from scheme file \"" + Options.schemeFileName + "\".");
+				System.err.println("Error: cannot read from scheme file \"" +
+						Options.schemeFileName + "\".");
 				return null;
 			}
 		}
@@ -91,7 +94,8 @@ public class Reader
 
 		if (path.indexOf(':') != -1 && path.indexOf('!') != -1)
 		{
-			String jarFilePath = path.substring(path.indexOf(':') + 1, path.indexOf('!'));
+			String jarFilePath = path.substring(path.indexOf(':') + 1,
+					path.indexOf('!'));
 			JarFile jar = new JarFile(jarFilePath);
 			JarEntry file = jar.getJarEntry(Options.defaultSchemeFileName);
 
@@ -115,7 +119,8 @@ public class Reader
 		}
 		System.out.println(path);
 
-		return new Scheme(new BufferedReader(new FileReader(Options.schemeFileName)));
+		return new Scheme(new BufferedReader(
+				new FileReader(Options.schemeFileName)));
 	}
 
 	public static void read(Scheme scheme)
@@ -129,13 +134,16 @@ public class Reader
 		{
 			input = new CommentPreprocessor().preprocess(input);
 		}
-		input = new LanguagePreprocessor().preprocess(input, Options.language, Options.to);
+		input = new LanguagePreprocessor().preprocess(input, Options.language,
+				Options.to);
 
 		Document document = new Document(input);
 
 		String formatted = document.convert(format);
 
-		System.out.println(String.format("Document converted from Moire markup (%d bytes) to %s (%d bytes): %s.", input.length(), Options.to, formatted.length(), Options.output));
+		System.out.println(String.format("Document converted from Moire " +
+				"markup (%d bytes) to %s (%d bytes): %s.", input.length(),
+				Options.to, formatted.length(), Options.output));
 		Util.write(Options.output, formatted);
 	}
 

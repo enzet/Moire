@@ -1,11 +1,14 @@
 package enzet.moire.core;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import enzet.moire.core.Scheme.Section.Relation;
 
 /**
- * Word
+ * Word.
+ * <br />
+ * A tree structure.
  *
  * @author Sergey Vartanov (me@enzet.ru)
  */
@@ -13,7 +16,10 @@ public class Word
 {
 	public WordType type;
 	public String value;
-	public java.util.List<Word> children;
+	public List<Word> children;
+
+	public static String FORMULA_START = "$";
+	public static String FORMULA_END = "$";
 
 	public Word(String value, WordType wordType)
 	{
@@ -113,7 +119,7 @@ public class Word
 		}
 		else if (type == WordType.FORMULA)
 		{
-			return "$" +  value + "$";
+			return FORMULA_START +  value + FORMULA_END;
 		}
 		else if (type == WordType.BRANCH)
 		{
@@ -136,8 +142,8 @@ public class Word
 			{
 				if (children.size() > 0)
 				{
-					System.err.println("Warning: screened letter has argument(s). " +
-						"Argument(s) skipped.");
+					System.err.println("Warning: screened letter has " +
+							"argument(s). Argument(s) skipped.");
 				}
 				return value;
 			}
@@ -145,8 +151,9 @@ public class Word
 
 			if (rule == null)
 			{
-				System.err.println("Error: no rule for " + value + " tag with " +
-					children.size() + " argument(s) in scheme. Tag skipped.");
+				System.err.println("Error: no rule for " + value +
+						" tag with " + children.size() +
+						" argument(s) in scheme. Tag skipped.");
 				return value;
 			}
 			return rule.convert(this, format);
@@ -163,10 +170,10 @@ public class Word
 		{
 			String converted = value;
 
-			/*for (Relation symbol : format.getScreen())
+			for (Relation symbol : format.getScreen())
 			{
 				converted = converted.replaceAll(symbol.from, symbol.to);
-			}*/
+			}
 			if (converted.startsWith("\n"))
 			{
 				return converted.substring(1);

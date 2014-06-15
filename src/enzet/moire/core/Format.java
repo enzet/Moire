@@ -77,7 +77,8 @@ public class Format
 	{
 		StringBuilder clazz = new StringBuilder();
 
-		clazz.append("\tpublic static class ").append(name.toUpperCase()).append("\n\t{\n");
+		clazz.append("\tpublic static class ").append(name.toUpperCase())
+				.append("\n\t{\n");
 
 		if (initialActions != null)
 		{
