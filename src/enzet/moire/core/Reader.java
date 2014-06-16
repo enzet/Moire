@@ -51,14 +51,12 @@ public class Reader
 		}
 		readFormats(scheme);
 
-		if (!Options.isGenerate)
-		{
-			read();
-		}
-		else
+		if (Options.isGenerate)
 		{
 			generateInner();
+			return;
 		}
+		convert();
 	}
 
 	public static Scheme createScheme() throws IOException
@@ -125,7 +123,7 @@ public class Reader
 	/**
 	 * Conversion
 	 */
-	public static void read()
+	public static void convert()
 	{
 		Format format = formats.get(Options.to.toLowerCase());
 
@@ -147,23 +145,65 @@ public class Reader
 		input = new LanguagePreprocessor().preprocess(input, Options.language,
 				Options.to);
 
-		Document document = new Document(input);
-
-		String formatted = document.convert(format);
-		String formatName =
-				format.getCaption() != null ? format.getCaption() : Options.to;
-
-		System.out.println(String.format("Document converted from Moire " +
-				"markup (%d bytes) to %s (%d bytes): %s.", input.length(),
-				formatName, formatted.length(), Options.output));
-
-		try
+		if (Options.bookLevel == -1)
 		{
-			Util.write(Options.output, formatted);
+			Document document = new Document(input);
+
+			String formatted = document.convert(format);
+			String formatName =
+					format.getCaption() != null ? format.getCaption() :
+							Options.to;
+
+			System.out.println(String.format("Document converted from Moire " +
+					"markup (%d bytes) to %s (%d bytes): %s.", input.length(),
+					formatName, formatted.length(), Options.output));
+
+			try
+			{
+				Util.write(Options.output, formatted);
+			}
+			catch (IOException e)
+			{
+				System.err.println("Fatal: cannot write output.");
+			}
 		}
-		catch (IOException e)
+		else
 		{
-			System.err.println("Fatal: cannot write output.");
+			File file = new File(Options.output);
+
+			if (!file.exists())
+			{
+				file.mkdir();
+			}
+			if (!file.isDirectory())
+			{
+				System.err.println("Fatal: " + Options.output +
+						" is not direcrory.");
+			}
+			Document document = new Document(input);
+
+			Map<String, String> pages =
+					document.convertToBook(format, Options.bookLevel);
+
+			for (String fileName : pages.keySet())
+			{
+				try
+				{
+					File parent = new File(Options.output + "/" + fileName).getParentFile();
+					if(!parent.exists() && !parent.mkdirs()){
+						throw new IllegalStateException("Couldn't create dir: " + parent);
+					}
+
+					Util.write(Options.output + "/" + fileName,
+							"<meta http-equiv = \"Content-Type\" content = \"text/html; charset = utf-8\">" +
+							pages.get(fileName));
+				}
+				catch (IOException e)
+				{
+					System.err.println("Fatal: cannot write page " + fileName +
+							".");
+				}
+			}
 		}
 	}
 
@@ -195,6 +235,7 @@ public class Reader
 
 		innerClass.append("package enzet.moire;\n\n");
 		innerClass.append("import enzet.moire.core.Reader;\n\n");
+		innerClass.append("import enzet.moire.core.State;\n\n");
 		innerClass.append("import enzet.moire.core.Word;\n\n");
 
 		for (Format format : formats.values())

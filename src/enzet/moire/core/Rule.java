@@ -64,7 +64,7 @@ public class Rule
 		elements = parseElements(value);
 	}
 
-	public String convert(Word word, Format format)
+	public String convert(Word word, Format format, State state)
 	{
 		StringBuilder returned = new StringBuilder();
 
@@ -89,30 +89,34 @@ public class Rule
 
 		Object[] param = new Object[size];
 
+		List<Word> childrenParameter;
+
 		if (word.children != null && word.children.size() > 0 &&
 				word.children.get(0) != null)
 		{
 			try
 			{
-				param[0] = word.children.get(0).children;
+				childrenParameter = word.children.get(0).children;
 			}
 			catch (Exception e)
 			{
-				param[0] = new ArrayList();
+				childrenParameter = new ArrayList<Word>();
 			}
 		}
 		else
 		{
-			param[0] = new ArrayList();
+			childrenParameter = new ArrayList<Word>();
 		}
+		state.setChildren(childrenParameter);
+		param[0] = state;
 
 		for (int i = 0; i < parameters; i++)
 		{
 			/* converted: 1, 3, 5... */
-			param[2 * i + 1] = word.getParameter(i, format, false);
+			param[2 * i + 1] = word.getParameter(i, format, false, state);
 
 			/* clear: 2, 4, 6... */
-			param[2 * i + 2] = word.getParameter(i, format, true);
+			param[2 * i + 2] = word.getParameter(i, format, true, state);
 		}
 		/*
 		 * Elements processing
@@ -147,7 +151,8 @@ public class Rule
 				{
 					if (2 * ((Parameter) element).number - 1 < size)
 					{
-						returned.append(param[2 * ((Parameter) element).number - 1]);
+						returned.append(
+								param[2 * ((Parameter) element).number - 1]);
 					}
 					else
 					{
@@ -174,7 +179,7 @@ public class Rule
 		{
 			Class<?>[] p = new Class[parameters * 2 + 1];
 
-			p[0] = List.class;
+			p[0] = State.class;
 
 			for (int i = 1; i < parameters * 2 + 1; i++)
 			{
@@ -182,6 +187,10 @@ public class Rule
 			}
 			Method m = getMethod(format, methods, p);
 
+			if (m == null)
+			{
+				return;
+			}
 			if (((Function) element).isReturn)
 			{
 				String result = (String) m.invoke(null, param);
@@ -199,7 +208,7 @@ public class Rule
 		}
 	}
 
-	private Method getMethod(Format format, int methods, Class<?>[] p)
+	private Method getMethod(Format format, int methodNumber, Class<?>[] p)
 	{
 		Method m;
 		Class<?> c;
@@ -218,13 +227,13 @@ public class Rule
 		try
 		{
 			m = c.getMethod("method_" + name + "_" + parameters + "_" +
-					methods, p);
+					methodNumber, p);
 		}
 		catch (NoSuchMethodException e)
 		{
 			if (format.parent != null)
 			{
-				return getMethod(format.parent, methods, p);
+				return getMethod(format.parent, methodNumber, p);
 			}
 			System.err.println("Class enzet.moire.Inner$" +
 					format.getName().toUpperCase() + " has no method for " +
@@ -347,7 +356,7 @@ public class Rule
 
 	public String generateMethods()
 	{
-		String returned = "";
+		StringBuilder returned = new StringBuilder();
 		int methods = 0;
 
 		for (Object element : elements)
@@ -356,24 +365,28 @@ public class Rule
 			{
 				Function f = (Function) element;
 
-				returned += "\t\tpublic static ";
-				returned += f.isReturn ? "String" : "void";
-				returned += " method_" + name + "_" + parameters + "_" +
-						++methods + "(";
-				returned += "List<Word> words" + (parameters == 0 ? "" : ", ");
+				returned.append("\t\tpublic static ")
+						.append(f.isReturn ? "String" : "void")
+						.append(" method_").append(name).append("_")
+						.append(parameters).append("_").append(++methods)
+						.append("(").append("State state")
+						.append(parameters == 0 ? "" : ", ");
 
 				for (int i = 0; i < parameters; i++)
 				{
-					returned += "String arg" + (i + 1) + ", String carg" + (i + 1);
+					returned.append("String arg").append(i + 1)
+							.append(", String carg").append(i + 1);
+
 					if (i != parameters - 1)
 					{
-						returned += ", ";
+						returned.append(", ");
 					}
 				}
-				returned += ")\n\t\t{\n\t\t\t" + f.text + "\n\t\t}\n\n";
+				returned.append(")\n\t\t{\n\t\t\t").append(f.text)
+						.append("\n\t\t}\n\n");
 			}
 		}
-		return returned;
+		return returned.toString();
 	}
 
 	// Getters and setters

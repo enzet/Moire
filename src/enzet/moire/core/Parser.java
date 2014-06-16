@@ -23,8 +23,6 @@ public class Parser
 		System.out.print("Parsing " + text.length + " bytes... ");
 
 		Words words = parse(text, 0);
-		words.add(0, new Word("begin", WordType.TAG));
-		words.add(new Word("end", WordType.TAG));
 
 		System.out.println("done.");
 

@@ -38,7 +38,8 @@ public class Word
 		children.addAll(words);
 	}
 
-	public String getParameter(int number, Format format, boolean isClear)
+	public String getParameter(int number, Format format, boolean isClear,
+			State state)
 	{
 		Word branch = children.get(number);
 
@@ -49,14 +50,20 @@ public class Word
 		}
 		else
 		{
-			String s = "";
+			StringBuilder s = new StringBuilder();
 
 			for (Word w : branch.children)
 			{
-				s += (isClear ? w.screen(format) : w.convert(format));
+				s.append(isClear ? w.screen(format) :
+						w.convert(format, state));
 			}
-			return s;
+			return s.toString();
 		}
+	}
+
+	public boolean hasParameter(int number)
+	{
+		return number < children.size();
 	}
 
 	/**
@@ -101,7 +108,7 @@ public class Word
 	 *
 	 * Convert word with all subwords into the text representation.
 	 */
-	public String convert(Format format)
+	public String convert(Format format, State state)
 	{
 		if (type == WordType.SIMPLE_WORD)
 		{
@@ -133,7 +140,7 @@ public class Word
 
 			for (Word w : children)
 			{
-				builder.append(w.convert(format));
+				builder.append(w.convert(format, state));
 			}
 			return builder.toString();
 		}
@@ -162,7 +169,7 @@ public class Word
 						" argument(s) in scheme. Tag skipped.");
 				return value;
 			}
-			return rule.convert(this, format);
+			return rule.convert(this, format, state);
 		}
 		return value;
 	}

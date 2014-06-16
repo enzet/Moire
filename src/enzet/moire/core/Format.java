@@ -168,7 +168,6 @@ public class Format
 		{
 			clazz.append(initialActions).append("\n");
 		}
-
 		for (Rule r : rules)
 		{
 			clazz.append(r.generateMethods());

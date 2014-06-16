@@ -34,6 +34,9 @@ public class Options
 	@Option(name = "-s", aliases = "--scheme", usage = "Scheme file")
 	public static String schemeFileName;
 
+	@Option(name = "-b", aliases = "--book", usage = "Create book instead of single file with level")
+	public static int bookLevel = -1;
+
 	@Option(name = "-g", aliases = "--generate", usage = "Generate inner class")
 	public static boolean isGenerate = false;
 

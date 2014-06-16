@@ -36,7 +36,8 @@ public class ConversionTest
 	{
 		Format format = new Format("html");
 		
-		Scheme scheme = new Scheme(new BufferedReader(new FileReader(new File("default.moirescheme"))));
+		Scheme scheme = new Scheme(new BufferedReader(
+				new FileReader(new File("default.moirescheme"))));
 		format.readFormat(scheme);
 
         Parser parser = new Parser(input);
