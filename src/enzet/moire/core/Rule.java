@@ -310,7 +310,7 @@ public class Rule
 							}
 							i++;
 							int k = 0;
-							while (!(k == 0 && (c = text.charAt(i)) == '}' &&
+							while (!((c = text.charAt(i)) == '}' && k == 0 && 
 									text.charAt(i - 1) != '\\'))
 							{
 								if (c == '{') k++;
@@ -331,9 +331,12 @@ public class Rule
 								l = "";
 							}
 							i++;
-							while (!((c = text.charAt(i)) == ']' &&
+							int kk = 0;
+							while (!((c = text.charAt(i)) == ']' && kk == 0 &&
 									text.charAt(i - 1) != '\\'))
 							{
+								if (c == '[') kk++;
+								if (c == ']') kk--;
 								l += c;
 								i++;
 							}

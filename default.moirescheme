@@ -75,19 +75,41 @@ u 1:<u>\1</u>
 :: githubstylehtml
 
 extends:html
-name:"Github style HTML"
+name:Github style HTML
 
 ::: tags
 
-begin 0:<html><head><meta http-equiv = "Content-Type" content = "text/html; charset = utf-8"><style>body \{font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 1.6; padding-top: 10px; padding-bottom: 10px; padding: 30px; width: 800px;\} a \{color: #4183C4;\} tt, table tr td tt \{font-size: 13px; margin: 0 2px; padding: 0 5px; border: 1px solid #eaeaea; background-color: #f8f8f8; border-radius: 3px;\} pre \{background-color: #f8f8f8; border: 1px solid #ccc; font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;\} pre tt \{background-color: transparent; border: none;\} table \{border-collapse: collapse; font-size: inherit; margin-top: 10; margin-bottom: 10;\} table tr:nth-child(2n) \{background-color: #f8f8f8;\} table tr th \{font-weight: bold; border: 1px solid #cccccc; padding: 6px 13px;\} table tr td \{border: 1px solid #cccccc; padding: 6px 13px;\}</style></head><body><p>
+begin 0:<html><head><meta http-equiv = "Content-Type" content = "text/html; charset = utf-8"><style>body \{font-family: Helvetica, arial, sans-serif; font-size: 14px; line-height: 1.6; padding-top: 10px; padding-bottom: 10px; padding: 30px; width: 800px;\} a \{color: #4183C4;\} tt, table tr td tt \{font-size: 13px; margin: 0 2px; padding: 0 5px; border: 1px solid #eaeaea; background-color: #f8f8f8; border-radius: 3px;\} pre \{background-color: #f8f8f8; border: 1px solid #cccccc; font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;\} pre tt \{background-color: transparent; border: none; padding: 0; margin: 0;\} table \{border-collapse: collapse; font-size: inherit; margin-top: 10; margin-bottom: 10;\} table tr:nth-child(2n) \{background-color: #f8f8f8;\} table tr th \{font-weight: bold; border: 1px solid #cccccc; padding: 6px 13px;\} table tr td \{border: 1px solid #cccccc; padding: 6px 13px;\}</style></head><body><p>
 end 0:</p></body></html>
+
+
+
+:: gitstylehtml
+
+extends:html
+name:Git book style HTML
+
+::: init
+
+static int[] levels = new int[7];
+static String content = "";
+static int imageNumber;
+
+::: tags
+
+begin 0:<html><head><link rel="stylesheet" type="text/css" href="[return state.getStringLevel();]style.css"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div class = main><p>
+end 0:</p></div><div class = content>[return content;]</div></body></html>
+1 2:{levels[1]++; levels[2] = 0; levels[3] = 0; levels[4] = 0; levels[5] = 0;}<a href = "#\2"><h1 id = "\2"><span class = number>[return levels[1] + "";]</span> \1</h1> {content += "<a href = #" + arg2 + ">" + arg1 + "</a><br />";}</a>
+2 2:{levels[2]++; levels[3] = 0; levels[4] = 0; levels[5] = 0;}<a href = "#\2"><h2 id = "\2"><span class = number>[return levels[1] + "." + levels[2];]</span> \1</h2> {content += "&nbsp; &nbsp; <a href = #" + arg2 + ">" + arg1 + "</a><br />";}</a>
+3 2:{levels[3]++; levels[4] = 0; levels[5] = 0;}<a href = "#\2"><h3 id = "\2"><span class = number>[return levels[1] + "." + levels[2] + "." + levels[3];]</span> \1</h3> {content += "&nbsp; &nbsp; &nbsp; &nbsp; <a href = #" + arg2 + ">" + arg1 + "</a><br />";}</a>
+image 2:<center><img src = "[return state.getStringLevel();]\1" alt = "\2" /><br /><br /><span class = imagecaption>Pic. [imageNumber++; return imageNumber + ".";] <i>\2</i></span></center>
 
 
 
 :: markdown
 
-name:"Markdown"
-extension:"md"
+name:Markdown
+extension:md
 
 ::: header
 
@@ -146,8 +168,8 @@ quote 1:>\1
 
 :: redminewiki
 
-name:"Redmine wiki markup"
-extension:"redminewiki"
+name:Redmine wiki markup
+extension:redminewiki
 
 ::: init
 
@@ -236,5 +258,134 @@ u 1:\1
 quote 1:\1
 
 ::: symbols
+
+::: screen
+
+
+
+
+
+:: tex
+
+::: tags
+
+moire 1:
+begin 0:\\documentclass\[twoside,psfig\]\{article\}\n\\usepackage\[utf8\]\{inputenc\}\n\\usepackage\[russian\]\{babel\}\n\\usepackage\{multicol\}\n  \\usepackage\{enumitem\}\n\\usepackage\[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt\]\{geometry\}\n\\usepackage\{graphicx\}\n\n\\begin\{document\}\n\n
+end 0:\n\\end\{thebibliography\}\n\n\\end \{document\}
+0 1:\\title\{\1\}
+1 1:\\section\{\1\}
+2 1:\\subsection\{\1\}
+3 1:\\subsubsection\{\1\}
+4 1:\\paragraph\{\1\}
+5 1:\\subparagraph\{\1\}
+6 1:\1
+b 1:\{\\bf \1\}
+book 2:\\bibitem\{\1\} \2 
+books 0:\\begin\{thebibliography\}\{0\}
+cite 1:
+code 1:\\begin\{verbatim\}\c1\\end\{verbatim\}
+code 2:\\begin\{verbatim\}\c1\\end\{verbatim\}
+href 1:\1
+href 2:\1
+i 1:\{\\em \1\}
+math 1:$\c1$
+ignore 1:\c1
+image 1:\\begin\{figure\}\[h!\]\\begin\{center\}\\includegraphics\{\1\}\\end\{center\}\\end\{figure\}    
+image 2:\\begin\{figure\}\[h!\]\\begin\{center\}\\includegraphics\{\1\}\\end\{center\}\\caption\{\2\}\\end\{figure\}    
+item 1:\\item \1
+list 1:\\begin\{itemize\}\1\\end\{itemize\}
+shortlist 1:\\begin\{itemize\}\[topsep=0pt, itemsep=-0.5ex\]\1\\end\{itemize\}
+ordered 1:\\begin\{ordered\}\1\\end\{ordered\}
+sc 1:\{\\sc \1\}
+size 2:\1
+strike 1:\1
+sub 1:\1
+sup 1:\1
+table 1:\1
+tr 1:\1|
+td 1:| \1
+tt 1:\{\\tt \1\}
+u 1:\1
+quote 1:\1
+
+::: symbols
+
+::: screen
+
+_:\\_
+&:\\&
+%:\\%
+\#:\\#
+
+
+
+:: rtf
+
+::: header
+
+import java.util.ArrayList;
+import java.util.List;
+
+::: init
+
+static boolean isOrdered;
+static List<Integer> counter;
+static int lc = 0; /* List counter */
+
+::: tags
+
+moire 1:
+begin 0:\{\\rtf0\\ansi\\deff0\n\{\\*\\listtable\{\\list\\listtemplateid1\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u8226 ?;\}\\li720\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9702 ?;\}\\li1080\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9642 ?;\}\\li1440\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u8226 ?;\}\\li1800\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9702 ?;\}\\li2160\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9642 ?;\}\\li2520\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u8226 ?;\}\\li2880\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9702 ?;\}\\li3240\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9642 ?;\}\\li3600\}\\listid1\}\}\n\{\\listoverridetable\{\\listoverride\\listid1\\ls1\}\}\n\{\\fonttbl\{\\f1 Courier 10 Pitch;\}\}
+end 0:\n\}
+title 1:\\par\\pard \\sb346\\sa173\{\\fs52 \1  \\fs24\}\n
+1 1:\n\\par\\pard \\sb346\\sa173\{\\fs40 \1  \\fs24\}\n
+1 2:\n\\par\\pard \\sb346\\sa173\{\\fs40 \1  \\fs24\}\n
+2 1:\n\\par\\pard \\sb346\\sa173\{\\fs36 \1  \\fs24\}\n
+2 2:\n\\par\\pard \\sb346\\sa173\{\\fs36 \1  \\fs24\}\n
+3 1:\n\\par\\pard \\sb346\\sa173\{\\fs32 \1  \\fs24\}\n
+3 2:\n\\par\\pard \\sb346\\sa173\{\\fs32 \1  \\fs24\}\n
+4 1:\n\\par\\pard \\sb346\\sa173\{\\fs30 \1  \\fs24\}\n
+4 2:\n\\par\\pard \\sb346\\sa173\{\\fs30 \1  \\fs24\}\n
+5 1:\n\\par\\pard \\sb346\\sa173\{\\fs28 \1  \\fs24\}\n
+5 2:\n\\par\\pard \\sb346\\sa173\{\\fs28 \1  \\fs24\}\n
+6 1:\n\\par\\pard \\sb346\\sa173\{\\fs26 \1  \\fs24\}\n
+6 2:\n\\par\\pard \\sb346\\sa173\{\\fs26 \1  \\fs24\}\n
+b 1:\n\\b \1\\b0\n
+code 1:\1
+code 2:\1
+font 2:
+href 1:\{\\field\{\\*\\fldinst\{HYPERLINK  "\1"\}\}\{\\fldrslt\{\\u1  \1\n\}\}\}
+href 2:\{\\field\{\\*\\fldinst\{HYPERLINK  "\1"\}\}\{\\fldrslt\{\\u1  \2\n\}\}\}
+i 1:\\i \1\\i0\n
+math 1:\1
+ignore 1:\1
+image 1:\1
+image 2:\1
+item 1:\n\\par\\pard\\ilvl[return String.valueOf(lc);]\\ls1 \\li[return String.valueOf(360 + lc * 360);]\\ri0\\lin[return String.valueOf(360 + lc * 360);]\\rin0\\fi-360\{\\rtlch \\ltrch\\loch \1 \}\n
+list 1:{lc++;}\1 \\line {lc--;}[if (lc == 0) return "\\par\\pard"; else return "";]
+shortlist 1:\1
+ordered 1:\\levelnfc0\\list \1 \\list0
+s 1:\\strike \1\\strike0
+sc 1:\\scaps \1\\scaps0\n
+size 2:\\fs[return String.valueOf(Integer.parseInt(\1) * 2);] \2
+strike 1:\1
+sub 1:\\sub \1\\nosupersub\n
+super 1:\\super \1\\nosupersub\n
+table 1:\1
+tr 1:\1|
+td 1:| \1
+tt 1:\{\\f1 \1\}
+u 1:\\ul \1\\ul0\n
+quote 1:\1
+book 2:\1
+books 0:
+cite 1:\1
+
+::: symbols
+
+\n\n:\\par\\pard 
+~:\\u0160  
+---:\\u8212  
+--:\\u8211  
 
 ::: screen

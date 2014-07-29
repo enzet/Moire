@@ -122,7 +122,7 @@ public class Scheme
 		String l;
 		while ((l = input.readLine()) != null)
 		{
-			l = l.trim();
+			//l = l.trim();
 			if (l.startsWith(":"))
 			{
 				int level = 0;

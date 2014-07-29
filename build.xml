@@ -99,6 +99,14 @@
 					</zips>
 				</archives>
 			</restrict>
+			<restrict>
+				<name name="**/*.properties" />
+				<archives>
+					<zips>
+						<fileset dir="lib" includes="**/*.jar" />
+					</zips>
+				</archives>
+			</restrict>
 			<manifest>
 				<attribute name="Main-Class" value="enzet.moire.core.Reader" />
 			</manifest>
