@@ -128,6 +128,24 @@ public class Word
 					converted = converted.replaceAll(symbol.from, symbol.to);
 				}
 			}
+			if (format.escapeUnicode())
+			{
+				StringBuilder unicode = new StringBuilder();
+
+				for (int i = 0; i < converted.length(); i++)
+				{
+					if ((int) converted.charAt(i) > 0xff)
+					{
+						unicode.append("\\u")
+								.append((int) converted.charAt(i)).append("  ");
+					}
+					else
+					{
+						unicode.append(converted.charAt(i));
+					}
+				}
+				converted = unicode.toString();
+			}
 			return converted;
 		}
 		else if (type == WordType.FORMULA)

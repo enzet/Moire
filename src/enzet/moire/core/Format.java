@@ -22,6 +22,8 @@ public class Format
 	private String caption;
 	private String extension;
 
+	private boolean escapeUnicode = false;
+
 	/**
 	 * Super format.
 	 */
@@ -70,6 +72,10 @@ public class Format
 					if (r.from.equals("extension"))
 					{
 						extension = r.to;
+					}
+					if (r.from.equals("escape-unicode"))
+					{
+						escapeUnicode = r.to.equals("true");
 					}
 					/* Parent format reading. */
 
@@ -229,5 +235,10 @@ public class Format
 			return null;
 		}
 		return parent.getCaption();
+	}
+
+	public boolean escapeUnicode()
+	{
+		return escapeUnicode;
 	}
 }
