@@ -4,6 +4,7 @@ import re
 input_file = open(sys.argv[1]).read()
 output_file = open(sys.argv[2], 'w+')
 prep_file = open('preprocessed', 'w+')
+rules_file = open('rules')
 
 class Tag:
 	def __init__(self, id, parameters):
@@ -48,24 +49,25 @@ input_file = preprocessed
 
 prep_file.write(input_file)
 
-rules = [\
-	['title', 1, 's += "<title>" + parse(arg[0]) + "</title>"'],\
-	['1',     1, 's += "<h1>" + parse(arg[0]) + "</h1>"'],\
-	['2',     1, 's += "<h2>" + parse(arg[0]) + "</h2>"'],\
-	['3',     1, 's += "<h3>" + parse(arg[0]) + "</h3>"'],\
-	['4',     1, 's += "<h4>" + parse(arg[0]) + "</h4>"'],\
-	['5',     1, 's += "<h5>" + parse(arg[0]) + "</h5>"'],\
-	['6',     1, 's += "<h6>" + parse(arg[0]) + "</h6>"'],\
-	['b',     1, 's += "<b>"  + parse(arg[0]) + "</b>"'],\
-	['i',     1, 's += "<i>"  + parse(arg[0]) + "</i>"'],\
-	['list',  1, 's += "<ol>" + parse(arg[0]) + "</ol>"'],\
-	['item',  1, 's += "<li>" + parse(arg[0]) + "</li>"'],\
-	['abbr',  1, 's += "" + parse(arg[0]) + ""'],\
-	['code',  1, 's += "<tt><pre>" + arg[0][0] + "</pre></tt>"'],\
-	['tt',    1, 's += "<tt>" + parse(arg[0]) + "</tt>"'],\
-	['href',  2, 's += "<a href = " + str(arg[0]) + ">" + parse(arg[1]) + "</a>"'],\
-	['table', 1, 's += "<table>"\nfor tr in arg[0]:\n s += "<tr>"\n for td in tr:\n  s += "<td>" + parse(td) + "</td>"\n s += "</tr>"\ns += "</table>"']\
-]
+rules = []
+right = ''
+rule = None
+
+l = rules_file.readline()
+while l != '':
+	if l[0] != '\t':
+		if rule != None:
+			rule[2] = right
+			rules.append(rule)
+		rule = [l[:-2], '', '']
+		right = ''
+	else:
+		right += l[1:]
+	l = rules_file.readline()
+
+if rule != None:
+	rule[2] = right
+	rules.append(rule)
 
 def is_space(c):
 	if c == ' ' or c == '\n' or c == '\t' or c == '\r':
@@ -177,7 +179,5 @@ def parse(text):
 			if kk != None:
 				s += kk
 		return s
-
-print parsed
 
 output_file.write(parse(parsed))
