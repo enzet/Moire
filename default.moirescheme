@@ -321,6 +321,8 @@ _:\\_
 
 :: rtf
 
+escape-unicode:true
+
 ::: header
 
 import java.util.ArrayList;
@@ -338,18 +340,18 @@ moire 1:
 begin 0:\{\\rtf0\\ansi\\deff0\n\{\\*\\listtable\{\\list\\listtemplateid1\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u8226 ?;\}\\li720\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9702 ?;\}\\li1080\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9642 ?;\}\\li1440\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u8226 ?;\}\\li1800\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9702 ?;\}\\li2160\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9642 ?;\}\\li2520\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u8226 ?;\}\\li2880\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9702 ?;\}\\li3240\}\n\{\\listlevel\\levelnfc23\{\\leveltext \\'01\\u9642 ?;\}\\li3600\}\\listid1\}\}\n\{\\listoverridetable\{\\listoverride\\listid1\\ls1\}\}\n\{\\fonttbl\{\\f1 Courier 10 Pitch;\}\}
 end 0:\n\}
 title 1:\\par\\pard \\sb346\\sa173\{\\fs52 \1  \\fs24\}\n
-1 1:\n\\par\\pard \\sb346\\sa173\{\\fs40 \1  \\fs24\}\n
-1 2:\n\\par\\pard \\sb346\\sa173\{\\fs40 \1  \\fs24\}\n
-2 1:\n\\par\\pard \\sb346\\sa173\{\\fs36 \1  \\fs24\}\n
-2 2:\n\\par\\pard \\sb346\\sa173\{\\fs36 \1  \\fs24\}\n
-3 1:\n\\par\\pard \\sb346\\sa173\{\\fs32 \1  \\fs24\}\n
-3 2:\n\\par\\pard \\sb346\\sa173\{\\fs32 \1  \\fs24\}\n
-4 1:\n\\par\\pard \\sb346\\sa173\{\\fs30 \1  \\fs24\}\n
-4 2:\n\\par\\pard \\sb346\\sa173\{\\fs30 \1  \\fs24\}\n
-5 1:\n\\par\\pard \\sb346\\sa173\{\\fs28 \1  \\fs24\}\n
-5 2:\n\\par\\pard \\sb346\\sa173\{\\fs28 \1  \\fs24\}\n
-6 1:\n\\par\\pard \\sb346\\sa173\{\\fs26 \1  \\fs24\}\n
-6 2:\n\\par\\pard \\sb346\\sa173\{\\fs26 \1  \\fs24\}\n
+1 1:\\sb346\\sa173\{\\fs40 \1\\fs24\}\n
+1 2:\\sb346\\sa173\{\\fs40 \1\\fs24\}\n
+2 1:\\sb346\\sa173\{\\fs36 \1\\fs24\}\n
+2 2:\\sb346\\sa173\{\\fs36 \1\\fs24\}\n
+3 1:\\sb346\\sa173\{\\fs32 \1\\fs24\}\n
+3 2:\\sb346\\sa173\{\\fs32 \1\\fs24\}\n
+4 1:\\sb346\\sa173\{\\fs30 \1\\fs24\}\n
+4 2:\\sb346\\sa173\{\\fs30 \1\\fs24\}\n
+5 1:\\sb346\\sa173\{\\fs28 \1\\fs24\}\n
+5 2:\\sb346\\sa173\{\\fs28 \1\\fs24\}\n
+6 1:\\sb346\\sa173\{\\fs26 \1\\fs24\}\n
+6 2:\\sb346\\sa173\{\\fs26 \1\\fs24\}\n
 b 1:\n\\b \1\\b0\n
 code 1:\1
 code 2:\1
@@ -361,8 +363,8 @@ math 1:\1
 ignore 1:\1
 image 1:\1
 image 2:\1
-item 1:\n\\par\\pard\\ilvl[return String.valueOf(lc);]\\ls1 \\li[return String.valueOf(360 + lc * 360);]\\ri0\\lin[return String.valueOf(360 + lc * 360);]\\rin0\\fi-360\{\\rtlch \\ltrch\\loch \1 \}\n
-list 1:{lc++;}\1 \\line {lc--;}[if (lc == 0) return "\\par\\pard"; else return "";]
+item 1:\\par\\pard\\ilvl[return String.valueOf(lc);]\\ls1 \\li[return String.valueOf(360 + lc * 360);]\\fi-360 \1
+list 1:{lc++;}\1 {lc--;}[if (lc == 0) return "\\par\\pard"; else return "";]
 shortlist 1:\1
 ordered 1:\\levelnfc0\\list \1 \\list0
 s 1:\\strike \1\\strike0
