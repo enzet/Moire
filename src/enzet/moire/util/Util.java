@@ -25,18 +25,26 @@ public class Util
 
 	public static String get(String fileName) throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new FileReader(fileName));
-
-		String line;
-		StringBuilder content = new StringBuilder();
-
-		while ((line = reader.readLine()) != null)
+		try
 		{
-			content.append(line).append("\n");
-		}
-		reader.close();
+			BufferedReader reader = new BufferedReader(new FileReader(fileName));
 
-		return content.toString();
+			String line;
+			StringBuilder content = new StringBuilder();
+
+			while ((line = reader.readLine()) != null)
+			{
+				content.append(line).append("\n");
+			}
+			reader.close();
+
+			return content.toString();
+		}
+		catch (IOException e)
+		{
+			System.err.println("Cannot read from " + fileName);
+			throw e;
+		}
 	}
 
 	public static boolean isLetter(char character)

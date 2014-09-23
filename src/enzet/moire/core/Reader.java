@@ -237,6 +237,11 @@ public class Reader
 		innerClass.append("import enzet.moire.core.Reader;\n\n");
 		innerClass.append("import enzet.moire.core.State;\n\n");
 		innerClass.append("import enzet.moire.core.Word;\n\n");
+		innerClass.append("import java.io.BufferedReader;\n\n");
+		innerClass.append("import java.io.FileReader;\n\n");
+		innerClass.append("import java.io.File;\n\n");
+		innerClass.append("import java.lang.StringBuilder;\n\n");
+		innerClass.append("import java.io.IOException;\n\n");
 
 		for (Format format : formats.values())
 		{
