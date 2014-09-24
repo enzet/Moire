@@ -1,10 +1,41 @@
+# -*- coding: utf-8 -*-
+
+'''
+File conversion from Moire markup language to other formats.
+
+Usage: python moire.py -i <input file> -o <output file> -t <format> 
+                       -r <rules file>
+
+Options:
+    -i <file>   input file name
+    -o <file>   output file name
+    -f <format> resulted format
+    -r <file>   rules file name
+
+This file is a part of Moire project—light markup language.
+
+Author: Sergey Vartanov (me@enzet.ru)
+
+See http://github.com/enzet/moire
+'''
+
+import argparse
 import sys
 import re
 
-input_file = open(sys.argv[1]).read()
-output_file = open(sys.argv[2], 'w+')
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-i', dest = 'input')
+parser.add_argument('-o', dest = 'output')
+parser.add_argument('-f', dest = 'format')
+parser.add_argument('-r', dest = 'rules')
+
+options = parser.parse_args(sys.argv[1:])
+
+input_file = open(options.input).read()
+output_file = open(options.output, 'w+')
 prep_file = open('preprocessed', 'w+')
-rules_file = open('rules')
+rules_file = open(options.rules)
 
 class Tag:
 	def __init__(self, id, parameters):
@@ -29,7 +60,7 @@ adding = True
 i = 0
 while i < len(input_file):
 	c = input_file[i]
-	if c == '[':
+	if c == '[' and input_file[i - 1] != '\\':
 		end = input_file.find(' ', i)
 		if input_file[i + 1:end] == 'ru':
 			adding = True
@@ -37,15 +68,32 @@ while i < len(input_file):
 		else:
 			adding = False
 			i = end
-	elif c == ']':
+	elif c == ']' and input_file[i - 1] != '\\':
 		i += 1
 		adding = True
 	else:
-		if adding == True:
+		if adding:
 			preprocessed += c
 	i += 1
 
 input_file = preprocessed
+preprocessed = ''
+adding = True
+
+i = 0
+while i < len(input_file):
+	if input_file[i:i + 2] == '/*':
+		adding = False
+		i += 1
+	elif input_file[i:i + 2] == '*/':
+		adding = True
+		i += 1
+	else:
+		if adding:
+			preprocessed += input_file[i]
+	i += 1
+
+input_file = '\\begin {} ' + preprocessed + '\\end {} '
 
 prep_file.write(input_file)
 
@@ -55,14 +103,14 @@ rule = None
 
 l = rules_file.readline()
 while l != '':
-	if l[0] != '\t':
+	if l[1] != '\t':
 		if rule != None:
 			rule[2] = right
 			rules.append(rule)
-		rule = [l[:-2], '', '']
-		right = ''
+		rule = [l[1:l.find(':')], '', '']
+		right = l[l.find(':') + 1:].strip()
 	else:
-		right += l[1:]
+		right += l[2:]
 	l = rules_file.readline()
 
 if rule != None:
@@ -157,6 +205,8 @@ def get_line(line):
 
 parsed = get_line(lexems)
 
+no_tags = []
+
 def parse(text):
 	if text == None or text == '' or text == []:
 		return 'none'
@@ -170,8 +220,10 @@ def parse(text):
 				try:
 					exec(rule[2])
 				except:
-					print 'Error for tag "' + text.id + '" in ' + str(arg) + '.'
+					print 'Error for tag "' + text.id + '" in ' + str(arg) + \
+							'.'
 				return s
+		no_tags.append(text.id)
 	else:
 		s = ''
 		for item in text:
@@ -181,3 +233,5 @@ def parse(text):
 		return s
 
 output_file.write(parse(parsed))
+
+print 'No tags: ' + str(set(no_tags))
