@@ -11,7 +11,7 @@ import org.kohsuke.args4j.Option;
  */
 public class Options
 {
-	public static String partFileName = "part.java";
+	public static String defaultPartFileName = "part.java";
     public static String defaultSchemeFileName = "default.moirescheme";
 
 	// Main options
@@ -21,6 +21,9 @@ public class Options
 
 	@Option(name = "-o", aliases = "--output", usage = "Output file")
 	public static String output;
+
+	@Option(name = "-p", aliases = "--part", usage = "Part file")
+	public static String partFileName;
 
 	@Option(name = "-t", aliases = "--to", usage = "Output format")
 	public static String to;

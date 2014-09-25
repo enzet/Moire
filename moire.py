@@ -29,14 +29,31 @@ parser.add_argument('-i', dest = 'input')
 parser.add_argument('-o', dest = 'output')
 parser.add_argument('-f', dest = 'format')
 parser.add_argument('-r', dest = 'rules')
+parser.add_argument('-pl', dest = 'print_lexems', action = 'store_true',\
+		help = 'print lexems')
+parser.add_argument('-pp', dest = 'print_preprocessed', action = 'store_true',\
+		help = 'print preprocessed file')
 
 options = parser.parse_args(sys.argv[1:])
 
-input_file = open(options.input).read()
+try:
+	input_file = open(options.input).read()
+except:
+	print 'Input file "' + options.input + '" is not found.'
+	sys.exit(1)
+
+try:
+	rules_file = open(options.rules)
+except:
+	print 'Rules file "' + options.rules + '" is not found.'
+	sys.exit(1)
+
 output_file = open(options.output, 'w+')
 prep_file = open('preprocessed', 'w+')
-rules_file = open(options.rules)
 
+'''
+Moire tag definition
+'''
 class Tag:
 	def __init__(self, id, parameters):
 		self.id = id
@@ -69,7 +86,6 @@ while i < len(input_file):
 			adding = False
 			i = end
 	elif c == ']' and input_file[i - 1] != '\\':
-		i += 1
 		adding = True
 	else:
 		if adding:
@@ -94,6 +110,9 @@ while i < len(input_file):
 	i += 1
 
 input_file = '\\begin {} ' + preprocessed + '\\end {} '
+
+if options.print_preprocessed:
+	print '\033[32m' + input_file + '\033[0m'
 
 prep_file.write(input_file)
 
@@ -165,13 +184,17 @@ def lexer(tx):
 
 lexems = lexer(input_file)
 
+if options.print_lexems:
+	print lexems
+
 index = 0
+level = 0
 
 def get_line(line):
 	global index
+	global level
 	tag = None
 	result = []
-	level = 0
 	while index < len(line):
 		item = line[index]
 		if item[0] == '\\':
@@ -186,13 +209,17 @@ def get_line(line):
 			else:
 				index += 1
 				tag.parameters.append(get_line(line))
+			index += 1
 			continue
 		elif item == '}':
-			if level == 0:
-				if tag != None:
-					result.append(tag)
-				return result
 			level -= 1
+			if level < 0:
+				print 'error'
+				index += 1
+				sys.exit(1)
+			if tag != None:
+				result.append(tag)
+			return result
 		else:
 			if tag != None:
 				result.append(tag)
@@ -232,6 +259,13 @@ def parse(text):
 				s += kk
 		return s
 
-output_file.write(parse(parsed))
+p = parse(parsed)
 
-print 'No tags: ' + str(set(no_tags))
+# print p
+
+output_file.write(p)
+
+if len(no_tags) > 0:
+	print 'Tags not found:'
+	for k in set(no_tags):
+		print '  ' + str(k)

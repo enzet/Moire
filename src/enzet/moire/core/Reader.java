@@ -251,7 +251,15 @@ public class Reader
 			}
 		}
 		innerClass.append("public class Inner\n{\n");
-		innerClass.append(Util.get(Options.partFileName));
+
+		try
+		{
+			innerClass.append(Util.get(Options.partFileName));
+		}
+		catch (IOException e)
+		{
+			innerClass.append(Util.get(Options.defaultPartFileName));
+		}
 
 		for (Format format : formats.values())
 		{

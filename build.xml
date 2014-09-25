@@ -8,6 +8,7 @@
     <property name="build" location="bin" />
     <property name="test-build" location="test/bin" />
     <property name="scheme" value="default.moirescheme" />
+    <property name="part" value="part.java" />
 
 	<target name="init" description="Initialization">
 		<mkdir dir="${build}" />
@@ -51,7 +52,7 @@
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
-			<arg line="-s ${scheme} -g" />
+			<arg line="-s ${scheme} -p ${part} -g" />
 			<jvmarg line="-Dfile.encoding=UTF-8" />
 		</java>
 	</target>
