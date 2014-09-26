@@ -69,6 +69,8 @@ class Tag:
 		s += '\033[31m}\033[0m'
 		return s
 
+# Languages preprocessing
+
 langs = ['ru']
 
 preprocessed = ''
@@ -84,13 +86,15 @@ while i < len(input_file):
 			i = end
 		else:
 			adding = False
-			i = end
+			i += 1
 	elif c == ']' and input_file[i - 1] != '\\':
 		adding = True
 	else:
 		if adding:
 			preprocessed += c
 	i += 1
+
+# Comments preprocessing
 
 input_file = preprocessed
 preprocessed = ''
@@ -109,32 +113,53 @@ while i < len(input_file):
 			preprocessed += input_file[i]
 	i += 1
 
-input_file = '\\begin {} ' + preprocessed + '\\end {} '
+input_file = '\\body {' + preprocessed + '}'
 
 if options.print_preprocessed:
 	print '\033[32m' + input_file + '\033[0m'
 
 prep_file.write(input_file)
 
-rules = []
+# Rules reading from file
+
+rules = {}
+
+def add_rule(rule, right, block):
+	global rules
+	if rule != None:
+		rule[2] = right
+		if block in rules:
+			rules[block].append(rule)
+		else:
+			rules[block] = [rule]
+
 right = ''
 rule = None
-
 l = rules_file.readline()
+block = ''
+
 while l != '':
-	if l[1] != '\t':
-		if rule != None:
-			rule[2] = right
-			rules.append(rule)
-		rule = [l[1:l.find(':')], '', '']
-		right = l[l.find(':') + 1:].strip()
+	if l[0] != '\t':
+		add_rule(rule, right, block)
+		rule = None
+		if l[0] == ':':
+			language = l[1:-1]
+		elif len(l) > 1:
+			block = l[:-2]
 	else:
-		right += l[2:]
+		if l[1] != '\t':
+			add_rule(rule, right, block)
+			rule = [l[1:l.find(':')], '', '']
+			right = l[l.find(':') + 1:].strip()
+		else:
+			right += l[2:]
 	l = rules_file.readline()
 
-if rule != None:
-	rule[2] = right
-	rules.append(rule)
+add_rule(rule, right, block)
+
+block_tags = []
+for a in rules['block']:
+	block_tags.append(a[0])
 
 def is_space(c):
 	if c == ' ' or c == '\n' or c == '\t' or c == '\r':
@@ -160,6 +185,7 @@ def lexer(text):
 			if word != '':
 				lexems.append(word)
 				positions.append(index)
+			word = ''
 			in_tag = True
 			tag_name = '\\'
 		elif char == '{':
@@ -251,13 +277,13 @@ parsed = get_line(lexems)
 
 no_tags = []
 
-def parse(text):
+def parse(text, inblock = False):
 	if text == None or text == '' or text == []:
 		return 'none'
 	elif isinstance(text, str):
 		return text
 	elif isinstance(text, Tag):
-		for rule in rules:
+		for rule in rules['block'] + rules['inner']:
 			if rule[0] == text.id:
 				arg = text.parameters
 				s = ''
@@ -270,10 +296,21 @@ def parse(text):
 		no_tags.append(text.id)
 	else:
 		s = ''
+		innerblock = []
 		for item in text:
-			kk = parse(item)
-			if kk != None:
-				s += kk
+			if inblock:
+				if isinstance(item, Tag) and item.id in block_tags:
+					if innerblock != []:
+						s += str(parse(Tag('text', [innerblock])))
+						innerblock = []
+					s += str(parse(item))
+				else:
+					innerblock.append(item)
+			else:
+				s += str(parse(item))
+		if innerblock != []:
+			s += str(parse(Tag('text', [innerblock])))
+			innerblock = []
 		return s
 
 p = parse(parsed)
