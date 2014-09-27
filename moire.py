@@ -6,12 +6,6 @@ File conversion from Moiré markup language to other formats.
 Usage: python moire.py -i <input file> -o <output file> -t <format> 
                        -r <rules file>
 
-Options:
-    -i <file>   input file name
-    -o <file>   output file name
-    -f <format> resulted format
-    -r <file>   rules file name
-
 This file is a part of Moiré project—light markup language.
 
 Author: Sergey Vartanov (me@enzet.ru)
@@ -28,7 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', dest = 'input', help = 'Moiré input file')
 parser.add_argument('-o', dest = 'output', help = 'output file')
 parser.add_argument('-f', dest = 'format', help = 'output format')
-parser.add_argument('-r', dest = 'rules', help = 'rules file')
+parser.add_argument('-r ', dest = 'rules', help = 'rules file')
 parser.add_argument('-pl', dest = 'print_lexems', action = 'store_true',\
 		help = 'print lexems')
 parser.add_argument('-pp', dest = 'print_preprocessed', action = 'store_true',\
@@ -50,6 +44,27 @@ except:
 
 output_file = open(options.output, 'w+')
 prep_file = open('preprocessed', 'w+')
+
+def trim_inside(s):
+	ret = ''
+	i = 0
+	while i < len(s):
+		if is_space(s[i]):
+			ret += ' '
+			while i < len(s) and is_space(s[i]):
+				s += ''
+				i += 1
+			continue
+		else:
+			ret += s[i]
+		i += 1
+	return ret
+
+def is_space(c):
+	if c == ' ' or c == '\n' or c == '\t' or c == '\r':
+		return True
+	else:
+		return False
 
 '''
 Moire tag definition
@@ -80,7 +95,7 @@ i = 0
 while i < len(input_file):
 	c = input_file[i]
 	if c == '[' and input_file[i - 1] != '\\':
-		end = min(input_file.find(' ', i), input_file.find('\n', i))
+		end = min(input_file.find(' ', i), input_file.find('\n', i), input_file.find('\t', i))
 		if input_file[i + 1:end] == 'ru':
 			adding = True
 			i = end
@@ -160,12 +175,6 @@ add_rule(rule, right, block)
 block_tags = []
 for a in rules['block']:
 	block_tags.append(a[0])
-
-def is_space(c):
-	if c == ' ' or c == '\n' or c == '\t' or c == '\r':
-		return True
-	else:
-		return False
 
 def lexer(text):
 	'''
@@ -277,11 +286,46 @@ parsed = get_line(lexems)
 
 no_tags = []
 
+def process_inner_block(innerblock):
+	s = ''
+	if isinstance(innerblock[0], str):
+		innerblock[0] = innerblock[0].lstrip()
+	if isinstance(innerblock[-1], str):
+		innerblock[-1] = innerblock[-1].rstrip()
+	if len(innerblock) == 1 and innerblock[0] == '':
+		return ''
+	inners = []
+	last = []
+	for i in range(len(innerblock)):
+		if isinstance(innerblock[i], str):
+			if innerblock[i].find('\n\n') == -1:
+				last.append(innerblock[i])
+			else:
+				prev = 0
+				ind = innerblock[i].find('\n\n')
+				while ind > 0:
+					aaa = innerblock[i][prev:ind]
+					aaa = aaa.strip()
+					if aaa != '':
+						last.append(aaa)
+						inners.append(last)
+						last = []
+					prev = ind
+					ind = innerblock[i].find('\n\n', ind + 2)
+				last.append(innerblock[i][prev:])
+		else:
+			last.append(innerblock[i])
+	if last != []:
+		inners.append(last)
+	for l in inners:
+		s += str(parse(Tag('text', [l])))
+	return s
+
 def parse(text, inblock = False):
 	if text == None or text == '' or text == []:
-		return 'none'
+		return ''
 	elif isinstance(text, str):
-		return text
+		return trim_inside(text)
 	elif isinstance(text, Tag):
 		for rule in rules['block'] + rules['inner']:
 			if rule[0] == text.id:
@@ -294,14 +338,14 @@ def parse(text, inblock = False):
 							'.'
 				return s
 		no_tags.append(text.id)
-	else:
+	else: # if text is list of items
 		s = ''
 		innerblock = []
 		for item in text:
 			if inblock:
 				if isinstance(item, Tag) and item.id in block_tags:
 					if innerblock != []:
-						s += str(parse(Tag('text', [innerblock])))
+						s += process_inner_block(innerblock)
 						innerblock = []
 					s += str(parse(item))
 				else:
@@ -309,7 +353,8 @@ def parse(text, inblock = False):
 			else:
 				s += str(parse(item))
 		if innerblock != []:
-			s += str(parse(Tag('text', [innerblock])))
+			#s += str(parse(Tag('text', [innerblock])))
+			s += process_inner_block(innerblock)
 			innerblock = []
 		return s
 
