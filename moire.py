@@ -14,21 +14,26 @@ See http://github.com/enzet/moire
 '''
 
 import argparse
-import sys
+import os
 import re
+import sys
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-i', dest = 'input', help = 'Moiré input file')
 parser.add_argument('-o', dest = 'output', help = 'output file')
 parser.add_argument('-f', dest = 'format', help = 'output format')
-parser.add_argument('-r ', dest = 'rules', help = 'rules file')
+parser.add_argument('-r', dest = 'rules', help = 'rules file')
+parser.add_argument('-b', dest = 'book_level', help = 'book level')
+parser.add_argument('-l', dest = 'language', help = 'language')
 parser.add_argument('-pl', dest = 'print_lexems', action = 'store_true',\
 		help = 'print lexems')
 parser.add_argument('-pp', dest = 'print_preprocessed', action = 'store_true',\
 		help = 'print preprocessed file')
 
 options = parser.parse_args(sys.argv[1:])
+
+language = options.language
 
 try:
 	input_file = open(options.input).read()
@@ -42,7 +47,9 @@ except:
 	print 'Rules file "' + options.rules + '" is not found.'
 	sys.exit(1)
 
-output_file = open(options.output, 'w+')
+if options.book_level == 0:
+	output_file = open(options.output, 'w+')
+
 prep_file = open('preprocessed', 'w+')
 
 def trim_inside(s):
@@ -74,39 +81,39 @@ class Tag:
 		self.id = id
 		self.parameters = parameters
 	def __str__(self):
-		s = ''
-		s += self.id + ' {' + str(self.parameters)
+		s = self.id + ' {' + str(self.parameters)
 		s += '}'
 		return s
 	def __repr__(self):
-		s = '\033[31m'
-		s += self.id + ' {\033[0m' + str(self.parameters)
-		s += '\033[31m}\033[0m'
+		s = self.id + ' {' + str(self.parameters)
+		s += '}'
 		return s
 
-# Languages preprocessing
+class Document:
+	def __init__(self, id, content):
+		self.id = id
+		self.content = content
 
-langs = ['ru']
+# Languages preprocessing
 
 preprocessed = ''
 adding = True
  
 i = 0
 while i < len(input_file):
-	c = input_file[i]
-	if c == '[' and input_file[i - 1] != '\\':
-		end = min(input_file.find(' ', i), input_file.find('\n', i), input_file.find('\t', i))
-		if input_file[i + 1:end] == 'ru':
+	if input_file[i] == '[' and input_file[i - 1] != '\\':
+		end = i + 3
+		if input_file[i + 1:end] == options.language:
 			adding = True
 			i = end
 		else:
 			adding = False
 			i += 1
-	elif c == ']' and input_file[i - 1] != '\\':
+	elif input_file[i] == ']' and input_file[i - 1] != '\\':
 		adding = True
 	else:
 		if adding:
-			preprocessed += c
+			preprocessed += input_file[i]
 	i += 1
 
 # Comments preprocessing
@@ -128,7 +135,10 @@ while i < len(input_file):
 			preprocessed += input_file[i]
 	i += 1
 
-input_file = '\\body {' + preprocessed + '}'
+input_file = preprocessed
+
+if options.book_level == 0:
+	input_file = '\\body {' + input_file + '}'
 
 if options.print_preprocessed:
 	print '\033[32m' + input_file + '\033[0m'
@@ -158,7 +168,7 @@ while l != '':
 		add_rule(rule, right, block)
 		rule = None
 		if l[0] == ':':
-			language = l[1:-1]
+			format = l[1:-1]
 		elif len(l) > 1:
 			block = l[:-2]
 	else:
@@ -239,7 +249,10 @@ if options.print_lexems:
 index = 0
 level = 0
 
-def get_line(line):
+def get_intermediate(line):
+	'''
+	Get intermediate representation
+	'''
 	global index
 	global level
 	tag = None
@@ -254,10 +267,10 @@ def get_line(line):
 			level += 1
 			if tag == None:
 				index += 1
-				result.append(get_line(line))
+				result.append(get_intermediate(line))
 			else:
 				index += 1
-				tag.parameters.append(get_line(line))
+				tag.parameters.append(get_intermediate(line))
 			index += 1
 			continue
 		elif item == '}':
@@ -282,46 +295,64 @@ def get_line(line):
 		result.append(tag)
 	return result
 
-parsed = get_line(lexems)
+intermediate_representation = get_intermediate(lexems)
+
+if options.book_level == 0:
+	documents = [Document('_', intermediate_representation)]
+else:
+	documents = []
+	document = Document('_', [])
+	level = ['_', '_', '_', '_', '_', '_']
+	for element in intermediate_representation:
+		if isinstance(element, Tag) and \
+				(element.id == '1' or element.id == '2'):
+			if document.content != []:
+				documents.append(document)
+				level[int(element.id)] = element.parameters[1][0]
+				document = Document(level[:int(element.id) + 1], [element])
+		else:
+			document.content.append(element)
+	if document.content != []:
+		documents.append(document)
 
 no_tags = []
 
 def process_inner_block(innerblock):
-	s = ''
 	if isinstance(innerblock[0], str):
 		innerblock[0] = innerblock[0].lstrip()
 	if isinstance(innerblock[-1], str):
 		innerblock[-1] = innerblock[-1].rstrip()
 	if len(innerblock) == 1 and innerblock[0] == '':
 		return ''
-	inners = []
-	last = []
-	for i in range(len(innerblock)):
-		if isinstance(innerblock[i], str):
-			if innerblock[i].find('\n\n') == -1:
-				last.append(innerblock[i])
-			else:
-				prev = 0
-				ind = innerblock[i].find('\n\n')
-				while ind > 0:
-					aaa = innerblock[i][prev:ind]
-					aaa = aaa.strip()
-					if aaa != '':
-						last.append(aaa)
-						inners.append(last)
-						last = []
-					prev = ind
-					ind = innerblock[i].find('\n\n', ind + 2)
-				last.append(innerblock[i][prev:])
+	paragraphs = []
+	paragraph = []
+	for item in innerblock:
+		if isinstance(item, str):
+			previous = 0
+			delimeter = item.find('\n\n')
+			while delimeter != -1:
+				content = item[previous:delimeter].strip()
+				if content != '' or previous == 0:
+					paragraph.append(content)
+					paragraphs.append(paragraph)
+					paragraph = []
+				previous = delimeter + 1
+				delimeter = item.find('\n\n', delimeter + 1)
+			paragraph.append(item[previous:])
 		else:
-			last.append(innerblock[i])
-	if last != []:
-		inners.append(last)
-	for l in inners:
-		s += str(parse(Tag('text', [l])))
+			paragraph.append(item)
+	paragraphs.append(paragraph)
+	s = ''
+	for paragraph in paragraphs:
+		s += str(parse(Tag('text', [paragraph])))
 	return s
 
+level = 0
+
 def parse(text, inblock = False):
+	global level
+	global language
+	global title
 	if text == None or text == '' or text == []:
 		return ''
 	elif isinstance(text, str):
@@ -353,16 +384,29 @@ def parse(text, inblock = False):
 			else:
 				s += str(parse(item))
 		if innerblock != []:
-			#s += str(parse(Tag('text', [innerblock])))
 			s += process_inner_block(innerblock)
 			innerblock = []
 		return s
 
-p = parse(parsed)
+title = '_'
 
-# print p
-
-output_file.write(p)
+if options.book_level == 0:
+	p = parse(documents[0].content)
+	output_file.write(p)
+else:
+	for document in documents:
+		name = '_'
+		for level in document.id[1:]:
+			name += '/' + level
+		try:
+			os.makedirs(name)
+		except:
+			a += ''
+		name += '/index.html'
+		output = open(name, 'w+')
+		level = len(document.id)
+		title = name
+		output.write(parse(Tag('body', [document.content])))
 
 if len(no_tags) > 0:
 	print 'Tags not found:'
