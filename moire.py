@@ -512,8 +512,7 @@ def convert(input, format='html', language='en', remove_comments=True, rules_fil
     intermediate_representation = get_intermediate(lexemes, positions, status['level'])
     if wrap:
         intermediate_representation = Tag('body', [intermediate_representation])    
-    documents = get_documents(0, intermediate_representation)
-    result = parse(documents[0].content)
+    result = parse(intermediate_representation)
 
     return result
 
