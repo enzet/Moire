@@ -1,23 +1,18 @@
-Moiré is a simple multipurpose markup.
+Moire is a simple multipurpose markup.
 
-Writing on Moiré
+Writing on Moire
 ----------------
 
-Moiré syntax definition is [here](http://enzet.ru/en/program/moire).
-
-Conversion Moiré code into other formats
+Conversion Moire code into other formats
 ----------------------------------------
 
-Requirements: Java, ``javac``, Apache Ant.
+You can convert your Moire file to other formats using Python 2.7:
 
-Build Moiré: ``ant dist`` and run it:
-
-    java -jar Moire.jar -i <Moiré input file> -t <output format> -o <output file> <other options>
-    
+    python convertor.py -i <Moire input file> -f <format> -o <output file> <other options>
 
 ### Options ###
 
-``-i`` or ``--input``—input file in *Moiré* format;
+``-i`` or ``--input``—input file in *Moire* format;
 
 ``-o`` or ``--output``—output file;
 

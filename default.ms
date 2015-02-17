@@ -209,13 +209,16 @@ inner:
 
 
 
-:markdown::__main
+:markdown
 
 name:'Markdown'
 extension:'md'
 
 block:
-	body: counter = []
+	block: s += parse(arg[0], inblock = True)
+	body: 
+		counter = []
+		s += parse(arg[0], inblock = True)
 	title:
 	1:
 		parsed = parse(arg[0])
@@ -229,23 +232,24 @@ block:
 	6: s += '###### ' + parse(arg[0]) + ' ######'
 inner:
 	b: s += '**' + parse(arg[0]) + '**'
-	code: s += '    [return carg1.replaceAll("\n", "\n    ");]'
+	code: s += '    ' + parse(arg[0]).replace('\n', '\n    ')
 	href: s += '\[' + parse(arg[0]) + '\](' + parse(arg[0]) + ')'
-	href: s += '\[\2\](' + parse(arg[0]) + ')'
+	href: s += '\[' + parse(arg[1]) + '\](' + parse(arg[0]) + ')'
 	i: s += '*' + parse(arg[0]) + '*'
 	image: s += '!\[' + parse(arg[0]) + '\](' + parse(arg[0]) + ')'
-	image: s += '!\[\2\](' + parse(arg[0]) + ')'
+	image: s += '!\[' + parse(arg[1]) + '\](' + parse(arg[0]) + ')'
 	item: s += '\n[return multiline(counter.size() - 1, "    ");][return isOrdered ? counter.get(counter.size() - 1) + ".  " : "*   ";]' + parse(arg[0]) + '{counter.set(counter.size() - 1, 1);}'
 	list: s += '{isOrdered = false; counter.add(1);}' + parse(arg[0]) + '{counter.remove(counter.size() - 1);}'
 	ordered: s += '{isOrdered = true; counter.add(1);}' + parse(arg[0]) + '{counter.remove(counter.size() - 1);}'
-	size: s += skip()
-	strike: s += skip()
-	sub: s += skip()
-	super: s += skip()
-	table: s += skip()
-	tt: s += '``' + parse(arg[0]) + '``'
+	size:
+	strike:
+	sub:
+	super:
+	table:
+	tt: s += '``' + str(clear(arg[0])) + '``'
 	u: s += skip()
 	quote: s += '>' + parse(arg[0]) + ''
+	text: s += parse(arg[0]) + '\n\n'
 
 
 

@@ -307,13 +307,13 @@ def escape(text, format_name):
             .replace(']', ']')\
             .replace('"', 'kav')\
             .replace('─', 'line')
-    if format_name == 'html':
+    elif format_name == 'html':
         return text\
             .replace('&', '&amp;')\
             .replace('~', '&nbsp;')\
             .replace('<', '&lt;')\
             .replace('>', '&gt;')
-    if format_name == 'rtf':
+    elif format_name == 'rtf':
         text = text.decode('utf-8')
         result = u''
         for c in text:
@@ -324,6 +324,8 @@ def escape(text, format_name):
             else:
                 result += u'\\u' + unicode(ord(c)) + u'  '
         return result.encode('utf-8')
+    else:
+        return text
 
 
 def get_intermediate(lexemes, positions, level):
@@ -428,17 +430,12 @@ def parse(text, inblock=False, depth=0):
             if rule[0] == text.id:
                 arg = text.parameters
                 s = ''
-                hide_errors = True
-                if hide_errors:
-                    try:
-                        exec(rule[2])
-                    except:
-                        print 'Error for tag "' + text.id + '" in ' + \
-                              str(arg)[:100] + \
-                              ('...' if len(str(arg)) > 100 else '') + '.'
-                else:
-                    # print text.id
+                try:
                     exec(rule[2])
+                except:
+                    print 'Error for tag "' + text.id + '" in ' + \
+                          str(arg)[:100] + \
+                          ('...' if len(str(arg)) > 100 else '') + '.'
                 return s
         no_tags.append(text.id)
     else:  # if text is list of items
