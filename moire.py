@@ -12,6 +12,7 @@ See http://github.com/enzet/moire
 
 import sys
 import os
+import re
 
 # Global variables
 
@@ -22,20 +23,21 @@ id_list = ['_', '_', '_', '_', '_', '_', '_']
 ruwords, enwords = [], []
 status = {}
 
+# Constants
+
 language_begin = '['
 language_end = ']'
 
 comment_begin = '/*'
 comment_end = '*/'
 
-# Constants
-
 paragraph_delimiter = '\n\n'
 
 
 class Tag:
     """
-    Moiré tag definition
+    Moiré tag definition. Tag has tag name and tag parameters:
+    \<tag name> {<parameter 1>} ... {<parameter N>}.
     """
     def __init__(self, tag_id, parameters):
         self.id = tag_id
@@ -115,6 +117,18 @@ class Format:
         for a in self.rules['block']:
             self.block_tags.append(a[0])
         rules_file.close()
+
+
+class Tree:
+    def __init__(self, parent, children, element):
+        self.element = element
+        self.parent = parent
+        self.children = children
+
+    def pr(self):
+        print self.element
+        for child in self.children:
+            child.pr()
 
 
 def is_space(c):
@@ -306,7 +320,8 @@ def escape(text, format_name):
             .replace('[', '[')\
             .replace(']', ']')\
             .replace('"', 'kav')\
-            .replace('─', 'line')
+            .replace('─', 'line')\
+            .replace('#', 'sharp')
     elif format_name == 'html':
         return text\
             .replace('&', '&amp;')\
@@ -427,7 +442,9 @@ def parse(text, inblock=False, depth=0):
         return escape(trim_inside(text), markup_format.name)
     elif isinstance(text, Tag):
         for rule in markup_format.rules['block'] + markup_format.rules['inner']:
-            if rule[0] == text.id:
+            if rule[0] == text.id or rule[0] == 'number' and text.id in '123456':
+                if rule[0] == 'number':
+                    number = int(text.id)
                 arg = text.parameters
                 s = ''
                 try:
@@ -478,7 +495,12 @@ def get_documents(level, intermediate_representation):
     return documents
 
 
-def convert(input, format='html', language='en', remove_comments=True, rules_file='default.ms', wrap=True):
+def convert(input, format='html', language='en', remove_comments=True, 
+        rules_file='default.ms', wrap=True):
+    """
+    Convert Moire text without includes but with comments and language artefacts 
+    to selected format.
+    """
 
     global index
     global id_list
@@ -491,14 +513,17 @@ def convert(input, format='html', language='en', remove_comments=True, rules_fil
     status['root'] = '/Users/Enzet/Program/Book/_'
     status['image'] = False
 
+    # Initialization
+
     if rules_file == '' or not rules_file:
         rules_file = 'default.ms'
-
     result = input
     markup_format = Format(rules_file, format)
-
     if not markup_format:
         return None
+
+    # Language and comments preprocessing
+
     if language != '':
         result = language_preprocessing(result, language)
     if remove_comments:
@@ -506,12 +531,60 @@ def convert(input, format='html', language='en', remove_comments=True, rules_fil
 
     lexemes, positions = lexer(result)
     index = 0
-    intermediate_representation = get_intermediate(lexemes, positions, status['level'])
+    intermediate_representation = \
+        get_intermediate(lexemes, positions, status['level'])
+
+    # Construct content table
+
+    tree = Tree(None, [], [0, None, None])
+    content_root = tree
+    for k in intermediate_representation:
+        if isinstance(k, Tag) and k.id in '123456':
+            if len(k.parameters) == 2:
+                obj = [int(k.id), k.parameters[0], k.parameters[1]]
+            else:
+                obj = [int(k.id), k.parameters[0], None]
+            element = Tree(tree, [], obj)
+            if obj[0] > tree.element[0]:
+                k.parameters.append(element)
+                tree.children.append(element)
+                tree = tree.children[-1]
+            else:
+                while obj[0] <= tree.element[0]:
+                    tree = tree.parent
+                k.parameters.append(element)
+                tree.children.append(element)
+                tree = tree.children[-1]
+
+    # Wrap whole text with "body" tag
+
     if wrap:
-        intermediate_representation = Tag('body', [intermediate_representation])    
+        intermediate_representation = \
+            Tag('body', [intermediate_representation, content_root])    
+
     result = parse(intermediate_representation)
 
     return result
+
+
+def convert_file(input_file_name, format='html', language='en', 
+        remove_comments=True, rules_file='default.ms', wrap=True):
+
+    input_file = open(input_file_name)
+    input = ''
+
+    l = None
+    while l != '':
+        l = input_file.readline()
+        if '\\include {' in l:
+            file_name = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l).group('name')
+            if os.path.isfile(file_name):
+                l = open(file_name).read() + '\n'
+            else:
+                print 'No such file: ' + file_name
+        input += l
+
+    return convert(input, format, language, remove_comments, rules_file, wrap)
 
 
 def construct_book(input_file_name, kind, language, rules_file_name, book_level, output_file_name):
@@ -527,8 +600,6 @@ def construct_book(input_file_name, kind, language, rules_file_name, book_level,
     result = open(input_file_name).read()
 
     markup_format = Format(rules_file_name, kind)
-
-    print markup_format
 
     if language != '':
         result = language_preprocessing(result, language)

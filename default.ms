@@ -35,7 +35,12 @@ block:
 	block: s += parse(arg[0], inblock = True)
 	body:
 		status['content'] = []
-		s += '''<html>
+		s += '''<!------------------------------------------------------------------------------ 
+		-----                                                                      -----
+		-----       PLEASE, DON'T EDIT THIS FILE! IT IS GENERATED FROM MOIRE.      -----
+		-----                                                                      -----
+		------------------------------------------------------------------------------->
+		<html>
 			<head>
 				<meta http-equiv = "Content-Type" content = "text/html; charset = utf-8">
 				<!--<meta http-equiv="refresh" content="10" >-->
@@ -55,58 +60,36 @@ block:
 			}
 			</script>
 			<body>'''
+		s += '<div class = top><a href = #>↟</a></div>'
+		s += '<span class = content>Top level subpages: '
+		for child in arg[1].children:
+			if child.element and len(child.element) == 3 and child.element[2]:
+				s += '<a href = #' + str(child.element[2][0]) + '>' + parse(child.element[1]) + '</a>, '
+		s = s[:-2] + '.</span>'
 		s += parse(arg[0], inblock = True)
-		s += '<div class = content><h3>Content</h3>'
-		a = 0
-		for item in status['content']:
-			if item[2] > a:
-				s += '<ul class = content>'
-			if item[2] < a:
-				for k in range(a - item[2]):
-					s += '</ul>'
-			s += '<li><a href = #' + item[1] + '>' + item[0] + '</a></li>'
-			a = item[2]
-		s += '</div>'
 		s += '''	</body>
 		</html>'''
 	code: s += '<pre><tt>' + clear(arg[0]) + '</tt></pre>'
 	title: s += '<title>' + parse(arg[0]) + '</title>'
-	1:
-		s += '<h1'
-		if len(arg) > 1:
-			s += ' id="' + arg[1][0] + '"'
-			status['content'].append([parse(arg[0]), arg[1][0], 1])
-		s += '>' + parse(arg[0]) + '</h1><hr />'
-	2:
-		s += '<h2'
-		if len(arg) > 1:
+	number:
+		s += '<h' + str(number)
+		if len(arg) == 3:
 			s += ' id="' + arg[1][0] + '"'
 			status['content'].append([parse(arg[0]), arg[1][0], 2])
-		s += '>' + parse(arg[0]) + '</h2>'
-	3:
-		s += '<h3'
-		if len(arg) > 1:
-			s += ' id="' + arg[1][0] + '"'
-		s += '>' + parse(arg[0]) + '</h3>'
-		#status['content'].append([parse(arg[0]), arg[1][0], 3])
-	4:
-		s += '<h4'
-		if len(arg) > 1:
-			s += ' id="' + arg[1][0] + '"'
-		s += '>' + parse(arg[0]) + '</h4>'
-		#status['content'].append([parse(arg[0]), arg[1][0], 4])
-	5:
-		s += '<h5'
-		if len(arg) > 1:
-			s += ' id="' + arg[1][0] + '"'
-		s += '>' + parse(arg[0]) + '</h5>'
-		#status['content'].append([parse(arg[0]), arg[1][0], 5])
-	6:
-		s += '<h6'
-		if len(arg) > 1:
-			s += ' id="' + arg[1][0] + '"'
-		s += '>' + parse(arg[0]) + '</h6>'
-		#status['content'].append([parse(arg[0]), arg[1][0], 6])
+		s += '>' + parse(arg[0])
+		if len(arg) == 3:
+			s += '&nbsp;<span class = normal><sup><a href = #' + arg[1][0] + '>§</a>'
+			if arg[2] and arg[2].parent and arg[2].parent.element and arg[2].parent.element[2]:
+				s += ' <a href = #' + str(arg[2].parent.element[2][0]) + '>up</a>'
+			s += '</sup></span>'
+		s += '</h' + str(number) + '>'
+		if len(arg) == 3:
+			if arg[2] and arg[2].children and len(arg[2].children) > 1:
+				s += '<span class = content>Subpages: '
+				for child in arg[2].children:
+					if child.element and len(child.element) == 3 and child.element[2]:
+						s += '<a href = #' + str(child.element[2][0]) + '>' + parse(child.element[1]) + '</a>, '
+				s = s[:-2] + '.</span>'
 	list:
 		s += '<ul>'
 		for item in arg[0]:
@@ -133,8 +116,11 @@ block:
 		s += '</table>'
 inner:
 	b: s += '<b>'  + parse(arg[0]) + '</b>'
+	bookquote: s += '<div class = bookquote>' + parse(arg[0]) + '</div>'
 	br: s += '<br />'
+	comment: s += '<i class = comment>' + parse(arg[0]) + '</i>'
 	href: s += '<a href = "' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
+	href_no_parse: s += parse(arg[1])
 	i: s += '<i>'  + parse(arg[0]) + '</i>'
 	size:
 		s += '<span style = "font-size: ' + str(arg[0]) + '">' + \
@@ -266,11 +252,12 @@ block:
 		s += '''\\documentclass[twoside,psfig]{article}
 		\\usepackage[utf8]{inputenc}
 		\\usepackage[russian]{babel}
-		\\usepackage{multicol}
 		\\usepackage{enumitem}
+		\\usepackage{float}
 		\\usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry}
 		\\usepackage{graphicx}
-		\\usepackage{float}
+		\\usepackage{hyperref}
+		\\usepackage{multicol}
 		\\begin{document}'''
 		s += parse(arg[0], inblock = True)
 		s += '\\end {document}'
@@ -335,19 +322,21 @@ block:
 		s += '\\end{thebibliography}\n\n'
 inner:
 	b:          s += '{\\bf ' + parse(arg[0]) + '}'
+	br:         s += '\\\\'
 	cite:       s += '\\cite {' + arg[0][0] + '}'
 	code:       s += '\\begin{verbatim}' + arg[0][0] + '\\end{verbatim}'
+	date:       pass
 	href:
 		link = arg[0][0]
 		if link[0] == '#':
 			link = link[1:]
-		s += link
-		# if len(arg) == 1:
-		# 	s += '\\href {' + link + '} {' + link + '}'
-		# else:
-		# 	s += '\\href {' + link + '} {' + parse(arg[1]) + '}'
+		if len(arg) == 1:
+			s += '\\href {' + link + '} {' + link + '}'
+		else:
+			s += '\\href {' + link + '} {' + parse(arg[1]) + '}'
 	i: s += '{\\em ' + parse(arg[0]) + '}'
-	math: s += '$' + arg[0][0] + '$'
+	math: s += '$' + ''.join(arg[0]) + '$'
+	mathblock: s += '\\[' + ''.join(arg[0]) + '\\]'
 	ignore: s += '' + arg[0][0] + ''
 	image: 
 		s += '\\begin{figure}[h]\\begin{center}\\includegraphics{' + parse(arg[0]) + '}\\end{center}'
@@ -355,6 +344,7 @@ inner:
 			s += '\\caption {' + parse(arg[1]) + '}'
 		s += '\\end{figure}'
 	item: s += '\\item ' + parse(arg[0]) + ''
+	page: s += '\\textsuperscript{' + parse(arg[0]) + '}'
 	sc: s += '{\\sc ' + parse(arg[0]) + '}'
 	size: s += '' + parse(arg[0]) + ''
 	strike: s += '' + parse(arg[0]) + ''
