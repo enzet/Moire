@@ -76,47 +76,64 @@ class Format:
     Markup format.
     """
     def __init__(self, file_name, file_format):
+        """
+        Reading Moire format structure from file.
+        """
         self.name = file_format  # Format ID: tex, html...
         self.rules = None
         self.block_tags = None
+        self.rules = {}
+        self.parse_file(file_name, file_format)
+
+    def parse_file(self, file_name, file_format):
+        right = ''
+        rule = None
+        block = ''
+
+        current_format = ''
+
         try:
             rules_file = open(file_name)
         except IOError:
             return
-        self.rules = {}
-        right = ''
-        rule = None
-        l = rules_file.readline()
-        block = ''
 
-        format1 = ''
+        l = rules_file.readline()
 
         while l != '':
             if l[0] != '\t':
-                if format1 == file_format:
-                    add_rule(self.rules, rule, right, block)
+                if current_format == file_format:
+                    self.add_rule(rule, right, block)
                 rule = None
                 if l[0] == ':':
-                    format1 = l[1:l.find(':', 2)]
+                    current_format = l[1:l.find(':', 2)]
                 elif len(l) > 1:
                     block = l[:-2]
             else:
                 if l[1] != '\t':
-                    if format1 == file_format:
-                        add_rule(self.rules, rule, right, block)
+                    if current_format == file_format:
+                        self.add_rule(rule, right, block)
                     rule = [l[1:l.find(':')], '', '']
                     right = l[l.find(':') + 1:].strip()
                 else:
                     right += l[2:]
             l = rules_file.readline()
 
-        if format1 == file_format:
-            add_rule(self.rules, rule, right, block)
+        if current_format == file_format:
+            self.add_rule(rule, right, block)
 
         self.block_tags = []
         for a in self.rules['block']:
             self.block_tags.append(a[0])
         rules_file.close()
+
+
+    def add_rule(self, rule, right, block):
+        if rule:
+            rule[2] = right
+            if block in self.rules:
+                self.rules[block].append(rule)
+            else:
+                self.rules[block] = [rule]
 
 
 class Tree:
@@ -154,15 +171,6 @@ def trim_inside(s):
             ret += s[i]
         i += 1
     return ret
-
-
-def add_rule(rules, rule, right, block):
-    if rule:
-        rule[2] = right
-        if block in rules:
-            rules[block].append(rule)
-        else:
-            rules[block] = [rule]
 
 
 def language_preprocessing(input_file, language):

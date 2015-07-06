@@ -52,7 +52,7 @@ while True:
     else:
         answer = raw_input('Input file "' + options.input_file_name + \
             '" is not found. Do you want to specity correct? [y/n] ')
-        if answer.lower() in ['y', 'yes', 'ok']:
+        if answer.lower() in ['y', 'yes']:
             options.input_file_name = raw_input('Please, specify the input ' + \
                'file name (or use -i <file name>): ')
         else:
