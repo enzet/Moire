@@ -182,6 +182,16 @@ tests = \
                 '\\lang\\',
                 'Not escaped language'
             ],
+            [
+                'before[lang ]after',
+                'beforeafter',
+                'Empty language'
+            ],
+            [
+                'before[nolang ]after',
+                'beforeafter',
+                'Empty nolanguage'
+            ],
         ],
         'rtf':
         [
