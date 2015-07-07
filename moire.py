@@ -103,7 +103,8 @@ class Format:
             if l[0] != '\t':
                 if current_format == file_format:
                     if block == 'parameters' and rule and rule[0] == 'inherit':
-                        self.parse_file(right + '.ms', file_format)
+                        sub_file_name = file_name[0:max(0, file_name.rfind('/') + 1)] + right + file_name[file_name.rfind('.'):]
+                        self.parse_file(sub_file_name, file_format)
                     self.add_rule(rule, right, block)
                 rule = None
                 if l[0] == ':':
@@ -125,7 +126,7 @@ class Format:
 
         self.block_tags = []
         for a in self.rules['block']:
-            self.block_tags.append(a[0])
+            self.block_tags.append(a)
         rules_file.close()
 
 

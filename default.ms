@@ -33,7 +33,7 @@ escape:
 	'&':'&amp;'
 
 block:
-	block: s += parse(arg[0], inblock = True)
+	block: s += parse(arg[0], inblock=True)
 	body:
 		status['content'] = []
 		s += '''<html>
@@ -42,7 +42,7 @@ block:
 				<link rel = "stylesheet" href = "style.css">
 			</head>
 			<body>'''
-		s += parse(arg[0], inblock = True)
+		s += parse(arg[0], inblock=True)
 		s += '''	</body>
 		</html>'''
 	code: s += '<pre><tt>' + clear(arg[0]) + '</tt></pre>'
@@ -53,7 +53,7 @@ block:
 		s += '<ul>'
 		for item in arg[0]:
 			if isinstance(item, list):
-				s += '<li>' + parse(item, inblock = True) + '</li>'
+				s += '<li>' + parse(item, inblock=True) + '</li>'
 		s += '</ul>'
 	shortlist:
 		s += '<ul>'
@@ -70,14 +70,14 @@ block:
 				s += '<tr>'
 				for td in tr:
 					if isinstance(td, list):
-						s += '<td>' + parse(td, inblock = True) + '</td>'
+						s += '<td>' + parse(td, inblock=True) + '</td>'
 				s += '</tr>'
 		s += '</table>'
 inner:
-	b: s += '<b>'  + parse(arg[0]) + '</b>'
+	b: s += '<b>' + parse(arg[0]) + '</b>'
 	br: s += '<br />'
 	href: s += '<a href = "' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
-	i: s += '<i>'  + parse(arg[0]) + '</i>'
+	i: s += '<i>' + parse(arg[0]) + '</i>'
 	size:
 		s += '<span style = "font-size: ' + str(arg[0]) + '">' + \
 			parse(arg[1]) + '</span>'
@@ -109,40 +109,40 @@ block:
 					k += '\n'
 				i += 1
 			return k
-		s += parse(arg[0], inblock = True, depth = 1) + '\n'
+		s += parse(arg[0], inblock=True, depth=1) + '\n'
 	code: s += clear(arg[0]) + '\n'
 	title:
-	1: s += parse(arg[0], depth = depth + 1)
-	2: s += '  ' + parse(arg[0], depth = depth + 1)
-	3: s += '    ' + parse(arg[0], depth = depth + 1)
-	4: s += '      ' + parse(arg[0], depth = depth + 1)
-	5: s += '        ' + parse(arg[0], depth = depth + 1)
-	6: s += '          ' + parse(arg[0], depth = depth + 1)
+	1: s += parse(arg[0], depth=depth + 1)
+	2: s += '  ' + parse(arg[0], depth=depth + 1)
+	3: s += '    ' + parse(arg[0], depth=depth + 1)
+	4: s += '      ' + parse(arg[0], depth=depth + 1)
+	5: s += '        ' + parse(arg[0], depth=depth + 1)
+	6: s += '          ' + parse(arg[0], depth=depth + 1)
 	list:
 		for item in arg[0]:
 			if isinstance(item, list):
-				s += '  * ' + parse(item, inblock = True, depth = depth + 1)
+				s += '  * ' + parse(item, inblock=True, depth=depth + 1)
 	image:
 	table:
 		s += '+----------+----------+\n'
 		for tr in arg[0]:
 			s += '|'
 			for td in tr:
-				s += ' ' + parse(td, inblock = True, depth = depth + 1) + ' |'
+				s += ' ' + parse(td, inblock=True, depth=depth + 1) + ' |'
 			s += '\n'
 			s += '+----------+----------+\n'
 inner:
-	b: s += parse(arg[0], depth = depth + 1)
-	href: s += parse(arg[1], depth = depth + 1) + ' (' + arg[0][0] + ')'
-	i: s += parse(arg[0], depth = depth + 1)
-	size: s += parse(arg[0], depth = depth + 1)
-	strike: s += parse(arg[0], depth = depth + 1)
-	sc: s += parse(arg[0], depth = depth + 1)
-	sub: s += parse(arg[0], depth = depth + 1)
-	super: s += parse(arg[0], depth = depth + 1)
-	text: s += parse(arg[0], depth = depth + 1) + '\n\n'
-	tt: s += parse(arg[0], depth = depth + 1)
-	u: s += parse(arg[0], depth = depth + 1)
+	b: s += parse(arg[0], depth=depth + 1)
+	href: s += parse(arg[1], depth=depth + 1) + ' (' + arg[0][0] + ')'
+	i: s += parse(arg[0], depth=depth + 1)
+	size: s += parse(arg[0], depth=depth + 1)
+	strike: s += parse(arg[0], depth=depth + 1)
+	sc: s += parse(arg[0], depth=depth + 1)
+	sub: s += parse(arg[0], depth=depth + 1)
+	super: s += parse(arg[0], depth=depth + 1)
+	text: s += parse(arg[0], depth=depth + 1) + '\n\n'
+	tt: s += parse(arg[0], depth=depth + 1)
+	u: s += parse(arg[0], depth=depth + 1)
 
 
 
@@ -152,10 +152,10 @@ name:'Markdown'
 extension:'md'
 
 block:
-	block: s += parse(arg[0], inblock = True)
+	block: s += parse(arg[0], inblock=True)
 	body: 
 		counter = []
-		s += parse(arg[0], inblock = True)
+		s += parse(arg[0], inblock=True)
 	title:
 	1:
 		parsed = parse(arg[0])
@@ -210,7 +210,7 @@ block:
 		\\usepackage{hyperref}
 		\\usepackage{multicol}
 		\\begin{document}'''
-		s += parse(arg[0], inblock = True)
+		s += parse(arg[0], inblock=True)
 		s += '\\end {document}'
 	title:
 		s += '\\title{' + parse(arg[0]) + '}'
@@ -264,7 +264,7 @@ block:
 			if isinstance(item, list):
 				s += '\\item ' + parse(item[0]) + '\n\n'
 		s += '\\end{ordered}\n'
-	annotation: s += '\\begin {abstract}\n\n' + parse(arg[0], inblock = True) + '\\end {abstract}\n\n'
+	annotation: s += '\\begin {abstract}\n\n' + parse(arg[0], inblock=True) + '\\end {abstract}\n\n'
 	books:
 		s += '\\begin{thebibliography}{0}\n\n'
 		for item in arg[0]:
@@ -327,7 +327,7 @@ inner:
 # ::: tags
 
 block:
-	block: s += parse(arg[0], inblock = True)
+	block: s += parse(arg[0], inblock=True)
 	body:
 		status['levels'] = [0, 0, 0, 0, 0, 0, 0]
 		status['bookindex'] = 0
@@ -344,7 +344,7 @@ block:
 		{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li3600}\\listid1}}
 		{\\listoverridetable{\\listoverride\\listid1\\ls1}}
 		{\\fonttbl{\\f1 Courier 10 Pitch;}{\\f2 Arial;}{\\f3 Times New Roman;}}\\fs20'''
-		s += '{\\f3 ' + parse(arg[0], inblock = True) + '}'
+		s += '{\\f3 ' + parse(arg[0], inblock=True) + '}'
 		s += '\n}'
 	title: s += '\\par\\pard \\qc\\b\\sb346\\sa173{\\f2{\\fs32 ' + parse(arg[0]) + '  \\fs20}}\\b0\n'
 	table: s += parse(arg[0])
