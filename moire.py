@@ -86,6 +86,7 @@ class Format:
         self.parse_file(file_name, file_format)
 
     def parse_file(self, file_name, file_format):
+        print 'parsing ' + file_name
         right = ''
         rule = None
         block = ''
@@ -102,6 +103,8 @@ class Format:
         while l != '':
             if l[0] != '\t':
                 if current_format == file_format:
+                    if block == 'parameters' and rule and rule[0] == 'inherit':
+                        self.parse_file(right + '.ms', file_format)
                     self.add_rule(rule, right, block)
                 rule = None
                 if l[0] == ':':
@@ -130,10 +133,9 @@ class Format:
     def add_rule(self, rule, right, block):
         if rule:
             rule[2] = right
-            if block in self.rules:
-                self.rules[block].append(rule)
-            else:
-                self.rules[block] = [rule]
+            if not (block in self.rules):
+                self.rules[block] = {}
+            self.rules[block][rule[0]] = rule
 
 
 class Tree:
@@ -449,19 +451,24 @@ def parse(text, inblock=False, depth=0):
     elif isinstance(text, str):
         return escape(trim_inside(text), markup_format.name)
     elif isinstance(text, Tag):
-        for rule in markup_format.rules['block'] + markup_format.rules['inner']:
-            if rule[0] == text.id or rule[0] == 'number' and text.id in '123456':
-                if rule[0] == 'number':
-                    number = int(text.id)
-                arg = text.parameters
-                s = ''
-                try:
-                    exec(rule[2])
-                except:
-                    print 'Error for tag "' + text.id + '" in ' + \
-                          str(arg)[:100] + \
-                          ('...' if len(str(arg)) > 100 else '') + '.'
-                return s
+        key = 'number' if (text.id in '123456') else text.id
+        rule = None
+        if key in markup_format.rules['block']:
+            rule = markup_format.rules['block'][key]
+        if key in markup_format.rules['inner']:
+            rule = markup_format.rules['inner'][key]
+        if rule:
+            if key == 'number':
+                number = int(text.id)
+            arg = text.parameters
+            s = ''
+            try:
+                exec(rule[2])
+            except:
+                print 'Error for tag "' + text.id + '" in ' + \
+                      str(arg)[:100] + \
+                      ('...' if len(str(arg)) > 100 else '') + '.'
+            return s
         no_tags.append(text.id)
     else:  # if text is list of items
         s = ''
@@ -595,7 +602,8 @@ def convert_file(input_file_name, format='html', language='en',
     return convert(input, format, language, remove_comments, rules_file, wrap)
 
 
-def construct_book(input_file_name, kind, language, rules_file_name, book_level, output_file_name):
+def construct_book(input_file_name, kind, language, rules_file_name, 
+        book_level, output_file_name):
 
     global markup_format
 

@@ -23,13 +23,14 @@ block:
 
 :html
 
-name:'HTML'
-extension:'html'
+parameters:
+	name:'HTML'
+	extension:'html'
 
 escape:
-'<':'&lt;'
-'>':'&rt;'
-'&':'&amp;'
+	'<':'&lt;'
+	'>':'&rt;'
+	'&':'&amp;'
 
 block:
 	block: s += parse(arg[0], inblock = True)

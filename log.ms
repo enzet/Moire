@@ -1,7 +1,8 @@
-inherit:default
 
 :html
 
+parameters:
+	inherit:default
 block:
 	body:
 		status['content'] = []
