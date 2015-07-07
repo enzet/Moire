@@ -86,7 +86,6 @@ class Format:
         self.parse_file(file_name, file_format)
 
     def parse_file(self, file_name, file_format):
-        print 'parsing ' + file_name
         right = ''
         rule = None
         block = ''
