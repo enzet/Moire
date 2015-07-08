@@ -78,6 +78,17 @@ inner:
 	br: s += '<br />'
 	href: s += '<a href = "' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
 	i: s += '<i>' + parse(arg[0]) + '</i>'
+	math:
+		formula = ''.join(arg[0])
+		formula_hash = str(hex(hash(formula)))[2:]
+		if not os.path.isfile('formula/' + formula_hash + '.png'):
+			print 'Construct formula: ' + formula + ' to ' + formula_hash + '.png'
+			os.chdir('latex')
+			print subprocess.check_output(['pdflatex', '\\def\\formula{' + formula + '}\\input{formula.tex}'])
+			print subprocess.check_output(['convert', '-density', '120', 'formula.pdf', '-quality', '90', 'formula.png'])
+			shutil.copy2('formula.png', '../formula/' + formula_hash + '.png')
+			os.chdir('..')
+		s += '<img style = "top: 6; position: relative;" src = formula/' + formula_hash + '.png />'
 	size:
 		s += '<span style = "font-size: ' + str(arg[0]) + '">' + \
 			parse(arg[1]) + '</span>'
@@ -215,12 +226,19 @@ block:
 	title:
 		s += '\\title{' + parse(arg[0]) + '}'
 		s += '\\vspace{12em}\\begin{center}{\\huge ' + parse(arg[0]) + '}\\end{center}\\vspace{2em}'
-	1: s += '\\section{' + parse(arg[0]) + '}'
-	2: s += '\\subsection{' + parse(arg[0]) + '}'
-	3: s += '\\subsubsection{' + parse(arg[0]) + '}'
-	4: s += '\\paragraph{' + parse(arg[0]) + '}'
-	5: s += '\\subparagraph{' + parse(arg[0]) + '}'
-	6: s += '' + parse(arg[0]) + ''
+	number: 
+		if number == 1:
+			s += '\\section{' + parse(arg[0]) + '}'
+		if number == 2:
+			s += '\\subsection{' + parse(arg[0]) + '}'
+		if number == 3:
+			s += '\\subsubsection{' + parse(arg[0]) + '}'
+		if number == 4:
+			s += '\\paragraph{' + parse(arg[0]) + '}'
+		if number == 5:
+			s += '\\subparagraph{' + parse(arg[0]) + '}'
+		if number == 6:
+			s += '' + parse(arg[0]) + ''
 	table:
 		s += '\\begin{table}[h]\n\\begin{center}\n\\begin{tabular}{|'
 		max_tds = 0

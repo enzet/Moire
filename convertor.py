@@ -84,7 +84,10 @@ if not options.book_level or options.book_level == 0:
         sys.exit(1)
 
     output_file = open(options.output_destination, 'w+')
+    print 'Writing result to ' + options.output_destination + '...'
     output_file.write(output)
+    output_file.close()
+    print 'Done.'
 
 else:
 

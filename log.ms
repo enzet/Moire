@@ -65,4 +65,16 @@ inner:
 	formal: s += '&lt;' + arg[0][0] + '&gt;'
 	hidden: s += '<a class = hidden href = "javascript:show_hide(' + arg[0][0] + ')">' + parse(arg[1]) + '</a><div style = "display: none" class = hidden id = ' + arg[0][0] + '>' + parse(arg[2]) + '</div>'
 	page: s += '<span class = page>' + arg[0][0] + '</span>'
-	red: s += '<span style = "color: red;">' + parse(arg[0]) + '</span>'
+
+:tex
+
+parameters:
+	inherit:default
+inner:
+	blockquote: #s += parse(arg[0])
+	comment: #s += '{\\em ' + parse(arg[0]) + '}'
+	date:
+	formal: #s += '<' + arg[0][0] + '>'
+	hidden:
+	page: #s += '\\textsuperscript{' + arg[0][0] + '}'
+

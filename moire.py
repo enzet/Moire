@@ -10,6 +10,8 @@ Author: Sergey Vartanov (me@enzet.ru).
 See http://github.com/enzet/moire
 """
 
+import shutil
+import subprocess
 import sys
 import os
 import re
@@ -324,6 +326,9 @@ def clear(text):
 def escape(text, format_name):
     if format_name == 'tex':
         return text\
+            .replace('%', '\\%')\
+            .replace('$', '\\$')\
+            .replace('|', 'VERTICAL')\
             .replace('_', '\\_')\
             .replace('∞', 'inf')\
             .replace('−', 'minus')\
