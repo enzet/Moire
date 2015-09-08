@@ -16,6 +16,9 @@ import sys
 import os
 import re
 
+import datetime
+import yaml
+
 # Global variables
 
 index = 0
@@ -150,6 +153,14 @@ class Tree:
         print self.element
         for child in self.children:
             child.pr()
+
+    def find(self, text):
+        if self.element[2] and self.element[2][0] == text:
+            return True
+        for child in self.children:
+            if child.find(text):
+                return True
+        return False
 
 
 def is_space(c):
@@ -469,12 +480,14 @@ def parse(text, inblock=False, depth=0):
             s = ''
             try:
                 exec(rule[2])
-            except:
+            except Exception as e:
                 print 'Error for tag "' + text.id + '" in ' + \
                       str(arg)[:100] + \
                       ('...' if len(str(arg)) > 100 else '') + '.'
+                print e
             return s
         no_tags.append(text.id)
+        print 'No such tag: ' + text.id
     else:  # if text is list of items
         s = ''
         inner_block = []
@@ -516,7 +529,7 @@ def get_documents(level, intermediate_representation):
 
 
 def convert(input, format='html', language='en', remove_comments=True, 
-        rules_file='default.ms', wrap=True):
+        rules_file='default.ms', wrap=True, opt=None):
     """
     Convert Moire text without includes but with comments and language artefacts 
     to selected format.
@@ -532,6 +545,10 @@ def convert(input, format='html', language='en', remove_comments=True,
     status['level'] = 0
     status['root'] = '/Users/Enzet/Program/Book/_'
     status['image'] = False
+
+    if opt:
+        for key in opt:
+            status[key] = opt[key]
 
     # Initialization
 
@@ -575,6 +592,7 @@ def convert(input, format='html', language='en', remove_comments=True,
                 k.parameters.append(element)
                 tree.children.append(element)
                 tree = tree.children[-1]
+    status['tree'] = content_root
 
     # Wrap whole text with "body" tag
 
@@ -588,7 +606,7 @@ def convert(input, format='html', language='en', remove_comments=True,
 
 
 def convert_file(input_file_name, format='html', language='en', 
-        remove_comments=True, rules_file='default.ms', wrap=True):
+        remove_comments=True, rules_file='default.ms', wrap=True, opt=None):
 
     input_file = open(input_file_name)
     input = ''
@@ -604,7 +622,8 @@ def convert_file(input_file_name, format='html', language='en',
                 print 'No such file: ' + file_name
         input += l
 
-    return convert(input, format, language, remove_comments, rules_file, wrap)
+    return convert(input, format, language, remove_comments, rules_file, wrap, 
+        opt=opt)
 
 
 def construct_book(input_file_name, kind, language, rules_file_name, 

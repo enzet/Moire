@@ -8,8 +8,9 @@ formats, such as HTML, TeX, etc.
 Usage: python moire.py 
        -i <input file> 
        -o <output file> 
-       -t <format> 
+       -f <format> 
        -r <rules file>
+	   -b <book level>
 
 This file is a part of Moire project—light markup language.
 
