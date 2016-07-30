@@ -38,6 +38,9 @@ comment_end = '*/'
 
 paragraph_delimiter = '\n\n'
 
+def error(message):
+    print '\033[41m ' + str(message) + '. \033[0m'
+ 
 
 class Tag:
     """
@@ -329,25 +332,39 @@ def clear(text):
     if isinstance(text, list):
         s = ''
         for item in text:
-            s += item
-        return escape(s, markup_format.name)
-    return escape(text, markup_format.name)
+            if isinstance(item, str):
+                s += item
+        return escape(s, markup_format.name, True)
+    return escape(text, markup_format.name, True)
 
 
-def escape(text, format_name):
+def escape(text, format_name, from_clear=False):
     if format_name == 'tex':
-        return text\
-            .replace('%', '\\%')\
-            .replace('$', '\\$')\
-            .replace('|', 'VERTICAL')\
-            .replace('_', '\\_')\
-            .replace('∞', 'inf')\
-            .replace('−', 'minus')\
-            .replace('[', '[')\
-            .replace(']', ']')\
-            .replace('"', 'kav')\
-            .replace('─', 'line')\
-            .replace('#', 'sharp')
+        if from_clear:
+            return text\
+                .replace('%', '\\%')\
+                .replace('$', '\\$')\
+                .replace('|', 'VERTICAL')\
+                .replace('∞', 'inf')\
+                .replace('−', 'minus')\
+                .replace('[', '[')\
+                .replace(']', ']')\
+                .replace('"', 'kav')\
+                .replace('─', 'line')\
+                .replace('#', 'sharp')
+        else:
+            return text\
+                .replace('%', '\\%')\
+                .replace('$', '\\$')\
+                .replace('|', 'VERTICAL')\
+                .replace('_', '\\_')\
+                .replace('∞', 'inf')\
+                .replace('−', 'minus')\
+                .replace('[', '[')\
+                .replace(']', ']')\
+                .replace('"', 'kav')\
+                .replace('─', 'line')\
+                .replace('#', 'sharp')
     elif format_name == 'html':
         return text\
             .replace('&', '&amp;')\
@@ -478,13 +495,16 @@ def parse(text, inblock=False, depth=0):
                 number = int(text.id)
             arg = text.parameters
             s = ''
-            try:
+            if False:
                 exec(rule[2])
-            except Exception as e:
-                print 'Error for tag "' + text.id + '" in ' + \
-                      str(arg)[:100] + \
-                      ('...' if len(str(arg)) > 100 else '') + '.'
-                print e
+            else:
+                try:
+                    exec(rule[2])
+                except Exception as e:
+                    print 'Error for tag "' + text.id + '" in ' + \
+                          str(arg)[:100] + \
+                          ('...' if len(str(arg)) > 100 else '') + '.'
+                    print e
             return s
         no_tags.append(text.id)
         print 'No such tag: ' + text.id
@@ -606,20 +626,36 @@ def convert(input, format='html', language='en', remove_comments=True,
 
 
 def convert_file(input_file_name, format='html', language='en', 
-        remove_comments=True, rules_file='default.ms', wrap=True, opt=None):
+        remove_comments=True, rules_file='default.ms', wrap=True, opt=None,
+        path=None):
 
     input_file = open(input_file_name)
+    directory = ''
+    if '/' in input_file_name:
+        directory = input_file_name[:input_file_name.find('/') + 1]
     input = ''
 
+    if path == None:
+        path = []
+    path.append(directory)
     l = None
     while l != '':
         l = input_file.readline()
         if '\\include {' in l:
             file_name = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l).group('name')
+            found = False
             if os.path.isfile(file_name):
                 l = open(file_name).read() + '\n'
+                found = True
             else:
-                print 'No such file: ' + file_name
+                for directory in path:
+                    if os.path.isfile(directory + '/' + file_name):
+                        l = open(directory + '/' + file_name).read() + '\n'
+                        found = True
+                        break
+            if not found:
+                error('no such file to include: ' + file_name)
+                l = '\n'
         input += l
 
     return convert(input, format, language, remove_comments, rules_file, wrap, 
