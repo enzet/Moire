@@ -20,7 +20,7 @@ clear_color = '\033[0m'
 
 tests = \
     {
-        'html':
+        'HTML':
         [
             [
                 'plain text',
@@ -167,57 +167,35 @@ tests = \
                 '<table><tr><td><p>td</p></td><td><p>td</p></td></tr></table>',
                 'Tag with more nested parameters'
             ],
-            [
-                '[lang language][nolang nolanguage]',
-                'language',
-                'Language'
-            ],
-            [
-                '\\[lang lang\\]',
-                '[lang lang]',
-                'Escaped language'
-            ],
-            [
-                '\\\\[lang lang\\\\]',
-                '\\lang\\',
-                'Not escaped language'
-            ],
-            [
-                'before[lang ]after',
-                'beforeafter',
-                'Empty language'
-            ],
-            [
-                'before[nolang ]after',
-                'beforeafter',
-                'Empty nolanguage'
-            ],
         ],
-        'rtf':
+        'RTF':
         [
             [
                 'АБВ',
                 '\\u1040  \\u1041  \\u1042  ',
-                'Unicode in RTF'
+                'Unicode'
             ],
         ],
-        'tex':
+        'Tex':
         [
             [
                 '_',
                 '\\_',
-                'Escape sequences in TeX'
+                'Escape sequences'
             ],
         ],
     }
 
-for f in tests:
-    for test in tests[f]:
-        converted = moire.convert(test[0], language='lang', wrap=False, format=f)
+for current_format in tests:
+    for test in tests[current_format]:
+        converted = moire.convert(test[0], language='lang', wrap=False,
+            format=current_format)
         if converted == test[1]:
-            print ' ' + green_color + ' OK ' + clear_color + '  ' + test[2]
+            print ' ' + green_color + ' OK ' + clear_color + '  [' + \
+                current_format + '] ' + test[2]
         else:
-            print ' ' + red_color + 'FAIL' + clear_color + '  ' + test[2]
+            print ' ' + red_color + 'FAIL' + clear_color + '  [' + \
+                current_format + '] ' + test[2]
             print '       Rule: ' + repr(test[0])
             print '             ' + red_color + repr(converted) + clear_color
             print '             ' + green_color + repr(test[1]) + clear_color

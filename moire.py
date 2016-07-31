@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-Moiré library.
+Moire library.
 
-This file is a part of Moiré project—light markup language.
+This file is a part of Moire project—light markup language.
 
 Author: Sergey Vartanov (me@enzet.ru).
 
-See http://github.com/enzet/moire
+See http://github.com/enzet/Moire
 """
 
-import shutil
-import subprocess
 import sys
 import os
 import re
-
-import datetime
-import yaml
 
 # Global variables
 
@@ -25,26 +20,23 @@ index = 0
 markup_format = None
 no_tags = []
 id_list = ['_', '_', '_', '_', '_', '_', '_']
-ruwords, enwords = [], []
 status = {}
 
 # Constants
-
-language_begin = '['
-language_end = ']'
 
 comment_begin = '/*'
 comment_end = '*/'
 
 paragraph_delimiter = '\n\n'
 
+
 def error(message):
     print '\033[41m ' + str(message) + '. \033[0m'
- 
+
 
 class Tag:
     """
-    Moiré tag definition. Tag has tag name and tag parameters:
+    Moire tag definition. Tag has tag name and tag parameters:
     \<tag name> {<parameter 1>} ... {<parameter N>}.
     """
     def __init__(self, tag_id, parameters):
@@ -77,73 +69,6 @@ class Document:
         self.id = id
         self.content = content
         self.title = title
-
-
-class Format:
-    """
-    Markup format.
-    """
-    def __init__(self, file_name, file_format):
-        """
-        Reading Moire format structure from file.
-        """
-        self.name = file_format  # Format ID: tex, html...
-        self.rules = None
-        self.block_tags = None
-        self.rules = {}
-        self.parse_file(file_name, file_format)
-
-    def parse_file(self, file_name, file_format):
-        right = ''
-        rule = None
-        block = ''
-
-        current_format = ''
-
-        try:
-            rules_file = open(file_name)
-        except IOError:
-            return
-
-        l = rules_file.readline()
-
-        while l != '':
-            if l[0] != '\t':
-                if current_format == file_format:
-                    if block == 'parameters' and rule and rule[0] == 'inherit':
-                        sub_file_name = file_name[0:max(0, file_name.rfind('/') + 1)] + right + file_name[file_name.rfind('.'):]
-                        self.parse_file(sub_file_name, file_format)
-                    self.add_rule(rule, right, block)
-                rule = None
-                if l[0] == ':':
-                    current_format = l[1:l.find(':', 2)]
-                elif len(l) > 1:
-                    block = l[:-2]
-            else:
-                if l[1] != '\t':
-                    if current_format == file_format:
-                        self.add_rule(rule, right, block)
-                    rule = [l[1:l.find(':')], '', '']
-                    right = l[l.find(':') + 1:].strip()
-                else:
-                    right += l[2:]
-            l = rules_file.readline()
-
-        if current_format == file_format:
-            self.add_rule(rule, right, block)
-
-        self.block_tags = []
-        for a in self.rules['block']:
-            self.block_tags.append(a)
-        rules_file.close()
-
-
-    def add_rule(self, rule, right, block):
-        if rule:
-            rule[2] = right
-            if not (block in self.rules):
-                self.rules[block] = {}
-            self.rules[block][rule[0]] = rule
 
 
 class Tree:
@@ -189,41 +114,6 @@ def trim_inside(s):
             ret += s[i]
         i += 1
     return ret
-
-
-def language_preprocessing(input_file, language):
-    preprocessed = ''
-    adding = True
-    i = 0
-    while i < len(input_file):
-        if input_file[i] == '\\':
-            if i == len(input_file) + 1:
-                print 'Error: backslash at the end of the string.'
-            elif input_file[i + 1] == language_begin or input_file[i + 1] == language_end:
-                if adding:
-                    preprocessed += input_file[i + 1]
-                i += 1
-            else:
-                if adding:
-                    preprocessed += '\\' + input_file[i + 1]
-                    i += 1
-        elif input_file[i] == language_begin:
-            start = i
-            i += 1
-            while is_letter_or_digit(input_file[i]):
-                i += 1
-            if input_file[start + 1:i] == language:
-                adding = True
-            else:
-                adding = False
-                i += 1
-        elif input_file[i] == language_end:
-            adding = True
-        else:
-            if adding:
-                preprocessed += input_file[i]
-        i += 1
-    return preprocessed
 
 
 def comments_preprocessing(input_file):
@@ -339,7 +229,7 @@ def clear(text):
 
 
 def escape(text, format_name, from_clear=False):
-    if format_name == 'tex':
+    if format_name == 'Tex':
         if from_clear:
             return text\
                 .replace('%', '\\%')\
@@ -365,13 +255,13 @@ def escape(text, format_name, from_clear=False):
                 .replace('"', 'kav')\
                 .replace('─', 'line')\
                 .replace('#', 'sharp')
-    elif format_name == 'html':
+    elif format_name == 'HTML':
         return text\
             .replace('&', '&amp;')\
             .replace('~', '&nbsp;')\
             .replace('<', '&lt;')\
             .replace('>', '&gt;')
-    elif format_name == 'rtf':
+    elif format_name == 'RTF':
         text = text.decode('utf-8')
         result = u''
         for c in text:
@@ -485,26 +375,13 @@ def parse(text, inblock=False, depth=0):
         return escape(trim_inside(text), markup_format.name)
     elif isinstance(text, Tag):
         key = 'number' if (text.id in '123456') else text.id
-        rule = None
-        if key in markup_format.rules['block']:
-            rule = markup_format.rules['block'][key]
-        if key in markup_format.rules['inner']:
-            rule = markup_format.rules['inner'][key]
-        if rule:
-            if key == 'number':
-                number = int(text.id)
-            arg = text.parameters
+        method = getattr(markup_format, key)
+        if method:
             s = ''
-            if False:
-                exec(rule[2])
+            if key == 'number':
+                s += method(text.parameters, int(text.id))
             else:
-                try:
-                    exec(rule[2])
-                except Exception as e:
-                    print 'Error for tag "' + text.id + '" in ' + \
-                          str(arg)[:100] + \
-                          ('...' if len(str(arg)) > 100 else '') + '.'
-                    print e
+                s += method(text.parameters)
             return s
         no_tags.append(text.id)
         print 'No such tag: ' + text.id
@@ -548,11 +425,11 @@ def get_documents(level, intermediate_representation):
     return documents
 
 
-def convert(input, format='html', language='en', remove_comments=True, 
-        rules_file='default.ms', wrap=True, opt=None):
+def convert(input, format='HTML', language='en', remove_comments=True,
+        rules='default', wrap=True, opt=None):
     """
-    Convert Moire text without includes but with comments and language artefacts 
-    to selected format.
+    Convert Moire text without includes but with comments artefacts to selected
+    format.
     """
 
     global index
@@ -572,17 +449,15 @@ def convert(input, format='html', language='en', remove_comments=True,
 
     # Initialization
 
-    if rules_file == '' or not rules_file:
-        rules_file = 'default.ms'
     result = input
-    markup_format = Format(rules_file, format)
+    __import__(rules)
+    module = sys.modules[rules]
+    markup_format = module.__dict__[format]()
     if not markup_format:
         return None
 
-    # Language and comments preprocessing
+    # Comments preprocessing
 
-    if language != '':
-        result = language_preprocessing(result, language)
     if remove_comments:
         result = comments_preprocessing(result)
 
@@ -677,8 +552,6 @@ def construct_book(input_file_name, kind, language, rules_file_name,
 
     markup_format = Format(rules_file_name, kind)
 
-    if language != '':
-        result = language_preprocessing(result, language)
     result = comments_preprocessing(result)
 
     documents = []
