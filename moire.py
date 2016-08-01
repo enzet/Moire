@@ -479,6 +479,7 @@ def convert(input, format='HTML', language='en', remove_comments=True,
                 while int(k.id) <= int(tree.element.id):
                     tree = tree.parent
                 tree.children.append(element)
+                element.parent = tree
                 tree = tree.children[-1]
     status['tree'] = content_root
     markup_format.tree = content_root
