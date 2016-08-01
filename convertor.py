@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 """
 Command line Python tool for file conversion from Moire markup language to other 
@@ -10,7 +10,7 @@ Usage: python moire.py
        -o <output file> 
        -f <format> 
        -r <rules file>
-	   -b <book level>
+       -b <book level>
 
 This file is a part of Moire project—light markup language.
 

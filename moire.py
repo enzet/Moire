@@ -83,19 +83,18 @@ class Tree:
             child.pr()
 
     def find(self, text):
-        if self.element[2] and self.element[2][0] == text:
-            return True
+        if len(self.element.parameters) > 1 and \
+                self.element.parameters[1][0] == text:
+            return self
         for child in self.children:
-            if child.find(text):
-                return True
-        return False
+            a = child.find(text)
+            if a:
+                return a
+        return None
 
 
 def is_space(c):
-    if c == ' ' or c == '\n' or c == '\t' or c == '\r':
-        return True
-    else:
-        return False
+    return c in ' \n\t\r'
 
 
 def trim_inside(s):
@@ -374,11 +373,11 @@ def parse(text, inblock=False, depth=0):
     elif isinstance(text, str):
         return escape(trim_inside(text), markup_format.name)
     elif isinstance(text, Tag):
-        key = 'number' if (text.id in '123456') else text.id
+        key = 'header' if (text.id in '123456') else text.id
         method = getattr(markup_format, key)
         if method:
             s = ''
-            if key == 'number':
+            if key == 'header':
                 s += method(text.parameters, int(text.id))
             else:
                 s += method(text.parameters)
@@ -468,32 +467,27 @@ def convert(input, format='HTML', language='en', remove_comments=True,
 
     # Construct content table
 
-    tree = Tree(None, [], [0, None, None])
+    tree = Tree(None, [], Tag('0', []))
     content_root = tree
     for k in intermediate_representation:
         if isinstance(k, Tag) and k.id in '123456':
-            if len(k.parameters) == 2:
-                obj = [int(k.id), k.parameters[0], k.parameters[1]]
-            else:
-                obj = [int(k.id), k.parameters[0], None]
-            element = Tree(tree, [], obj)
-            if obj[0] > tree.element[0]:
-                k.parameters.append(element)
+            element = Tree(tree, [], k)
+            if int(k.id) > int(tree.element.id):
                 tree.children.append(element)
                 tree = tree.children[-1]
             else:
-                while obj[0] <= tree.element[0]:
+                while int(k.id) <= int(tree.element.id):
                     tree = tree.parent
-                k.parameters.append(element)
                 tree.children.append(element)
                 tree = tree.children[-1]
     status['tree'] = content_root
+    markup_format.tree = content_root
 
     # Wrap whole text with "body" tag
 
     if wrap:
         intermediate_representation = \
-            Tag('body', [intermediate_representation, content_root])    
+            Tag('body', [intermediate_representation, content_root])
 
     result = parse(intermediate_representation)
 
