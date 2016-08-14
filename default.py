@@ -60,15 +60,15 @@ class HTML:
     def image(self, arg):
         return '<img src = "' + arg[0][0] + '" alt = "' + parse(arg[1]) + '" />'
     def table(self, arg):
-        s = '<table>'
+        s = '<table>\n'
         for tr in arg[0]:
             if isinstance(tr, list):
-                s += '<tr>'
+                s += '<tr>\n'
                 for td in tr:
                     if isinstance(td, list):
-                        s += '<td>' + parse(td, inblock=True) + '</td>'
-                s += '</tr>'
-        s += '</table>'
+                        s += '<td>\n' + parse(td, inblock=True) + '</td>\n'
+                s += '</tr>\n'
+        s += '</table>\n'
         return s
 
     ##inner:
@@ -96,7 +96,7 @@ class HTML:
     def sc(self, arg): return '<span style = "font-variant: small-caps;">' + parse(arg[0]) + '</span>'
     def sub(self, arg): return '<sub>' + parse(arg[0]) + '</sub>'
     def super(self, arg): return '<sup>' + parse(arg[0]) + '</sup>'
-    def text(self, arg): return '<p>' + parse(arg[0]) + '</p>'
+    def text(self, arg): return '<p>' + parse(arg[0]) + '</p>\n'
     def tt(self, arg): return '<tt>' + parse(arg[0]) + '</tt>'
     def u(self, arg): return '<u>' + parse(arg[0]) + '</u>'
     def quote(self, arg): return '<blockquote>' + parse(arg[0]) + '</blockquote>'

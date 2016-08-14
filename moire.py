@@ -362,7 +362,7 @@ def process_inner_block(inner_block):
     return s
 
 
-def parse(text, inblock=False, depth=0):
+def parse(text, inblock=False, depth=0, mode=''):
     global level
     global language
     global markup_format
@@ -374,16 +374,20 @@ def parse(text, inblock=False, depth=0):
         return escape(trim_inside(text), markup_format.name)
     elif isinstance(text, Tag):
         key = 'header' if (text.id in '123456') else text.id
-        method = getattr(markup_format, key)
+        method = None
+        try:
+            method = getattr(markup_format, mode + key)
+        except Exception as e:
+            pass
         if method:
             s = ''
             if key == 'header':
-                s += method(text.parameters, int(text.id))
+                s += str(method(text.parameters, int(text.id)))
             else:
-                s += method(text.parameters)
+                s += str(method(text.parameters))
             return s
-        no_tags.append(text.id)
-        print 'No such tag: ' + text.id
+        no_tags.append(mode + key)
+        print 'No such tag: ' + mode + key
     else:  # if text is list of items
         s = ''
         inner_block = []
@@ -393,11 +397,13 @@ def parse(text, inblock=False, depth=0):
                     if inner_block:
                         s += process_inner_block(inner_block)
                         inner_block = []
-                    s += str(parse(item))
+                    s += str(parse(item, inblock=inblock, depth=depth + 1, \
+                        mode=mode))
                 else:
                     inner_block.append(item)
             else:
-                s += str(parse(item))
+                s += str(parse(item, inblock=inblock, depth=depth + 1, \
+                    mode=mode))
         if inner_block:
             s += process_inner_block(inner_block)
         return s
@@ -490,6 +496,7 @@ def convert(input, format='HTML', language='en', remove_comments=True,
         intermediate_representation = \
             Tag('body', [intermediate_representation, content_root])
 
+    parse(intermediate_representation, False, 0, 'pre_')
     result = parse(intermediate_representation)
 
     return result
