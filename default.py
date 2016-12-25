@@ -10,7 +10,7 @@ depth = 0
 status = {}
 
 
-class HTML:
+class html:
     def __init__(self):
         pass
 
@@ -31,8 +31,9 @@ class HTML:
         status['content'] = []
         s = '''<html>
             <head>
-                <meta http-equiv = "Content-Type" content = "text/html; charset = utf-8">
-                <link rel = "stylesheet" href = "style.css">
+                <meta http-equiv="Content-Type" content="text/html; 
+                      charset=utf-8">
+                <link rel="stylesheet" href="style.css">
             </head>
             <body>'''
         s += parse(arg[0], inblock=True)
@@ -42,7 +43,8 @@ class HTML:
     def code(self, arg): return '<pre><tt>' + clear(arg[0]) + '</tt></pre>'
     def title(self, arg): return '<title>' + parse(arg[0]) + '</title>'
     def header(self, arg, number):
-        return '<h' + str(number) + '>' + parse(arg[0], inblock=True) + '</h' + str(number) + '>'
+        return '<h' + str(number) + '>' + parse(arg[0], inblock=True) + \
+            '</h' + str(number) + '>'
     def list(self, arg):
         s = '<ul>'
         for item in arg[0]:
@@ -76,6 +78,7 @@ class HTML:
     def b(self, arg): return '<b>' + parse(arg[0]) + '</b>'
     def br(self, arg): return '<br />'
     def href(self, arg): return '<a href = "' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
+    def formal(self, arg): return '&lt;<u>' + parse(arg[0]) + '</u>&gt;'
     def i(self, arg): return '<i>' + parse(arg[0]) + '</i>'
     def math(self, arg):
         # formula = ''.join(arg[0])
@@ -101,7 +104,7 @@ class HTML:
     def u(self, arg): return '<u>' + parse(arg[0]) + '</u>'
     def quote(self, arg): return '<blockquote>' + parse(arg[0]) + '</blockquote>'
 
-class Text:
+class text:
 
     name = 'Text'
     extension = 'txt'
@@ -152,7 +155,7 @@ class Text:
     def u(self, arg): return parse(arg[0], depth=depth + 1)
 
 
-class RawText:
+class rawtext:
 
     name = 'Text'
     extension = 'txt'
@@ -198,7 +201,7 @@ class RawText:
     def u(self, arg): return parse(arg[0])
 
 
-class Markdown:
+class markdown:
     name = 'Markdown'
     extensions = ['md', 'markdown']
 
@@ -258,13 +261,16 @@ class Markdown:
     def text(self, arg): return parse(arg[0]) + '\n\n'
 
 
-class Tex:
+class tex:
     name = 'Tex'
     extension = 'tex'
 
     escape = {
         '_': '\\_',
         }
+
+    block_tags = ['block', 'body', 'code', 'title', 'number', 'list',
+        'shortlist', 'image', 'table']
 
     def body(self, arg):
         s = '''\\documentclass[twoside,psfig]{article}:
@@ -393,7 +399,7 @@ class Tex:
     def cite(self, arg): return '\\cite{' + arg[0][0] + '}'
 
 
-class RTF:
+class rtf:
     name = 'RTF'
 
     def block(self, arg): return parse(arg[0], inblock=True)

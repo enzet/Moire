@@ -47,6 +47,9 @@ if not options.input_file_name:
     options.input_file_name = raw_input('Please, specify the input file ' + \
         'name (or use -i <file name>): ')
 
+if not options.language:
+    options.language = 'en'
+
 while True:
     if os.path.isfile(options.input_file_name):
         break
@@ -81,7 +84,7 @@ if not options.book_level or options.book_level == 0:
             options.language, True, options.rules, True)
 
     if not output:
-        print 'Error: cannot convert.'
+        print 'Fatal: output was no produced.'
         sys.exit(1)
 
     output_file = open(options.output_destination, 'w+')
@@ -94,6 +97,6 @@ else:
 
     moire.construct_book(options.input_file_name, kind=options.format, 
                          language=options.language, 
-                         rules_file_name=options.rules, 
+                         rules=options.rules, 
                          book_level=options.book_level, 
                          output_file_name=options.output_destination)
