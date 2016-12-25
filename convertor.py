@@ -94,6 +94,6 @@ else:
 
     moire.construct_book(options.input_file_name, kind=options.format, 
                          language=options.language, 
-                         rules_file_name=options.rules, 
+                         rules=options.rules, 
                          book_level=options.book_level, 
-                         output_file_name=options.output_destination)
+                         output_directory=options.output_destination)

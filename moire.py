@@ -31,7 +31,7 @@ paragraph_delimiter = '\n\n'
 
 
 def error(message):
-    print '\033[41m ' + str(message) + '. \033[0m'
+    print ' [ERROR] ' + str(message) + '.'
 
 
 class Tag:
@@ -387,7 +387,8 @@ def parse(text, inblock=False, depth=0, mode=''):
                 s += str(method(text.parameters))
             return s
         no_tags.append(mode + key)
-        print 'No such tag: ' + mode + key
+        if not mode:
+            print 'No such tag: ' + mode + key
     else:  # if text is list of items
         s = ''
         inner_block = []
@@ -473,7 +474,7 @@ def convert(input, format='HTML', language='en', remove_comments=True,
 
     # Construct content table
 
-    tree = Tree(None, [], Tag('0', []))
+    tree = Tree(None, [], Tag('0', ['_', '_']))
     content_root = tree
     for k in intermediate_representation:
         if isinstance(k, Tag) and k.id in '123456':
@@ -509,7 +510,7 @@ def convert_file(input_file_name, format='html', language='en',
     input_file = open(input_file_name)
     directory = ''
     if '/' in input_file_name:
-        directory = input_file_name[:input_file_name.find('/') + 1]
+        directory = input_file_name[:input_file_name.rfind('/') + 1]
     input = ''
 
     if path == None:
@@ -539,8 +540,8 @@ def convert_file(input_file_name, format='html', language='en',
         opt=opt)
 
 
-def construct_book(input_file_name, kind, language, rules_file_name, 
-        book_level, output_file_name):
+def construct_book(input_file_name, kind, language, rules, 
+        book_level, output_directory, remove_comments=True):
 
     global markup_format
 
@@ -550,9 +551,20 @@ def construct_book(input_file_name, kind, language, rules_file_name,
     status['root'] = '/Users/Enzet/Program/Book/_'
     status['image'] = True
 
-    result = open(input_file_name).read()
+    # Initialization
 
-    markup_format = Format(rules_file_name, kind)
+    result = open(input_file_name).read()
+    __import__(rules)
+    module = sys.modules[rules]
+    markup_format = module.__dict__[kind]()
+    if not markup_format:
+        return None
+
+    # Comments preprocessing
+
+    if remove_comments:
+        result = comments_preprocessing(result)
+    result = open(input_file_name).read()
 
     result = comments_preprocessing(result)
 
@@ -562,7 +574,8 @@ def construct_book(input_file_name, kind, language, rules_file_name,
 
     lexemes, positions = lexer(result)
     index = 0
-    intermediate_representation = get_intermediate(lexemes, positions, status['level'])
+    intermediate_representation = \
+        get_intermediate(lexemes, positions, status['level'])
 
     for element in intermediate_representation:
         if isinstance(element, Tag) and \
@@ -574,14 +587,16 @@ def construct_book(input_file_name, kind, language, rules_file_name,
                 except IndexError:
                     print 'No ID for header ' + element.parameters[0][0]
                     sys.exit(0)
-                document = Document(level[:int(element.id) + 1], [element], str(element.parameters[0][0]))
+                document = Document(level[:int(element.id) + 1], [element], \
+                    str(element.parameters[0][0]))
         else:
             document.content.append(element)
     if document.content != []:
         documents.append(document)
 
     for document in documents:
-        name = '_/' + language
+        print '-'
+        name = output_directory
         status['id'] = document.id
         for level in document.id[1:]:
             name += '/' + level

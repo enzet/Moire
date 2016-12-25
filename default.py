@@ -10,7 +10,7 @@ depth = 0
 status = {}
 
 
-class HTML:
+class html:
     def __init__(self):
         pass
 
@@ -50,6 +50,10 @@ class HTML:
                 s += '<li>' + parse(item, inblock=True) + '</li>'
         s += '</ul>'
         return s
+    def pre_list(self, arg):
+        for item in arg[0]:
+            if isinstance(item, list):
+                parse(item, mode='pre_')
     def shortlist(self, arg):
         s = '<ul>'
         for item in arg[0]:
@@ -57,6 +61,10 @@ class HTML:
                 s += '<li>' + parse(item) + '</li>'
         s += '</ul>'
         return s
+    def pre_shortlist(self, arg):
+        for item in arg[0]:
+            if isinstance(item, list):
+                parse(item, mode='pre_')
     def image(self, arg):
         return '<img src = "' + arg[0][0] + '" alt = "' + parse(arg[1]) + '" />'
     def table(self, arg):
@@ -101,7 +109,7 @@ class HTML:
     def u(self, arg): return '<u>' + parse(arg[0]) + '</u>'
     def quote(self, arg): return '<blockquote>' + parse(arg[0]) + '</blockquote>'
 
-class Text:
+class text:
 
     name = 'Text'
     extension = 'txt'
@@ -152,7 +160,7 @@ class Text:
     def u(self, arg): return parse(arg[0], depth=depth + 1)
 
 
-class RawText:
+class rawtext:
 
     name = 'Text'
     extension = 'txt'
@@ -160,6 +168,9 @@ class RawText:
     escape = {
         '<': '&lt;',
     }
+
+    block_tags = ['block', 'body', 'code', 'title', 'number', 'list',
+        'shortlist', 'image', 'table']
 
     def body(self, arg):
         def justify(text, width):
@@ -172,7 +183,7 @@ class RawText:
                 i += 1
             return k
         return parse(arg[0], inblock=True, depth=1) + '\n'
-    def header(self, arg): return parse(arg[0])
+    def header(self, arg, number): return parse(arg[0])
     def list(self, arg):
         s = ''
         for item in arg[0]:
@@ -198,7 +209,7 @@ class RawText:
     def u(self, arg): return parse(arg[0])
 
 
-class Markdown:
+class markdown:
     name = 'Markdown'
     extensions = ['md', 'markdown']
 
@@ -258,7 +269,7 @@ class Markdown:
     def text(self, arg): return parse(arg[0]) + '\n\n'
 
 
-class Tex:
+class tex:
     name = 'Tex'
     extension = 'tex'
 
@@ -393,7 +404,7 @@ class Tex:
     def cite(self, arg): return '\\cite{' + arg[0][0] + '}'
 
 
-class RTF:
+class rtf:
     name = 'RTF'
 
     def block(self, arg): return parse(arg[0], inblock=True)
