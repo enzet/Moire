@@ -20,7 +20,6 @@ index = 0
 markup_format = None
 no_tags = []
 id_list = ['_', '_', '_', '_', '_', '_', '_']
-status = {}
 
 # Constants
 
@@ -28,6 +27,8 @@ comment_begin = '/*'
 comment_end = '*/'
 
 paragraph_delimiter = '\n\n'
+
+status = {}
 
 
 def error(message):
@@ -331,7 +332,6 @@ def process_inner_block(inner_block):
     """
     Wrap parts of inner block element with text tag.
     """
-    global status
     if len(inner_block) == 1 and inner_block[0] == '':
         return ''
     paragraphs = []
@@ -362,37 +362,38 @@ def process_inner_block(inner_block):
     return s
 
 
-def parse(text, inblock=False, depth=0, mode=''):
+def parse(element, inblock=False, depth=0, mode=''):
+    """
+    Element parsing into formatted text. Element may be plain text, tag, or
+    list of elements.
+    """
     global level
     global language
     global markup_format
     global no_tags
-    global status
-    if not text or text == '' or text == []:
+    if not element or element == '' or element == []:
         return ''
-    elif isinstance(text, str):
-        return escape(trim_inside(text), markup_format.name)
-    elif isinstance(text, Tag):
-        key = 'header' if (text.id in '123456') else text.id
+    elif isinstance(element, str):
+        return escape(trim_inside(element), markup_format.name)
+    elif isinstance(element, Tag):
+        key = 'header' if (element.id in '123456') else element.id
         method = None
         try:
             method = getattr(markup_format, mode + key)
-        except Exception as e:
-            pass
-        if method:
             s = ''
             if key == 'header':
-                s += str(method(text.parameters, int(text.id)))
+                s += str(method(element.parameters, int(element.id)))
             else:
-                s += str(method(text.parameters))
+                s += str(method(element.parameters))
             return s
-        no_tags.append(mode + key)
-        if not mode:
-            print 'No such tag: ' + mode + key
-    else:  # if text is list of items
+        except AttributeError as e:
+            no_tags.append(mode + key)
+            print e
+            print 'No such tag: ' + mode + key + '.'
+    elif isinstance(element, list):
         s = ''
         inner_block = []
-        for item in text:
+        for item in element:
             if inblock:
                 if isinstance(item, Tag) and item.id in markup_format.block_tags:
                     if inner_block:
@@ -408,6 +409,8 @@ def parse(text, inblock=False, depth=0, mode=''):
         if inner_block:
             s += process_inner_block(inner_block)
         return s
+    else:
+        print 'Parsing error: unknown element type.'
 
 
 def get_documents(level, intermediate_representation):
@@ -441,26 +444,36 @@ def convert(input, format='HTML', language='en', remove_comments=True,
     global index
     global id_list
     global markup_format
-    global status
 
-    status['language'] = language
-    status['title'] = '_'
-    status['level'] = 0
-    status['root'] = '/Users/Enzet/Program/Book/_'
-    status['image'] = False
-
-    if opt:
-        for key in opt:
-            status[key] = opt[key]
-
-    # Initialization
+    # Import target format class
 
     result = input
     __import__(rules)
     module = sys.modules[rules]
     markup_format = module.__dict__[format]()
+
+    # Check if all was imported normally.
+
     if not markup_format:
+        print 'Fatal: cannot import format class.'
         return None
+    if not markup_format.body:
+        print 'Fatal: no body function in imported format class.'
+        return None
+
+    # Initialization
+
+    markup_format.language = language
+    markup_format.caption = '_'
+    markup_format.level = 1
+    markup_format.root = '/Users/Enzet/Program/Book/_'
+    markup_format.show_image = False
+    markup_format.options = {}
+    markup_format.id = ['_']
+
+    if opt:
+        for key in opt:
+            markup_format.options[key] = opt[key]
 
     # Comments preprocessing
 
@@ -470,7 +483,7 @@ def convert(input, format='HTML', language='en', remove_comments=True,
     lexemes, positions = lexer(result)
     index = 0
     intermediate_representation = \
-        get_intermediate(lexemes, positions, status['level'])
+        get_intermediate(lexemes, positions, markup_format.level)
 
     # Construct content table
 
@@ -488,7 +501,6 @@ def convert(input, format='HTML', language='en', remove_comments=True,
                 tree.children.append(element)
                 element.parent = tree
                 tree = tree.children[-1]
-    status['tree'] = content_root
     markup_format.tree = content_root
 
     # Wrap whole text with "body" tag
@@ -519,8 +531,11 @@ def convert_file(input_file_name, format='html', language='en',
     l = None
     while l != '':
         l = input_file.readline()
+        matcher = None
         if '\\include {' in l:
-            file_name = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l).group('name')
+            matcher = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l)
+        if matcher:
+            file_name = matcher.group('name')
             found = False
             if os.path.isfile(file_name):
                 l = open(file_name).read() + '\n'
@@ -545,11 +560,12 @@ def construct_book(input_file_name, kind, language, rules,
 
     global markup_format
 
-    status['language'] = language
-    status['title'] = '_'
-    status['level'] = 0
-    status['root'] = '/Users/Enzet/Program/Book/_'
-    status['image'] = True
+    result = input
+    __import__(rules)
+    module = sys.modules[rules]
+    markup_format = module.__dict__[kind]()
+    if not markup_format:
+        return None
 
     # Initialization
 
@@ -575,7 +591,7 @@ def construct_book(input_file_name, kind, language, rules,
     lexemes, positions = lexer(result)
     index = 0
     intermediate_representation = \
-        get_intermediate(lexemes, positions, status['level'])
+        get_intermediate(lexemes, positions, markup_format.level)
 
     for element in intermediate_representation:
         if isinstance(element, Tag) and \
@@ -595,7 +611,6 @@ def construct_book(input_file_name, kind, language, rules,
         documents.append(document)
 
     for document in documents:
-        print '-'
         name = output_directory
         status['id'] = document.id
         for level in document.id[1:]:
@@ -606,6 +621,7 @@ def construct_book(input_file_name, kind, language, rules,
             pass
         name += '/index.html'
         output = open(name, 'w+')
-        status['level'] = len(document.id)
-        status['title'] = document.title
-        output.write(parse(Tag('body', [document.content])))
+        markup_format.level = len(document.id)
+        markup_format.caption = document.title
+        parsed = parse(Tag('body', [document.content]))
+        output.write(parsed)

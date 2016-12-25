@@ -31,8 +31,9 @@ class html:
         status['content'] = []
         s = '''<html>
             <head>
-                <meta http-equiv = "Content-Type" content = "text/html; charset = utf-8">
-                <link rel = "stylesheet" href = "style.css">
+                <meta http-equiv="Content-Type" content="text/html; 
+                      charset=utf-8">
+                <link rel="stylesheet" href="style.css">
             </head>
             <body>'''
         s += parse(arg[0], inblock=True)
@@ -42,7 +43,8 @@ class html:
     def code(self, arg): return '<pre><tt>' + clear(arg[0]) + '</tt></pre>'
     def title(self, arg): return '<title>' + parse(arg[0]) + '</title>'
     def header(self, arg, number):
-        return '<h' + str(number) + '>' + parse(arg[0], inblock=True) + '</h' + str(number) + '>'
+        return '<h' + str(number) + '>' + parse(arg[0], inblock=True) + \
+            '</h' + str(number) + '>'
     def list(self, arg):
         s = '<ul>'
         for item in arg[0]:
@@ -84,6 +86,7 @@ class html:
     def b(self, arg): return '<b>' + parse(arg[0]) + '</b>'
     def br(self, arg): return '<br />'
     def href(self, arg): return '<a href = "' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
+    def formal(self, arg): return '&lt;<u>' + parse(arg[0]) + '</u>&gt;'
     def i(self, arg): return '<i>' + parse(arg[0]) + '</i>'
     def math(self, arg):
         # formula = ''.join(arg[0])
@@ -276,6 +279,9 @@ class tex:
     escape = {
         '_': '\\_',
         }
+
+    block_tags = ['block', 'body', 'code', 'title', 'number', 'list',
+        'shortlist', 'image', 'table']
 
     def body(self, arg):
         s = '''\\documentclass[twoside,psfig]{article}:
