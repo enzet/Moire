@@ -47,9 +47,6 @@ if not options.input_file_name:
     options.input_file_name = raw_input('Please, specify the input file ' + \
         'name (or use -i <file name>): ')
 
-if not options.language:
-    options.language = 'en'
-
 while True:
     if os.path.isfile(options.input_file_name):
         break
