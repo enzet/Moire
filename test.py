@@ -20,7 +20,7 @@ clear_color = '\033[0m'
 
 tests = \
     {
-        'HTML':
+        'html':
         [
             [
                 'plain text',
@@ -48,17 +48,22 @@ tests = \
                 'Simple tag with space'
             ],
             [
-                '\\code{code}',
+                '\\b {bold}',
+                '<b>bold</b>',
+                'Simple tag with two spaces'
+            ],
+            [
+                '\\code {code}',
                 '<pre><tt>code</tt></pre>',
                 'Verbatim'
             ],
             [
-                '\\\\\\{\\}',
-                '\\{}',
+                '\\\\b \\{\\}',
+                '\\b {}',
                 'Escaped tags'
             ],
             [
-                '\\b{\\}}',
+                '\\b {\\}}',
                 '<b>}</b>',
                 'Escaped tags in tag'
             ],
@@ -73,32 +78,32 @@ tests = \
                 'Escaped'
             ],
             [
-                '\\code{<&>&nbsp;}',
+                '\\code {<&>&nbsp;}',
                 '<pre><tt>&lt;&amp;&gt;&amp;nbsp;</tt></pre>',
                 'Escaped in code'
             ],
             [
-                '\\b{  bold  }',
+                '\\b {  bold  }',
                 '<b> bold </b>',
                 'Simple tag with spaces'
             ],
             [
-                '\\b{bold}text',
+                '\\b {bold}text',
                 '<b>bold</b>text',
                 'Simple tag and plain text'
             ],
             [
-                '\\b{bold} text',
+                '\\b {bold} text',
                 '<b>bold</b> text',
                 'Simple tag and plain text with space'
             ],
             [
-                'text\\b{bold}text',
+                'text\\b {bold}text',
                 'text<b>bold</b>text',
                 'Text around tag'
             ],
             [
-                'text \\b{bold} text',
+                'text \\b {bold} text',
                 'text <b>bold</b> text',
                 'Text around tag with spaces'
             ],
@@ -134,22 +139,22 @@ tests = \
             ],
             [
                 '\\href{link}{text}',
-                '<a href = "link">text</a>',
+                '<a href="link">text</a>',
                 'Tag with multiple parameters'
             ],
             [
                 'text \\href{link}{text} text',
-                'text <a href = "link">text</a> text',
+                'text <a href="link">text</a> text',
                 'Text around tag with multiple parameters'
             ],
             [
                 'text \\href {link} {text} text',
-                'text <a href = "link">text</a> text',
+                'text <a href="link">text</a> text',
                 'Text around tag with multiple parameters'
             ],
             [
                 '\\href {  link  } {  text  }',
-                '<a href = "  link  "> text </a>',
+                '<a href="  link  "> text </a>',
                 'Tag with multiple parameters with spaces'
             ],
             [
@@ -168,7 +173,7 @@ tests = \
                 'Tag with more nested parameters'
             ],
         ],
-        'RTF':
+        'rtf':
         [
             [
                 'АБВ',
@@ -176,7 +181,7 @@ tests = \
                 'Unicode'
             ],
         ],
-        'Tex':
+        'tex':
         [
             [
                 '_',

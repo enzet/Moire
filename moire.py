@@ -76,6 +76,7 @@ class Tree:
         self.element = element
         self.parent = parent
         self.children = children
+        self.number = 0
 
     def pr(self):
         print self.element
@@ -485,11 +486,13 @@ def convert(input, format='HTML', language='en', remove_comments=True,
             element = Tree(tree, [], k)
             if int(k.id) > int(tree.element.id):
                 tree.children.append(element)
+                element.number = len(tree.children) - 1
                 tree = tree.children[-1]
             else:
                 while int(k.id) <= int(tree.element.id):
                     tree = tree.parent
                 tree.children.append(element)
+                element.number = len(tree.children) - 1
                 element.parent = tree
                 tree = tree.children[-1]
     status['tree'] = content_root
@@ -535,7 +538,7 @@ def include(input_file, directory, path=None):
 
 
 def convert_file(input_file_name, format='html', language='en', 
-        remove_comments=True, rules_file='default.ms', wrap=True, opt=None,
+        remove_comments=True, rules_file='default', wrap=True, opt=None,
         path=None):
 
     input_file = open(input_file_name)
@@ -549,8 +552,8 @@ def convert_file(input_file_name, format='html', language='en',
         opt=opt)
 
 
-def construct_book(input_file_name, kind, language, rules, 
-        book_level, output_directory, remove_comments=True, path=None):
+def construct_book(input_file_name, output_directory, kind='html', language='en', rules='default', 
+        book_level=2, remove_comments=True, path=None):
 
     global markup_format
 
@@ -598,11 +601,13 @@ def construct_book(input_file_name, kind, language, rules,
             element = Tree(tree, [], k)
             if int(k.id) > int(tree.element.id):
                 tree.children.append(element)
+                element.number = len(tree.children) - 1
                 tree = tree.children[-1]
             else:
                 while int(k.id) <= int(tree.element.id):
                     tree = tree.parent
                 tree.children.append(element)
+                element.number = len(tree.children) - 1
                 element.parent = tree
                 tree = tree.children[-1]
     status['tree'] = content_root

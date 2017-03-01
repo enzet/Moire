@@ -92,8 +92,9 @@ if not options.book_level or options.book_level == 0:
 
 else:
 
-    moire.construct_book(options.input_file_name, kind=options.format, 
+    moire.construct_book(options.input_file_name, 
+                         output_directory=options.output_destination,
+                         kind=options.format, 
                          language=options.language, 
                          rules=options.rules, 
-                         book_level=options.book_level, 
-                         output_directory=options.output_destination)
+                         book_level=options.book_level)

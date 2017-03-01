@@ -68,24 +68,24 @@ class html:
             if isinstance(item, list):
                 parse(item, mode='pre_')
     def image(self, arg):
-        return '<img src = "' + arg[0][0] + '" alt = "' + parse(arg[1]) + '" />'
+        return '<img src="' + arg[0][0] + '" alt="' + parse(arg[1]) + '" />'
     def table(self, arg):
-        s = '<table>\n'
+        s = '<table>'
         for tr in arg[0]:
             if isinstance(tr, list):
-                s += '<tr>\n'
+                s += '<tr>'
                 for td in tr:
                     if isinstance(td, list):
-                        s += '<td>\n' + parse(td, inblock=True) + '</td>\n'
-                s += '</tr>\n'
-        s += '</table>\n'
+                        s += '<td>' + parse(td, inblock=True) + '</td>'
+                s += '</tr>'
+        s += '</table>'
         return s
 
     ##inner:
 
     def b(self, arg): return '<b>' + parse(arg[0]) + '</b>'
     def br(self, arg): return '<br />'
-    def href(self, arg): return '<a href = "' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
+    def href(self, arg): return '<a href="' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
     def formal(self, arg): return '&lt;<u>' + parse(arg[0]) + '</u>&gt;'
     def i(self, arg): return '<i>' + parse(arg[0]) + '</i>'
     def math(self, arg):
@@ -101,13 +101,13 @@ class html:
         # return '<img style = "top: 6; position: relative;" src = formula/' + formula_hash + '.png />'
         return ''
     def size(self, arg):
-        return '<span style = "font-size: ' + str(arg[0]) + '">' + \
+        return '<span style="font-size: ' + str(arg[0]) + '">' + \
             parse(arg[1]) + '</span>'
     def strike(self, arg): return '<s>' + parse(arg[0]) + '</s>'
-    def sc(self, arg): return '<span style = "font-variant: small-caps;">' + parse(arg[0]) + '</span>'
+    def sc(self, arg): return '<span style="font-variant: small-caps;">' + parse(arg[0]) + '</span>'
     def sub(self, arg): return '<sub>' + parse(arg[0]) + '</sub>'
     def super(self, arg): return '<sup>' + parse(arg[0]) + '</sup>'
-    def text(self, arg): return '<p>' + parse(arg[0]) + '</p>\n'
+    def text(self, arg): return '<p>' + parse(arg[0]) + '</p>'
     def tt(self, arg): return '<tt>' + parse(arg[0]) + '</tt>'
     def u(self, arg): return '<u>' + parse(arg[0]) + '</u>'
     def quote(self, arg): return '<blockquote>' + parse(arg[0]) + '</blockquote>'
