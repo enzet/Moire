@@ -393,7 +393,7 @@ def parse(text, inblock=False, depth=0, mode=''):
             return s
         no_tags.append(mode + key)
         if not mode:
-            print 'No such tag: ' + mode + key
+            error('No such tag: ' + mode + key)
     else:  # if text is list of items
         s = ''
         inner_block = []
@@ -514,20 +514,21 @@ def include(input_file, directory, path=None):
     input = ''
     if path == None:
         path = []
-    path.append(directory)
     l = None
     while l != '':
         l = input_file.readline()
         if '\\include {' in l:
-            file_name = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l).group('name')
+            file_name = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l)\
+                .group('name')
             found = False
             if os.path.isfile(file_name):
                 l = open(file_name).read() + '\n'
                 found = True
             else:
-                for directory in path:
-                    if os.path.isfile(directory + '/' + file_name):
-                        l = open(directory + '/' + file_name).read() + '\n'
+                for d in [directory] + path:
+                    if os.path.isfile(d + '/' + file_name):
+                        l = include(open(d + '/' + file_name), directory, \
+                            path) + '\n'
                         found = True
                         break
             if not found:
