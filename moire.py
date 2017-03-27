@@ -116,20 +116,23 @@ def trim_inside(s):
     return ret
 
 
-def comments_preprocessing(input_file):
+def comments_preprocessing(text):
+    """
+    Text to text processing: comments removing.
+    """
     preprocessed = ''
     adding = True
     i = 0
-    while i < len(input_file):
-        if input_file[i:i + 2] == comment_begin:
+    while i < len(text):
+        if text[i:i + 2] == comment_begin:
             adding = False
             i += 1
-        elif input_file[i:i + 2] == comment_end:
+        elif text[i:i + 2] == comment_end:
             adding = True
             i += 1
         else:
             if adding:
-                preprocessed += input_file[i]
+                preprocessed += text[i]
         i += 1
     return preprocessed
 
@@ -276,11 +279,10 @@ def escape(text, format_name, from_clear=False):
         return text
 
 
-def get_intermediate(lexemes, positions, level):
+def get_intermediate(lexemes, positions, level, index=0):
     """
     Get intermediate representation.
     """
-    global index
     tag = None
     result = []
     while index < len(lexemes):
@@ -293,10 +295,12 @@ def get_intermediate(lexemes, positions, level):
             level += 1
             if not tag:
                 index += 1
-                result.append(get_intermediate(lexemes, positions, level))
+                index, res = get_intermediate(lexemes, positions, level, index)
+                result.append(res)
             else:
                 index += 1
-                tag.parameters.append(get_intermediate(lexemes, positions, level))
+                index, res = get_intermediate(lexemes, positions, level, index)
+                tag.parameters.append(res)
             index += 1
             continue
         elif item.type == 'parameter_end':
@@ -304,14 +308,14 @@ def get_intermediate(lexemes, positions, level):
             if level < 0:
                 position = positions[index]
                 print 'Lexer error at ' + str(position) + '.'
-                print input_file[position - 10:position + 10]\
-                        .replace('\n', ' ').replace('\t', ' ')
-                print '          ^'
+                #print input_file[position - 10:position + 10]\
+                #        .replace('\n', ' ').replace('\t', ' ')
+                #print '          ^'
                 index += 1
                 sys.exit(1)
             if tag:
                 result.append(tag)
-            return result
+            return index, result
         elif item.type == 'text':
             if tag:
                 result.append(tag)
@@ -325,7 +329,7 @@ def get_intermediate(lexemes, positions, level):
         index += 1
     if tag:
         result.append(tag)
-    return result
+    return index, result
 
 
 def process_inner_block(inner_block):
@@ -392,6 +396,12 @@ def parse(text, inblock=False, depth=0, mode=''):
                 s += str(method(text.parameters))
             return s
         no_tags.append(mode + key)
+        try:
+            method = getattr(markup_format, mode + 'notag')
+        except Exception as e:
+            pass
+        if method:
+            return str(method([key] + text.parameters))
         if not mode:
             error('No such tag: ' + mode + key)
     else:  # if text is list of items
@@ -510,7 +520,7 @@ def convert(input, format='HTML', language='en', remove_comments=True,
     return result
 
 
-def include(input_file, directory, path=None):
+def include(input_file, directory, path=None, offset=0, prefix=''):
     input = ''
     if path == None:
         path = []
@@ -518,17 +528,18 @@ def include(input_file, directory, path=None):
     while l != '':
         l = input_file.readline()
         if '\\include {' in l:
-            file_name = re.match('\\\\include \{(?P<name>[\w\._-]*)\}\n', l)\
+            file_name = re.match('\\\\include \{(?P<name>[\w\._/-]*)\}' +
+                '( \{(?P<prefix>[\w_])\} \{(?P<offset>[\d-])\})?\n', l)\
                 .group('name')
             found = False
             if os.path.isfile(file_name):
-                l = open(file_name).read() + '\n'
+                l = include(open(file_name), directory, path) + '\n'
                 found = True
             else:
-                for d in [directory] + path:
-                    if os.path.isfile(d + '/' + file_name):
-                        l = include(open(d + '/' + file_name), directory, \
-                            path) + '\n'
+                for direct in [directory] + path:
+                    if os.path.isfile(direct + '/' + file_name):
+                        l = include(open(direct + '/' + file_name), \
+                            directory, path) + '\n'
                         found = True
                         break
             if not found:
@@ -536,6 +547,51 @@ def include(input_file, directory, path=None):
                 l = '\n'
         input += l
     return input
+
+
+def full_parse(input_file, directory, path=None, offset=0, prefix=''):
+    if path == None:
+        path = []
+
+    text = input_file.read()
+    text = comments_preprocessing(text)
+    lexemes, positions = lexer(text)
+    index, raw_IR = get_intermediate(lexemes, positions, 0, 0)
+
+    resulted_IR = []
+
+    for item in raw_IR:
+        if isinstance(item, Tag):
+            if item.id == 'include':
+                file_name = item.parameters[0][0]
+                offset1, prefix1 = 0, ''
+                if len(item.parameters) > 1:
+                    prefix1 = item.parameters[1][0]
+                if len(item.parameters) > 2:
+                    offset1 = int(item.parameters[2][0])
+                found = False
+                if os.path.isfile(file_name):
+                    resulted_IR += full_parse(open(file_name), directory, path, offset1, prefix1)
+                    found = True
+                else:
+                    for direct in [directory] + path:
+                        if os.path.isfile(direct + '/' + file_name):
+                            resulted_IR += full_parse(\
+                                open(direct + '/' + file_name), \
+                                directory, path, offset1, prefix1)
+                            found = True
+                            break
+                if not found:
+                    error('no such file to include: ' + file_name)
+            elif item.id in '123456' and (offset or prefix):
+                new_item = Tag(str(int(item.id) + offset), item.parameters)
+                resulted_IR.append(new_item)
+            else:
+                resulted_IR.append(item)
+        else:
+            resulted_IR.append(item)
+
+    return resulted_IR
 
 
 def convert_file(input_file_name, format='html', language='en', 
@@ -553,8 +609,9 @@ def convert_file(input_file_name, format='html', language='en',
         opt=opt)
 
 
-def construct_book(input_file_name, output_directory, kind='html', language='en', rules='default', 
-        book_level=2, remove_comments=True, path=None):
+def construct_book(input_file_name, output_directory, kind='html',
+        language='en', rules='default', book_level=2, remove_comments=True,
+        path=None):
 
     global markup_format
 
@@ -575,28 +632,33 @@ def construct_book(input_file_name, output_directory, kind='html', language='en'
 
     # Comments preprocessing
 
-    input_file = open(input_file_name)
+    input_file = open(input_file_name, 'r')
     directory = ''
     if '/' in input_file_name:
         directory = input_file_name[:input_file_name.rfind('/') + 1]
 
+    intermediate_representation = full_parse(input_file, directory, path)
+
+    '''
     result = include(input_file, directory, path)
     if remove_comments:
         result = comments_preprocessing(result)
-
-    documents = []
-    document = Document(['_'], [], 'Enzet')
-    level = ['_', '_', '_', '_', '_', '_']
 
     lexemes, positions = lexer(result)
     index = 0
     intermediate_representation = \
         get_intermediate(lexemes, positions, status['level'])
+    '''
+
+    documents = []
+    document = Document(['_'], [], 'Enzet')
+    level = ['_', '_', '_', '_', '_', '_']
 
     # Construct content table
 
     tree = Tree(None, [], Tag('0', ['_', '_']))
     content_root = tree
+
     for k in intermediate_representation:
         if isinstance(k, Tag) and k.id in '123456':
             element = Tree(tree, [], k)
@@ -611,6 +673,7 @@ def construct_book(input_file_name, output_directory, kind='html', language='en'
                 element.number = len(tree.children) - 1
                 element.parent = tree
                 tree = tree.children[-1]
+
     status['tree'] = content_root
     markup_format.tree = content_root
 
@@ -628,6 +691,7 @@ def construct_book(input_file_name, output_directory, kind='html', language='en'
                     str(element.parameters[0][0]))
         else:
             document.content.append(element)
+
     if document.content != []:
         documents.append(document)
 
