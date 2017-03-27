@@ -520,40 +520,10 @@ def convert(input, format='HTML', language='en', remove_comments=True,
     return result
 
 
-def include(input_file, directory, path=None, offset=0, prefix=''):
-    input = ''
-    if path == None:
-        path = []
-    l = None
-    while l != '':
-        l = input_file.readline()
-        if '\\include {' in l:
-            file_name = re.match('\\\\include \{(?P<name>[\w\._/-]*)\}' +
-                '( \{(?P<prefix>[\w_])\} \{(?P<offset>[\d-])\})?\n', l)\
-                .group('name')
-            found = False
-            if os.path.isfile(file_name):
-                l = include(open(file_name), directory, path) + '\n'
-                found = True
-            else:
-                for direct in [directory] + path:
-                    if os.path.isfile(direct + '/' + file_name):
-                        l = include(open(direct + '/' + file_name), \
-                            directory, path) + '\n'
-                        found = True
-                        break
-            if not found:
-                error('no such file to include: ' + file_name)
-                l = '\n'
-        input += l
-    return input
-
-
-def full_parse(input_file, directory, path=None, offset=0, prefix=''):
+def full_parse(text, directory, path=None, offset=0, prefix=''):
     if path == None:
         path = []
 
-    text = input_file.read()
     text = comments_preprocessing(text)
     lexemes, positions = lexer(text)
     index, raw_IR = get_intermediate(lexemes, positions, 0, 0)
@@ -571,13 +541,16 @@ def full_parse(input_file, directory, path=None, offset=0, prefix=''):
                     offset1 = int(item.parameters[2][0])
                 found = False
                 if os.path.isfile(file_name):
-                    resulted_IR += full_parse(open(file_name), directory, path, offset1, prefix1)
+                    included_text = open(file_name, 'r').read()
+                    resulted_IR += full_parse(included_text, directory, \
+                        path, offset1, prefix1)
                     found = True
                 else:
                     for direct in [directory] + path:
                         if os.path.isfile(direct + '/' + file_name):
-                            resulted_IR += full_parse(\
-                                open(direct + '/' + file_name), \
+                            included_text = \
+                                open(direct + '/' + file_name, 'r').read()
+                            resulted_IR += full_parse(included_text, \
                                 directory, path, offset1, prefix1)
                             found = True
                             break
@@ -632,12 +605,12 @@ def construct_book(input_file_name, output_directory, kind='html',
 
     # Comments preprocessing
 
-    input_file = open(input_file_name, 'r')
+    text = open(input_file_name, 'r').read()
     directory = ''
     if '/' in input_file_name:
         directory = input_file_name[:input_file_name.rfind('/') + 1]
 
-    intermediate_representation = full_parse(input_file, directory, path)
+    intermediate_representation = full_parse(text, directory, path)
 
     '''
     result = include(input_file, directory, path)
