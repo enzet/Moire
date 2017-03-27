@@ -477,15 +477,8 @@ def convert(input, format='HTML', language='en', remove_comments=True,
     if not markup_format:
         return None
 
-    # Comments preprocessing
-
-    if remove_comments:
-        result = comments_preprocessing(result)
-
-    lexemes, positions = lexer(result)
     index = 0
-    intermediate_representation = \
-        get_intermediate(lexemes, positions, status['level'])
+    intermediate_representation = full_parse(result, None)
 
     # Construct content table
 
