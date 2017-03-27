@@ -446,7 +446,7 @@ def get_documents(level, intermediate_representation):
     return documents
 
 
-def convert(input, format='HTML', language='en', remove_comments=True,
+def convert(input, format='HTML', remove_comments=True,
         rules='default', wrap=True, opt=None):
     """
     Convert Moire text without includes but with comments artefacts to selected
@@ -458,7 +458,7 @@ def convert(input, format='HTML', language='en', remove_comments=True,
     global markup_format
     global status
 
-    status['language'] = language
+    status['language'] = 'en'
     status['title'] = '_'
     status['level'] = 0
     status['root'] = '/Users/Enzet/Program/Book/_'
@@ -560,9 +560,8 @@ def full_parse(text, directory, path=None, offset=0, prefix=''):
     return resulted_IR
 
 
-def convert_file(input_file_name, format='html', language='en', 
-        remove_comments=True, rules_file='default', wrap=True, opt=None,
-        path=None):
+def convert_file(input_file_name, format='html', remove_comments=True,
+        rules_file='default', wrap=True, opt=None, path=None):
 
     input_file = open(input_file_name)
     directory = ''
@@ -571,17 +570,16 @@ def convert_file(input_file_name, format='html', language='en',
 
     input = include(input_file, directory, path)
 
-    return convert(input, format, language, remove_comments, rules_file, wrap, 
+    return convert(input, format, remove_comments, rules_file, wrap, 
         opt=opt)
 
 
 def construct_book(input_file_name, output_directory, kind='html',
-        language='en', rules='default', book_level=2, remove_comments=True,
-        path=None):
+        rules='default', book_level=2, remove_comments=True, path=None):
 
     global markup_format
 
-    status['language'] = language
+    status['language'] = 'en'
     status['title'] = '_'
     status['level'] = 0
     status['root'] = '/Users/Enzet/Program/Book/_'

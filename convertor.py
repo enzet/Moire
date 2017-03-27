@@ -25,18 +25,19 @@ import sys
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-i', dest='input_file_name', help='Moire input file')
-parser.add_argument('-o', dest='output_destination', help='output file')
-parser.add_argument('-f', dest='format', help='output format')
-parser.add_argument('-r', dest='rules', help='rules file')
-parser.add_argument('-b', dest='book_level', help='book level')
-parser.add_argument('-l', dest='language', help='language')
+parser.add_argument('-i', '--input', dest='input_file_name',
+    help='Moire input file')
+parser.add_argument('-o', '--output', dest='output_destination',
+    help='output file')
+parser.add_argument('-f', '--format', help='output format')
+parser.add_argument('-r', '--rules', help='rules file')
+parser.add_argument('-b', '--book-level', help='book level')
 parser.add_argument('-pl', dest='print_lexemes', action='store_true', 
-                    help='print lexemes')
+    help='print lexemes')
 parser.add_argument('-pp', dest='print_preprocessed', action='store_true', 
-                    help='print preprocessed file')
+    help='print preprocessed file')
 parser.add_argument('-pi', dest='print_intermediate', action='store_true', 
-                    help='print intermediate representation')
+    help='print intermediate representation')
 parser.add_argument('-opt', dest='opt', help='additional options')
 
 options = parser.parse_args(sys.argv[1:])
@@ -78,7 +79,7 @@ options.book_level = int(options.book_level) if options.book_level else 0
 if not options.book_level or options.book_level == 0:
 
     output = moire.convert_file(options.input_file_name, options.format, 
-            options.language, True, options.rules, True)
+        True, options.rules, True)
 
     if not output:
         print 'Fatal: output was no produced.'
@@ -93,8 +94,5 @@ if not options.book_level or options.book_level == 0:
 else:
 
     moire.construct_book(options.input_file_name, 
-                         output_directory=options.output_destination,
-                         kind=options.format, 
-                         language=options.language, 
-                         rules=options.rules, 
-                         book_level=options.book_level)
+        output_directory=options.output_destination, kind=options.format, 
+        rules=options.rules, book_level=options.book_level)

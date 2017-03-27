@@ -7,14 +7,14 @@ Moire is a simple multipurpose markup.
 You can convert your Moire file to other formats using Python 2.7:
 
 \code
-{python convertor.py -i <Moire input file> -f <format> -o <output file> <other options>}
+{python convertor.py -i <Moire input file> -f <format> -o <output destination> -r <style> <other options>}
 
 \3 {Options}
 
-\tt {-i} or \tt {--input}—input file in \i {Moire} format;
+\tt {-i} or \tt {--input}—input file in Moire format;
 
 \tt {-o} or \tt {--output}—output file;
 
 \tt {-t} or \tt {--to}—format of output file. May be \tt {html}, \tt {text} or \tt {markdown};
 
-\tt {-s} or \tt {--scheme}—scheme file name.
+\tt {-r} or \tt {--rules}—parsing rules identifier.

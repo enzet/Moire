@@ -193,7 +193,7 @@ tests = \
 
 for current_format in tests:
     for test in tests[current_format]:
-        converted = moire.convert(test[0], language='lang', wrap=False,
+        converted = moire.convert(test[0], wrap=False,
             format=current_format)
         if converted == test[1]:
             print ' ' + green_color + ' OK ' + clear_color + '  [' + \
