@@ -10,6 +10,8 @@ depth = 0
 status = {}
 
 
+# HTML.
+
 class html:
     def __init__(self):
         pass
@@ -26,7 +28,10 @@ class html:
     block_tags = ['block', 'body', 'code', 'title', 'number', 'list',
         'shortlist', 'image', 'table']
 
+    # Block tags.
+
     def block(self, arg): return parse(arg[0], inblock=True)
+
     def body(self, arg):
         status['content'] = []
         s = '''<html>
@@ -40,11 +45,20 @@ class html:
         s += '''    </body>
         </html>'''
         return s
+
     def code(self, arg): return '<pre><tt>' + clear(arg[0]) + '</tt></pre>'
+
     def title(self, arg): return '<title>' + parse(arg[0]) + '</title>'
+
     def header(self, arg, number):
         return '<h' + str(number) + '>' + parse(arg[0], inblock=True) + \
             '</h' + str(number) + '>'
+
+    def pre_list(self, arg):
+        for item in arg[0]:
+            if isinstance(item, list):
+                parse(item, mode='pre_')
+
     def list(self, arg):
         s = '<ul>'
         for item in arg[0]:
@@ -52,10 +66,7 @@ class html:
                 s += '<li>' + parse(item, inblock=True) + '</li>'
         s += '</ul>'
         return s
-    def pre_list(self, arg):
-        for item in arg[0]:
-            if isinstance(item, list):
-                parse(item, mode='pre_')
+
     def shortlist(self, arg):
         s = '<ul>'
         for item in arg[0]:
@@ -63,12 +74,15 @@ class html:
                 s += '<li>' + parse(item) + '</li>'
         s += '</ul>'
         return s
+
     def pre_shortlist(self, arg):
         for item in arg[0]:
             if isinstance(item, list):
                 parse(item, mode='pre_')
+
     def image(self, arg):
         return '<img src="' + arg[0][0] + '" alt="' + parse(arg[1]) + '" />'
+
     def table(self, arg):
         s = '<table>'
         for tr in arg[0]:
@@ -81,25 +95,14 @@ class html:
         s += '</table>'
         return s
 
-    ##inner:
+    # Inner tags.
 
     def b(self, arg): return '<b>' + parse(arg[0]) + '</b>'
     def br(self, arg): return '<br />'
     def href(self, arg): return '<a href="' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
     def formal(self, arg): return '&lt;<u>' + parse(arg[0]) + '</u>&gt;'
     def i(self, arg): return '<i>' + parse(arg[0]) + '</i>'
-    def math(self, arg):
-        # formula = ''.join(arg[0])
-        # formula_hash = str(hex(hash(formula)))[2:]
-        # if not os.path.isfile('formula/' + formula_hash + '.png'):
-        #     print 'Construct formula: ' + formula + ' to ' + formula_hash + '.png'
-        #     os.chdir('latex')
-        #     print subprocess.check_output(['pdflatex', '\\def\\formula{' + formula + '}\\input{formula.tex}'])
-        #     print subprocess.check_output(['convert', '-density', '120', 'formula.pdf', '-quality', '90', 'formula.png'])
-        #     shutil.copy2('formula.png', '../formula/' + formula_hash + '.png')
-        #     os.chdir('..')
-        # return '<img style = "top: 6; position: relative;" src = formula/' + formula_hash + '.png />'
-        return ''
+
     def size(self, arg):
         return '<span style="font-size: ' + str(arg[0]) + '">' + \
             parse(arg[1]) + '</span>'
@@ -111,6 +114,9 @@ class html:
     def tt(self, arg): return '<tt>' + parse(arg[0]) + '</tt>'
     def u(self, arg): return '<u>' + parse(arg[0]) + '</u>'
     def quote(self, arg): return '<blockquote>' + parse(arg[0]) + '</blockquote>'
+
+
+# Plain text.
 
 class text:
 
@@ -163,6 +169,8 @@ class text:
     def u(self, arg): return parse(arg[0], depth=depth + 1)
 
 
+# Plain text without formatting.
+
 class rawtext:
 
     name = 'Text'
@@ -211,6 +219,8 @@ class rawtext:
     def text(self, arg): return parse(arg[0]) + '\n\n'
     def u(self, arg): return parse(arg[0])
 
+
+# Markdown.
 
 class markdown:
     name = 'Markdown'
@@ -271,6 +281,8 @@ class markdown:
     def quote(self, arg): return '>' + parse(arg[0]) + ''
     def text(self, arg): return parse(arg[0]) + '\n\n'
 
+
+# TeX.
 
 class tex:
     name = 'Tex'
@@ -410,6 +422,8 @@ class tex:
     def cite(self, arg): return '\\cite{' + arg[0][0] + '}'
 
 
+# RTF.
+
 class rtf:
     name = 'RTF'
 
@@ -523,9 +537,3 @@ class rtf:
     def text(self, arg): return '\\par\\pard\\qj' + parse(arg[0]) + '\n'
     def br(self, arg): return '\\par\\pard'
 
-# ::: symbols
-#
-# \n\n:\\par\\pard
-# ~:\\u0160
-# ---:\\u8212
-# --:\\u8211
