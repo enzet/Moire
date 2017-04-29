@@ -243,8 +243,8 @@ def escape(text, format_name, from_clear=False):
                 .replace('[', '[')\
                 .replace(']', ']')\
                 .replace('"', 'kav')\
-                .replace('─', 'line')\
-                .replace('#', 'sharp')
+                .replace('─', 'line')
+                #.replace('#', 'sharp')
         else:
             return text\
                 .replace('%', '\\%')\
@@ -367,7 +367,7 @@ def process_inner_block(inner_block):
     return s
 
 
-def parse(text, inblock=False, depth=0, mode=''):
+def parse(text, custom_format=None, inblock=False, depth=0, mode=''):
     """
     Element parsing into formatted text. Element may be plain text, tag, or
     list of elements.
@@ -377,15 +377,21 @@ def parse(text, inblock=False, depth=0, mode=''):
     global markup_format
     global no_tags
     global status
+
+    current_format = markup_format
+
+    if custom_format:
+        current_format = custom_format
+
     if not text or text == '' or text == []:
         return ''
     elif isinstance(text, str):
-        return escape(trim_inside(text), markup_format.name)
+        return escape(trim_inside(text), current_format.name)
     elif isinstance(text, Tag):
         key = 'header' if (text.id in '123456') else text.id
         method = None
         try:
-            method = getattr(markup_format, mode + key)
+            method = getattr(current_format, mode + key)
         except Exception as e:
             pass
         if method:
@@ -397,29 +403,31 @@ def parse(text, inblock=False, depth=0, mode=''):
             return s
         no_tags.append(mode + key)
         try:
-            method = getattr(markup_format, mode + 'notag')
+            method = getattr(current_format, mode + 'notag')
         except Exception as e:
             pass
         if method:
             return str(method([key] + text.parameters))
         if not mode:
-            error('No such tag: ' + mode + key)
+            error('No such tag: ' + mode + key + ' in ' + \
+                str(current_format.name))
     else:  # if text is list of items
         s = ''
         inner_block = []
         for item in text:
             if inblock:
-                if isinstance(item, Tag) and item.id in markup_format.block_tags:
+                if isinstance(item, Tag) and \
+                        item.id in current_format.block_tags:
                     if inner_block:
                         s += process_inner_block(inner_block)
                         inner_block = []
                     s += str(parse(item, inblock=inblock, depth=depth + 1, \
-                        mode=mode))
+                        mode=mode, custom_format=custom_format))
                 else:
                     inner_block.append(item)
             else:
                 s += str(parse(item, inblock=inblock, depth=depth + 1, \
-                    mode=mode))
+                    mode=mode, custom_format=custom_format))
         if inner_block:
             s += process_inner_block(inner_block)
         return s
@@ -568,9 +576,9 @@ def convert_file(input_file_name, format='html', remove_comments=True,
     if '/' in input_file_name:
         directory = input_file_name[:input_file_name.rfind('/') + 1]
 
-    input = include(input_file, directory, path)
+    text = open(input_file_name, 'r').read()
 
-    return convert(input, format, remove_comments, rules_file, wrap, 
+    return convert(text, format, remove_comments, rules_file, wrap,
         opt=opt)
 
 
