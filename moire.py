@@ -10,6 +10,7 @@ Author: Sergey Vartanov (me@enzet.ru).
 See http://github.com/enzet/Moire
 """
 
+import datetime
 import sys
 import os
 import re
@@ -92,6 +93,21 @@ class Tree:
             if a:
                 return a
         return None
+
+
+class Argument:
+    def __init__(self, array, spec):
+        self.array = array
+        self.spec = spec
+
+    def __getitem__(self, key):
+        return self.array[key]
+
+    def __len__(self):
+        return len(self.array)
+
+    def spec(self):
+        return self.spec
 
 
 def is_space(c):
@@ -367,7 +383,7 @@ def process_inner_block(inner_block):
     return s
 
 
-def parse(text, custom_format=None, inblock=False, depth=0, mode=''):
+def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
     """
     Element parsing into formatted text. Element may be plain text, tag, or
     list of elements.
@@ -383,10 +399,19 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode=''):
     if custom_format:
         current_format = custom_format
 
-    if not text or text == '' or text == []:
+    if spec is None:
+        spec = {}
+
+    if not text:
         return ''
     elif isinstance(text, str):
-        return escape(trim_inside(text), current_format.name)
+        if 'full_escape' in spec and spec['full_escape']:
+            return current_format._full_escape(escape(text, \
+                current_format.name))
+        if 'trim' in spec and not spec['trim']:
+            return escape(text, current_format.name)
+        else:
+            return escape(trim_inside(text), current_format.name)
     elif isinstance(text, Tag):
         key = 'header' if (text.id in '123456') else text.id
         method = None
@@ -394,23 +419,26 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode=''):
             method = getattr(current_format, mode + key)
         except Exception as e:
             pass
+        arg = Argument(text.parameters, spec)
         if method:
             s = ''
             if key == 'header':
-                s += str(method(text.parameters, int(text.id)))
+                s += str(method(arg, int(text.id)))
             else:
-                s += str(method(text.parameters))
+                s += str(method(arg))
             return s
-        no_tags.append(mode + key)
+        '''
         try:
             method = getattr(current_format, mode + 'notag')
         except Exception as e:
             pass
-        if method:
-            return str(method([key] + text.parameters))
         if not mode:
+            no_tags.append(key)
             error('No such tag: ' + mode + key + ' in ' + \
                 str(current_format.name))
+        if method:
+            return str(method([key] + text.parameters))
+        '''
     else:  # if text is list of items
         s = ''
         inner_block = []
@@ -422,12 +450,12 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode=''):
                         s += process_inner_block(inner_block)
                         inner_block = []
                     s += str(parse(item, inblock=inblock, depth=depth + 1, \
-                        mode=mode, custom_format=custom_format))
+                        mode=mode, custom_format=custom_format, spec=spec))
                 else:
                     inner_block.append(item)
             else:
                 s += str(parse(item, inblock=inblock, depth=depth + 1, \
-                    mode=mode, custom_format=custom_format))
+                    mode=mode, custom_format=custom_format, spec=spec))
         if inner_block:
             s += process_inner_block(inner_block)
         return s
@@ -667,6 +695,8 @@ def construct_book(input_file_name, output_directory, kind='html',
     if document.content != []:
         documents.append(document)
 
+    markup_format.init()
+
     for document in documents:
         name = output_directory
         status['id'] = document.id
@@ -681,5 +711,10 @@ def construct_book(input_file_name, output_directory, kind='html',
         status['level'] = len(document.id)
         status['title'] = document.title
 
+        begin = datetime.datetime.now()
         parse(Tag('body', [document.content]), False, 0, 'pre_')
         output.write(parse(Tag('body', [document.content])))
+
+        print ' [PARSE]', datetime.datetime.now() - begin, name
+
+    markup_format.fini()
