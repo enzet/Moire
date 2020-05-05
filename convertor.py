@@ -25,22 +25,40 @@ import sys
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-i', '--input', dest='input_file_name',
+parser.add_argument('-i', '--input',
+    dest='input_file_name',
     help='Moire input file')
-parser.add_argument('-o', '--output', dest='output_destination',
+parser.add_argument('-o', '--output',
+    dest='output_destination',
     help='output file')
-parser.add_argument('-f', '--format', help='output format')
-parser.add_argument('-r', '--rules', help='rules file')
-parser.add_argument('-b', '--book-level', help='book level')
-parser.add_argument('-pl', dest='print_lexemes', action='store_true', 
+parser.add_argument('-f', '--format',
+    help='output format')
+parser.add_argument('-r', '--rules',
+    help='rules file')
+parser.add_argument('--import-directory',
+    help='path to rules file')
+parser.add_argument('-b', '--book-level',
+    help='book level')
+parser.add_argument('-pl',
+    dest='print_lexemes',
+    action='store_true',
     help='print lexemes')
-parser.add_argument('-pp', dest='print_preprocessed', action='store_true', 
+parser.add_argument('-pp',
+    dest='print_preprocessed',
+    action='store_true',
     help='print preprocessed file')
-parser.add_argument('-pi', dest='print_intermediate', action='store_true', 
+parser.add_argument('-pi',
+    dest='print_intermediate',
+    action='store_true',
     help='print intermediate representation')
-parser.add_argument('-opt', dest='opt', help='additional options')
+parser.add_argument('-opt',
+    dest='opt',
+    help='additional options')
 
 options = parser.parse_args(sys.argv[1:])
+
+if options.import_directory:
+    sys.path.insert(0, options.import_directory)
 
 # Arguments check
 
