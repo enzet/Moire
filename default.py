@@ -533,7 +533,7 @@ class rtf:
         s = ''
         cites = arg[0][0].split(', ')
         for cite in cites:
-            print cite, status['books']
+            print(cite, status['books'])
             if not (cite in status['books']):
                 status['bookindex'] += 1
                 status['books'][cite] = status['bookindex']

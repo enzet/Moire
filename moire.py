@@ -32,7 +32,7 @@ paragraph_delimiter = '\n\n'
 
 
 def error(message):
-    print ' [ERROR] ' + str(message) + '.'
+    print(' [ERROR] ' + str(message) + '.')
 
 
 class Tag:
@@ -80,7 +80,7 @@ class Tree:
         self.number = 0
 
     def pr(self):
-        print self.element
+        print(self.element)
         for child in self.children:
             child.pr()
 
@@ -175,7 +175,7 @@ def lexer(text):
         char = text[index]
         if char == '\\':
             if index == len(text) - 1:
-                print 'Error: backslash at the end of string.'
+                print('Error: backslash at the end of string.')
             elif not is_letter_or_digit(text[index + 1]):
                 if word != '':
                     lexemes.append(Lexeme('text', word))
@@ -323,7 +323,7 @@ def get_intermediate(lexemes, positions, level, index=0):
             level -= 1
             if level < 0:
                 position = positions[index]
-                print 'Lexer error at ' + str(position) + '.'
+                print('Lexer error at ' + str(position) + '.')
                 #print input_file[position - 10:position + 10]\
                 #        .replace('\n', ' ').replace('\t', ' ')
                 #print '          ^'
@@ -685,7 +685,7 @@ def construct_book(input_file_name, output_directory, kind='html',
                 try:
                     level[int(element.id)] = element.parameters[1][0]
                 except IndexError:
-                    print 'No ID for header ' + element.parameters[0][0]
+                    print('No ID for header ' + element.parameters[0][0])
                     sys.exit(0)
                 document = Document(level[:int(element.id) + 1], [element], \
                     str(element.parameters[0][0]))
@@ -715,6 +715,6 @@ def construct_book(input_file_name, output_directory, kind='html',
         parse(Tag('body', [document.content]), False, 0, 'pre_')
         output.write(parse(Tag('body', [document.content])))
 
-        print ' [PARSE]', datetime.datetime.now() - begin, name
+        # print(' [PARSE]', datetime.datetime.now() - begin, name)
 
     markup_format.fini()
