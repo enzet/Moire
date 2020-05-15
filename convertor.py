@@ -25,33 +25,56 @@ import sys
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-i', '--input',
+parser.add_argument(
+    '-i', '--input',
     dest='input_file_name',
     help='Moire input file')
-parser.add_argument('-o', '--output',
+
+parser.add_argument(
+    '-o', '--output',
     dest='output_destination',
     help='output file')
-parser.add_argument('-f', '--format',
+
+parser.add_argument(
+    '-f', '--format',
     help='output format')
-parser.add_argument('-r', '--rules',
+
+parser.add_argument(
+    '-r', '--rules',
     help='rules file')
-parser.add_argument('--import-directory',
+
+parser.add_argument(
+    '--import-directory',
     help='path to rules file')
-parser.add_argument('-b', '--book-level',
+
+parser.add_argument(
+    '--config',
+    help='configuration file name')
+
+parser.add_argument(
+    '-b', '--book-level',
     help='book level')
-parser.add_argument('-pl',
+
+parser.add_argument(
+    '-pl',
     dest='print_lexemes',
     action='store_true',
     help='print lexemes')
-parser.add_argument('-pp',
+
+parser.add_argument(
+    '-pp',
     dest='print_preprocessed',
     action='store_true',
     help='print preprocessed file')
-parser.add_argument('-pi',
+
+parser.add_argument(
+    '-pi',
     dest='print_intermediate',
     action='store_true',
     help='print intermediate representation')
-parser.add_argument('-opt',
+
+parser.add_argument(
+    '-opt',
     dest='opt',
     help='additional options')
 
@@ -63,27 +86,31 @@ if options.import_directory:
 # Arguments check
 
 if not options.input_file_name:
-    options.input_file_name = raw_input('Please, specify the input file ' + \
-        'name (or use -i <file name>): ')
+    options.input_file_name = input(
+        'Please, specify the input file name (or use -i <file name>): ')
 
 while True:
     if os.path.isfile(options.input_file_name):
         break
     else:
-        answer = raw_input('Input file "' + options.input_file_name + \
+        answer = input(
+            'Input file "' + options.input_file_name +
             '" is not found. Do you want to specity correct? [y/n] ')
         if answer.lower() in ['y', 'yes']:
-            options.input_file_name = raw_input('Please, specify the input ' + \
-               'file name (or use -i <file name>): ')
+            options.input_file_name = input(
+                'Please, specify the input '
+                'file name (or use -i <file name>): ')
         else:
             sys.exit(0)
 
 if not options.format:
-    options.format = raw_input('Please, specify the output format (html, ' + \
+    options.format = input(
+        'Please, specify the output format (html, '
         'tex, etc.) (or use -f <format>): ')
 
 if not options.output_destination:
-    answer = raw_input('You aren\'t specify output destination. Should I ' + \
+    answer = input(
+        'You aren\'t specify output destination. Should I '
         'create file "out.' + options.format + '"? [y/n] ')
     if answer.lower() in ['y', 'yes', 'ok']:
         options.output_destination = 'out.' + options.format
@@ -96,8 +123,9 @@ options.book_level = int(options.book_level) if options.book_level else 0
 
 if not options.book_level or options.book_level == 0:
 
-    output = moire.convert_file(options.input_file_name, options.format, 
-        True, options.rules, True)
+    output = moire.convert(
+        open(options.input_file_name, "r").read(), options.format, True,
+        options.rules, True)
 
     if not output:
         print('Fatal: output was no produced.')
@@ -111,6 +139,6 @@ if not options.book_level or options.book_level == 0:
 
 else:
 
-    moire.construct_book(options.input_file_name, 
-        output_directory=options.output_destination, kind=options.format, 
-        rules=options.rules, book_level=options.book_level)
+    moire.construct_book(
+        options.input_file_name, output_directory=options.output_destination,
+        kind=options.format, rules=options.rules, book_level=options.book_level)

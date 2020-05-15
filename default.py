@@ -10,9 +10,10 @@ depth = 0
 status = {}
 
 
-# HTML.
-
 class html:
+    """
+    HTML.
+    """
     def __init__(self):
         pass
 
@@ -46,13 +47,12 @@ class html:
         </html>'''
         return s
 
-    def code(self, arg): return '<pre><tt>' + clear(arg[0]) + '</tt></pre>'
+    def code(self, arg): return f"<pre><tt>{clear(arg[0])}</tt></pre>"
 
-    def title(self, arg): return '<title>' + parse(arg[0]) + '</title>'
+    def title(self, arg): return f"<title>{parse(arg[0])}</title>"
 
     def header(self, arg, number):
-        return '<h' + str(number) + '>' + parse(arg[0], inblock=True) + \
-            '</h' + str(number) + '>'
+        return f"<h{number}>{parse(arg[0], inblock=True)}</h{number}>"
 
     def pre_list(self, arg):
         for item in arg[0]:
@@ -60,19 +60,19 @@ class html:
                 parse(item, mode='pre_')
 
     def list(self, arg):
-        s = '<ul>'
+        s = "<ul>"
         for item in arg[0]:
             if isinstance(item, list):
-                s += '<li>' + parse(item, inblock=True) + '</li>'
-        s += '</ul>'
+                s += f"<li>{parse(item, inblock=True)}</li>"
+        s += "</ul>"
         return s
 
     def shortlist(self, arg):
-        s = '<ul>'
+        s = "<ul>"
         for item in arg[0]:
             if isinstance(item, list):
-                s += '<li>' + parse(item) + '</li>'
-        s += '</ul>'
+                s += f"<li>{parse(item)}</li>"
+        s += "</ul>"
         return s
 
     def pre_shortlist(self, arg):
@@ -81,7 +81,9 @@ class html:
                 parse(item, mode='pre_')
 
     def image(self, arg):
-        return '<img src="' + arg[0][0] + '" alt="' + parse(arg[1]) + '" />'
+        return \
+            f'<img src="{arg[0][0]}"' + \
+            (f' alt="{parse(arg[1])}"' if len(arg) >= 2 else "") + " />"
 
     def table(self, arg):
         s = '<table>'
@@ -97,29 +99,53 @@ class html:
 
     # Inner tags.
 
-    def b(self, arg): return '<b>' + parse(arg[0]) + '</b>'
-    def br(self, arg): return '<br />'
-    def href(self, arg): return '<a href="' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
-    def formal(self, arg): return '&lt;<u>' + parse(arg[0]) + '</u>&gt;'
-    def i(self, arg): return '<i>' + parse(arg[0]) + '</i>'
+    def b(self, arg):
+        return f"<b>{parse(arg[0])}</b>"
+
+    def br(self, arg):
+        return '<br />'
+
+    def href(self, arg):
+        return '<a href="' + arg[0][0] + '">' + parse(arg[1]) + '</a>'
+
+    def formal(self, arg):
+        return '&lt;<u>' + parse(arg[0]) + '</u>&gt;'
+
+    def i(self, arg):
+        return f"<i>{parse(arg[0])}</i>"
 
     def size(self, arg):
-        return '<span style="font-size: ' + str(arg[0]) + '">' + \
-            parse(arg[1]) + '</span>'
-    def strike(self, arg): return '<s>' + parse(arg[0]) + '</s>'
-    def sc(self, arg): return '<span style="font-variant: small-caps;">' + parse(arg[0]) + '</span>'
-    def sub(self, arg): return '<sub>' + parse(arg[0]) + '</sub>'
-    def super(self, arg): return '<sup>' + parse(arg[0]) + '</sup>'
-    def text(self, arg): return '<p>' + parse(arg[0]) + '</p>'
-    def tt(self, arg): return '<tt>' + parse(arg[0]) + '</tt>'
-    def u(self, arg): return '<u>' + parse(arg[0]) + '</u>'
-    def quote(self, arg): return '<blockquote>' + parse(arg[0]) + '</blockquote>'
+        return f'<span style="font-size: {arg[0]}">{parse(arg[1])}</span>'
 
+    def strike(self, arg):
+        return f"<s>{parse(arg[0])}</s>"
 
-# Plain text.
+    def sc(self, arg):
+        return f'<span style="font-variant: small-caps;">{parse(arg[0])}</span>'
+
+    def sub(self, arg):
+        return f"<sub>{parse(arg[0])}</sub>"
+
+    def super(self, arg):
+        return f"<sup>{parse(arg[0])}</sup>"
+
+    def text(self, arg):
+        return f"<p>{parse(arg[0])}</p>"
+
+    def tt(self, arg):
+        return f"<tt>{parse(arg[0])}</tt>"
+
+    def u(self, arg):
+        return f"<u>{parse(arg[0])}</u>"
+
+    def quote(self, arg):
+        return f"<blockquote>{parse(arg[0])}</blockquote>"
+
 
 class text:
-
+    """
+    Plain text.
+    """
     name = 'Text'
     extension = 'txt'
 
@@ -226,6 +252,11 @@ class markdown:
     name = 'Markdown'
     extensions = ['md', 'markdown']
 
+    block_tags = ['block', 'body', 'code', 'title', 'number', 'list',
+        'shortlist', 'image', 'table']
+
+    level = 0
+
     def block(self, arg): return parse(arg[0], inblock=True)
     def body(self, arg):
         counter = []
@@ -258,28 +289,37 @@ class markdown:
         for item in arg[0]:
             if isinstance(item, list):
                 n += 1
-                s += str(n) + '. ' + parse(item) + '\n'
+                self.level += 1
+                s += '\n' + ('   ' * (self.level - 1)) +  '* ' + parse(item) + '\n'
+                self.level -= 1
         return s
     def table(self, arg):
-        s = '<table>'
-        for tr in arg[0]:
+        s = ''
+        for index, tr in enumerate(arg[0]):
             if isinstance(tr, list):
-                s += '<tr>'
+                s += '|'
                 for td in tr:
                     if isinstance(td, list):
-                        s += '<td>' + parse(td, inblock=True) + '</td>'
-                s += '</tr>'
-        s += '</table>'
+                        s += ' ' + parse(td) + ' |'
+                s += '\n'
+                if index == 0:
+                    s += '|'
+                    for td in tr:
+                        if isinstance(td, list):
+                            s += '---|'
+                    s += '\n'
         return s
+
     def b(self, arg): return '**' + parse(arg[0]) + '**'
     def code(self, arg): return '    ' + parse(arg[0]).replace('\n', '\n    ')
     def href(self, arg): return '\[' + parse(arg[0]) + '\](' + parse(arg[0]) + ')'
     def i(self, arg): return '*' + parse(arg[0]) + '*'
     def image(self, arg): return '!\[' + parse(arg[0]) + '\](' + parse(arg[0]) + ')'
-    def tt(self, arg): return '<tt>' + str(clear(arg[0])) + '</tt>'
+    def formal(self, arg): return '<' + parse(arg[0]) + '>'
+    def tt(self, arg): return '`' + str(parse(arg[0])) + '`'
     def u(self, arg): pass
-    def quote(self, arg): return '>' + parse(arg[0]) + ''
     def text(self, arg): return parse(arg[0]) + '\n\n'
+    def quote(self, arg): return '>' + parse(arg[0]) + ''
 
 
 # TeX.

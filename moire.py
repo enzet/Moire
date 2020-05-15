@@ -13,7 +13,8 @@ See http://github.com/enzet/Moire
 import datetime
 import sys
 import os
-import re
+
+from typing import Dict, List
 
 # Global variables
 
@@ -406,7 +407,7 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
         return ''
     elif isinstance(text, str):
         if 'full_escape' in spec and spec['full_escape']:
-            return current_format._full_escape(escape(text, \
+            return current_format._full_escape(escape(text,
                 current_format.name))
         if 'trim' in spec and not spec['trim']:
             return escape(text, current_format.name)
@@ -422,11 +423,16 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
         arg = Argument(text.parameters, spec)
         if method:
             s = ''
-            if key == 'header':
-                s += str(method(arg, int(text.id)))
-            else:
-                s += str(method(arg))
+            try:
+                if key == 'header':
+                    s += str(method(arg, int(text.id)))
+                else:
+                    s += str(method(arg))
+            except Exception:
+                error("while " + key + " processing")
             return s
+        else:
+            status["missing_tags"].add(key)
         '''
         try:
             method = getattr(current_format, mode + 'notag')
@@ -449,12 +455,12 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
                     if inner_block:
                         s += process_inner_block(inner_block)
                         inner_block = []
-                    s += str(parse(item, inblock=inblock, depth=depth + 1, \
+                    s += str(parse(item, inblock=inblock, depth=depth + 1,
                         mode=mode, custom_format=custom_format, spec=spec))
                 else:
                     inner_block.append(item)
             else:
-                s += str(parse(item, inblock=inblock, depth=depth + 1, \
+                s += str(parse(item, inblock=inblock, depth=depth + 1,
                     mode=mode, custom_format=custom_format, spec=spec))
         if inner_block:
             s += process_inner_block(inner_block)
@@ -482,10 +488,32 @@ def get_documents(level, intermediate_representation):
     return documents
 
 
-def convert(input, format='HTML', remove_comments=True,
-        rules='default', wrap=True, opt=None):
+def get_ids(content: str, input_file_directory: str, include: bool = True) \
+        -> List[str]:
     """
-    Convert Moire text without includes but with comments artefacts to selected
+    Get all header identifiers.
+
+    :param content: input content in the Moire format
+    :param input_file_directory: directory of the input file for correct include
+        resolving.
+    :param include: include files specified in \include tag.
+    """
+    ids: List[str] = []
+    intermediate_representation = \
+        full_parse(content, input_file_directory, include=include)
+    for element in intermediate_representation:
+        if isinstance(element, Tag) and element.id in "123456":
+            if len(element.parameters) >= 2:
+                ids.append(element.parameters[1][0])
+    return ids
+
+
+def convert(
+        input: str, format: str = 'HTML', remove_comments: bool = True,
+        rules: str = 'default', wrap: bool = True, opt: dict = None,
+        input_file_directory: str = None, include: bool = True):
+    """
+    Convert Moire text without includes but with comments artifacts to selected
     format.
     """
 
@@ -514,7 +542,8 @@ def convert(input, format='HTML', remove_comments=True,
         return None
 
     index = 0
-    intermediate_representation = full_parse(result, None)
+    intermediate_representation = \
+        full_parse(result, input_file_directory, include=include)
 
     # Construct content table
 
@@ -549,8 +578,9 @@ def convert(input, format='HTML', remove_comments=True,
     return result
 
 
-def full_parse(text, directory, path=None, offset=0, prefix=''):
-    if path == None:
+def full_parse(text, directory, path=None, offset=0, prefix='',
+               include: bool = True):
+    if path is None:
         path = []
 
     text = comments_preprocessing(text)
@@ -561,7 +591,7 @@ def full_parse(text, directory, path=None, offset=0, prefix=''):
 
     for item in raw_IR:
         if isinstance(item, Tag):
-            if item.id == 'include':
+            if item.id == 'include' and include:
                 file_name = item.parameters[0][0]
                 offset1, prefix1 = 0, ''
                 if len(item.parameters) > 1:
@@ -571,7 +601,7 @@ def full_parse(text, directory, path=None, offset=0, prefix=''):
                 found = False
                 if os.path.isfile(file_name):
                     included_text = open(file_name, 'r').read()
-                    resulted_IR += full_parse(included_text, directory, \
+                    resulted_IR += full_parse(included_text, directory,
                         path, offset1, prefix1)
                     found = True
                 else:
@@ -579,12 +609,12 @@ def full_parse(text, directory, path=None, offset=0, prefix=''):
                         if os.path.isfile(direct + '/' + file_name):
                             included_text = \
                                 open(direct + '/' + file_name, 'r').read()
-                            resulted_IR += full_parse(included_text, \
+                            resulted_IR += full_parse(included_text,
                                 directory, path, offset1, prefix1)
                             found = True
                             break
                 if not found:
-                    error('no such file to include: ' + file_name)
+                    status["missing_files"].add(file_name)
             elif item.id in '123456' and (offset or prefix):
                 new_item = Tag(str(int(item.id) + offset), item.parameters)
                 resulted_IR.append(new_item)
@@ -594,20 +624,6 @@ def full_parse(text, directory, path=None, offset=0, prefix=''):
             resulted_IR.append(item)
 
     return resulted_IR
-
-
-def convert_file(input_file_name, format='html', remove_comments=True,
-        rules_file='default', wrap=True, opt=None, path=None):
-
-    input_file = open(input_file_name)
-    directory = ''
-    if '/' in input_file_name:
-        directory = input_file_name[:input_file_name.rfind('/') + 1]
-
-    text = open(input_file_name, 'r').read()
-
-    return convert(text, format, remove_comments, rules_file, wrap,
-        opt=opt)
 
 
 def construct_book(input_file_name, output_directory, kind='html',
@@ -687,12 +703,12 @@ def construct_book(input_file_name, output_directory, kind='html',
                 except IndexError:
                     print('No ID for header ' + element.parameters[0][0])
                     sys.exit(0)
-                document = Document(level[:int(element.id) + 1], [element], \
+                document = Document(level[:int(element.id) + 1], [element],
                     str(element.parameters[0][0]))
         else:
             document.content.append(element)
 
-    if document.content != []:
+    if document.content:
         documents.append(document)
 
     markup_format.init()
