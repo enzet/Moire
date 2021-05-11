@@ -16,6 +16,7 @@ class html:
     """
     HTML.
     """
+
     name = "HTML"
     extensions = ["html", "htm"]
 
@@ -23,10 +24,12 @@ class html:
         "<": "&lt;",
         ">": "&rt;",
         "&": "&amp;",
-        }
+    }
 
-    block_tags = ["block", "body", "code", "title", "number", "list",
-        "shortlist", "image", "table"]
+    block_tags = [
+        "block", "body", "code", "title", "number", "list", "shortlist",
+        "image", "table",
+    ]
 
     def __init__(self):
         pass
@@ -92,9 +95,11 @@ class html:
                 parse(item, mode="pre_")
 
     def image(self, arg: List[Any]) -> str:
-        return \
-            f'<img src="{arg[0][0]}"' + \
-            (f' alt="{parse(arg[1])}"' if len(arg) >= 2 else "") + " />"
+        return (
+            f'<img src="{arg[0][0]}"'
+            + (f' alt="{parse(arg[1])}"' if len(arg) >= 2 else "")
+            + " />"
+        )
 
     def table(self, arg: List[Any]) -> str:
         s = "<table>"
@@ -160,6 +165,7 @@ class text:
     """
     Plain text.
     """
+
     name = "Text"
     extension = "txt"
 
@@ -180,16 +186,22 @@ class text:
                     k += "\n"
                 i += 1
             return k
+
         return parse(arg[0], inblock=True, depth=1) + "\n"
-    def code(self, arg: List[Any]) -> str: return clear(arg[0]) + "\n"
+
+    def code(self, arg: List[Any]) -> str:
+        return clear(arg[0]) + "\n"
+
     def header(self, arg, number):
         return "  " * (number - 1) + parse(arg[0], depth=depth + 1)
+
     def list(self, arg: List[Any]) -> str:
         s = ""
         for item in arg[0]:
             if isinstance(item, list):
                 s += "  * " + parse(item, inblock=True, depth=depth + 1)
         return s
+
     def table(self, arg: List[Any]) -> str:
         s = "+----------+----------+\n"
         for tr in arg[0]:
@@ -199,20 +211,43 @@ class text:
             s += "\n"
             s += "+----------+----------+\n"
         return s
-    def b(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def href(self, arg: List[Any]) -> str: return parse(arg[1], depth=depth + 1) + " (" + arg[0][0] + ")"
-    def i(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def size(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def strike(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def sc(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def sub(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def super(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def text(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1) + "\n\n"
-    def tt(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
-    def u(self, arg: List[Any]) -> str: return parse(arg[0], depth=depth + 1)
+
+    def b(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def href(self, arg: List[Any]) -> str:
+        return parse(arg[1], depth=depth + 1) + " (" + arg[0][0] + ")"
+
+    def i(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def size(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def strike(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def sc(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def sub(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def super(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def text(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1) + "\n\n"
+
+    def tt(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
+
+    def u(self, arg: List[Any]) -> str:
+        return parse(arg[0], depth=depth + 1)
 
 
 # Plain text without formatting.
+
 
 class rawtext:
     name = "Text"
@@ -222,8 +257,10 @@ class rawtext:
         "<": "&lt;",
     }
 
-    block_tags = ["block", "body", "code", "title", "number", "list",
-        "shortlist", "image", "table"]
+    block_tags = [
+        "block", "body", "code", "title", "number", "list", "shortlist",
+        "image", "table",
+    ]
 
     def __init__(self):
         pass
@@ -238,14 +275,19 @@ class rawtext:
                     k += "\n"
                 i += 1
             return k
+
         return parse(arg[0], inblock=True, depth=1) + "\n"
-    def header(self, arg, number): return parse(arg[0])
+
+    def header(self, arg, number):
+        return parse(arg[0])
+
     def list(self, arg: List[Any]) -> str:
         s = ""
         for item in arg[0]:
             if isinstance(item, list):
                 s += "  * " + parse(item, inblock=True, depth=depth + 1)
         return s
+
     def table(self, arg: List[Any]) -> str:
         s = ""
         for tr in arg[0]:
@@ -253,26 +295,49 @@ class rawtext:
                 s += " " + parse(td, inblock=True, depth=depth + 1) + " |"
             s += "\n"
         return s
-    def b(self, arg: List[Any]) -> str: return parse(arg[0])
-    def href(self, arg: List[Any]) -> str: return parse(arg[1])
-    def i(self, arg: List[Any]) -> str: return parse(arg[0])
-    def size(self, arg: List[Any]) -> str: return parse(arg[0])
-    def strike(self, arg: List[Any]) -> str: return parse(arg[0])
-    def sc(self, arg: List[Any]) -> str: return parse(arg[0])
-    def sub(self, arg: List[Any]) -> str: return parse(arg[0])
-    def super(self, arg: List[Any]) -> str: return parse(arg[0])
-    def text(self, arg: List[Any]) -> str: return parse(arg[0]) + "\n\n"
-    def u(self, arg: List[Any]) -> str: return parse(arg[0])
+
+    def b(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def href(self, arg: List[Any]) -> str:
+        return parse(arg[1])
+
+    def i(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def size(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def strike(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def sc(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def sub(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def super(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def text(self, arg: List[Any]) -> str:
+        return parse(arg[0]) + "\n\n"
+
+    def u(self, arg: List[Any]) -> str:
+        return parse(arg[0])
 
 
 # Markdown.
+
 
 class markdown:
     name = "Markdown"
     extensions = ["md", "markdown"]
 
-    block_tags = ["block", "body", "code", "title", "number", "list",
-        "shortlist", "image", "table"]
+    block_tags = [
+        "block", "body", "code", "title", "number", "list", "shortlist",
+        "image", "table",
+    ]
 
     level = 0
 
@@ -290,8 +355,11 @@ class markdown:
 
     def body(self, arg: List[Any]) -> str:
         counter = []
-        return (parse(arg[0], inblock=True)
-            .replace("\n\n\n", "\n\n").replace("\n\n\n", "\n\n"))
+        return (
+            parse(arg[0], inblock=True)
+            .replace("\n\n\n", "\n\n")
+            .replace("\n\n\n", "\n\n")
+        )
 
     def header(self, arg, number):
         s = ""
@@ -319,7 +387,13 @@ class markdown:
             if isinstance(item, list):
                 n += 1
                 self.level += 1
-                s += "\n" + ("   " * (self.level - 1)) + "* " + parse(item) + "\n"
+                s += (
+                    "\n"
+                    + ("   " * (self.level - 1))
+                    + "* "
+                    + parse(item)
+                    + "\n"
+                )
                 self.level -= 1
         return s
 
@@ -340,7 +414,8 @@ class markdown:
                     s += "\n"
         return s
 
-    def b(self, arg: List[Any]) -> str: return "**" + parse(arg[0]) + "**"
+    def b(self, arg: List[Any]) -> str:
+        return "**" + parse(arg[0]) + "**"
 
     def code(self, arg: List[Any]) -> str:
         s: str = "```"
@@ -355,27 +430,40 @@ class markdown:
     def href(self, arg: List[Any]) -> str:
         return self._get_href(parse(arg[0]), parse(arg[1]))
 
-    def i(self, arg: List[Any]) -> str: return "*" + parse(arg[0]) + "*"
+    def i(self, arg: List[Any]) -> str:
+        return "*" + parse(arg[0]) + "*"
 
-    def image(self, arg: List[Any]) -> str: 
+    def image(self, arg: List[Any]) -> str:
         return "![" + parse(arg[1]) + "](" + parse(arg[0]) + ")"
 
-    def formal(self, arg: List[Any]) -> str: return "<" + parse(arg[0]) + ">"
-    def tt(self, arg: List[Any]) -> str: return "`" + str(parse(arg[0])) + "`"
-    def u(self, arg: List[Any]) -> str: pass
-    def text(self, arg: List[Any]) -> str: return parse(arg[0]) + "\n\n"
-    def quote(self, arg: List[Any]) -> str: return ">" + parse(arg[0]) + ""
+    def formal(self, arg: List[Any]) -> str:
+        return "<" + parse(arg[0]) + ">"
+
+    def tt(self, arg: List[Any]) -> str:
+        return "`" + str(parse(arg[0])) + "`"
+
+    def u(self, arg: List[Any]) -> str:
+        pass
+
+    def text(self, arg: List[Any]) -> str:
+        return parse(arg[0]) + "\n\n"
+
+    def quote(self, arg: List[Any]) -> str:
+        return ">" + parse(arg[0]) + ""
 
 
 class wiki:
     """
     Wiki syntax of Wikipedia.
     """
+
     name = "Wiki"
     extensions = ["wiki"]
 
-    block_tags = ["block", "body", "code", "title", "number", "list",
-        "shortlist", "image", "table"]
+    block_tags = [
+        "block", "body", "code", "title", "number", "list", "shortlist",
+        "image", "table",
+    ]
 
     level = 0
 
@@ -393,8 +481,11 @@ class wiki:
 
     def body(self, arg: List[Any]) -> str:
         counter = []
-        return (parse(arg[0], inblock=True)
-            .replace("\n\n\n", "\n\n").replace("\n\n\n", "\n\n"))
+        return (
+            parse(arg[0], inblock=True)
+            .replace("\n\n\n", "\n\n")
+            .replace("\n\n\n", "\n\n")
+        )
 
     def header(self, arg, number):
         return (number * "=") + " " + parse(arg[0]) + " " + (number * "=")
@@ -413,9 +504,16 @@ class wiki:
             if isinstance(item, list):
                 n += 1
                 self.level += 1
-                s += "\n" + ("   " * (self.level - 1)) + "* " + parse(item) + "\n"
+                s += (
+                    "\n"
+                    + ("   " * (self.level - 1))
+                    + "* "
+                    + parse(item)
+                    + "\n"
+                )
                 self.level -= 1
         return s
+
     def table(self, arg: List[Any]) -> str:
         s = ""
         for index, tr in enumerate(arg[0]):
@@ -440,7 +538,7 @@ class wiki:
         if len(arg) > 1:
             return (
                 f'<syntaxhighlight lang="{clear(arg[1])}">'
-                f'\n{clear(arg[0])}\n</syntaxhighlight>'
+                f"\n{clear(arg[0])}\n</syntaxhighlight>"
             )
         else:
             return f"<pre><tt>{clear(arg[0])}\n</tt></pre>"
@@ -455,10 +553,11 @@ class wiki:
     def i(self, arg: List[Any]) -> str:
         return f"''{parse(arg[0])}''"
 
-    def image(self, arg: List[Any]) -> str: 
+    def image(self, arg: List[Any]) -> str:
         return "[[File:" + parse(arg[0]) + "|thumb|" + parse(arg[1]) + "]]"
 
-    def formal(self, arg: List[Any]) -> str: return "<" + parse(arg[0]) + ">"
+    def formal(self, arg: List[Any]) -> str:
+        return "<" + parse(arg[0]) + ">"
 
     def tt(self, arg: List[Any]) -> str:
         return "<code>" + str(parse(arg[0])) + "</code>"
@@ -466,11 +565,15 @@ class wiki:
     def u(self, arg: List[Any]) -> str:
         return f"<u>{parse(arg[0])}</u>"
 
-    def text(self, arg: List[Any]) -> str: return parse(arg[0]) + "\n\n"
-    def quote(self, arg: List[Any]) -> str: return ">" + parse(arg[0]) + ""
+    def text(self, arg: List[Any]) -> str:
+        return parse(arg[0]) + "\n\n"
+
+    def quote(self, arg: List[Any]) -> str:
+        return ">" + parse(arg[0]) + ""
 
 
 # TeX.
+
 
 class tex:
     name = "Tex"
@@ -478,10 +581,12 @@ class tex:
 
     escape = {
         "_": "\\_",
-        }
+    }
 
-    block_tags = ["block", "body", "code", "title", "number", "list",
-        "shortlist", "image", "table"]
+    block_tags = [
+        "block", "body", "code", "title", "number", "list", "shortlist",
+        "image", "table",
+    ]
 
     def __init__(self):
         pass
@@ -503,7 +608,11 @@ class tex:
 
     def title(self, arg: List[Any]) -> str:
         s = "\\title{" + parse(arg[0]) + "}"
-        s += "\\vspace{12em}\\begin{center}{\\huge " + parse(arg[0]) + "}\\end{center}\\vspace{2em}"
+        s += (
+            "\\vspace{12em}\\begin{center}{\\huge "
+            + parse(arg[0])
+            + "}\\end{center}\\vspace{2em}"
+        )
         return s
 
     def header(self, arg, number):
@@ -571,7 +680,12 @@ class tex:
         s += "\\end{ordered}\n"
         return s
 
-    def annotation(self, arg: List[Any]) -> str: return "\\begin {abstract}\n\n" + parse(arg[0], inblock=True) + "\\end {abstract}\n\n"
+    def annotation(self, arg: List[Any]) -> str:
+        return (
+            "\\begin {abstract}\n\n"
+            + parse(arg[0], inblock=True)
+            + "\\end {abstract}\n\n"
+        )
 
     def books(self, arg: List[Any]) -> str:
         s = "\\begin{thebibliography}{0}\n\n"
@@ -580,12 +694,22 @@ class tex:
                 s += "\\bibitem{" + item[0][0] + "} " + parse(item[1]) + "\n\n"
         s += "\\end{thebibliography}\n\n"
         return s
-        
-    def b(self, arg: List[Any]) -> str: return "{\\bf " + parse(arg[0]) + "}"
-    def br(self, arg: List[Any]) -> str: return "\\\\"
-    def cite(self, arg: List[Any]) -> str: return "\\cite {" + arg[0][0] + "}"
-    def code(self, arg: List[Any]) -> str: return "\\begin{verbatim}" + arg[0][0] + "\\end{verbatim}"
-    def date(self, arg: List[Any]) -> str: pass
+
+    def b(self, arg: List[Any]) -> str:
+        return "{\\bf " + parse(arg[0]) + "}"
+
+    def br(self, arg: List[Any]) -> str:
+        return "\\\\"
+
+    def cite(self, arg: List[Any]) -> str:
+        return "\\cite {" + arg[0][0] + "}"
+
+    def code(self, arg: List[Any]) -> str:
+        return "\\begin{verbatim}" + arg[0][0] + "\\end{verbatim}"
+
+    def date(self, arg: List[Any]) -> str:
+        pass
+
     def href(self, arg: List[Any]) -> str:
         s = ""
         link = arg[0][0]
@@ -596,33 +720,75 @@ class tex:
         else:
             s += "\\href {" + link + "} {" + parse(arg[1]) + "}"
         return s
-    def i(self, arg: List[Any]) -> str: return "{\\em " + parse(arg[0]) + "}"
-    def math(self, arg: List[Any]) -> str: return "$" + "".join(arg[0]) + "$"
-    def mathblock(self, arg: List[Any]) -> str: return "\\[" + "".join(arg[0]) + "\\]"
-    def ignore(self, arg: List[Any]) -> str: return "" + arg[0][0] + ""
+
+    def i(self, arg: List[Any]) -> str:
+        return "{\\em " + parse(arg[0]) + "}"
+
+    def math(self, arg: List[Any]) -> str:
+        return "$" + "".join(arg[0]) + "$"
+
+    def mathblock(self, arg: List[Any]) -> str:
+        return "\\[" + "".join(arg[0]) + "\\]"
+
+    def ignore(self, arg: List[Any]) -> str:
+        return "" + arg[0][0] + ""
+
     def image(self, arg: List[Any]) -> str:
-        s = "\\begin{figure}[h]\\begin{center}\\includegraphics{" + parse(arg[0]) + "}\\end{center}"
+        s = (
+            "\\begin{figure}[h]\\begin{center}\\includegraphics{"
+            + parse(arg[0])
+            + "}\\end{center}"
+        )
         if len(arg) > 1:
             s += "\\caption {" + parse(arg[1]) + "}"
         s += "\\end{figure}"
         return s
-    def item(self, arg: List[Any]) -> str: return "\\item " + parse(arg[0]) + ""
-    def page(self, arg: List[Any]) -> str: return "\\textsuperscript{" + parse(arg[0]) + "}"
-    def sc(self, arg: List[Any]) -> str: return "{\\sc " + parse(arg[0]) + "}"
-    def size(self, arg: List[Any]) -> str: return "" + parse(arg[0]) + ""
-    def strike(self, arg: List[Any]) -> str: return "" + parse(arg[0]) + ""
-    def sub(self, arg: List[Any]) -> str: return "$_{" + parse(arg[0]) + "}$"
-    def super(self, arg: List[Any]) -> str: return "\\textsuperscript{" + parse(arg[0]) + "}"
-    def text(self, arg: List[Any]) -> str: return parse(arg[0]) + "\n\n"
-    def tr(self, arg: List[Any]) -> str: return "" + parse(arg[0]) + "|"
-    def td(self, arg: List[Any]) -> str: return "| " + parse(arg[0]) + ""
-    def tt(self, arg: List[Any]) -> str: return "{\\tt " + parse(arg[0]) + "}"
-    def u(self, arg: List[Any]) -> str: return "" + parse(arg[0]) + ""
-    def quote(self, arg: List[Any]) -> str: return "" + parse(arg[0]) + ""
-    def cite(self, arg: List[Any]) -> str: return "\\cite{" + arg[0][0] + "}"
+
+    def item(self, arg: List[Any]) -> str:
+        return "\\item " + parse(arg[0]) + ""
+
+    def page(self, arg: List[Any]) -> str:
+        return "\\textsuperscript{" + parse(arg[0]) + "}"
+
+    def sc(self, arg: List[Any]) -> str:
+        return "{\\sc " + parse(arg[0]) + "}"
+
+    def size(self, arg: List[Any]) -> str:
+        return "" + parse(arg[0]) + ""
+
+    def strike(self, arg: List[Any]) -> str:
+        return "" + parse(arg[0]) + ""
+
+    def sub(self, arg: List[Any]) -> str:
+        return "$_{" + parse(arg[0]) + "}$"
+
+    def super(self, arg: List[Any]) -> str:
+        return "\\textsuperscript{" + parse(arg[0]) + "}"
+
+    def text(self, arg: List[Any]) -> str:
+        return parse(arg[0]) + "\n\n"
+
+    def tr(self, arg: List[Any]) -> str:
+        return "" + parse(arg[0]) + "|"
+
+    def td(self, arg: List[Any]) -> str:
+        return "| " + parse(arg[0]) + ""
+
+    def tt(self, arg: List[Any]) -> str:
+        return "{\\tt " + parse(arg[0]) + "}"
+
+    def u(self, arg: List[Any]) -> str:
+        return "" + parse(arg[0]) + ""
+
+    def quote(self, arg: List[Any]) -> str:
+        return "" + parse(arg[0]) + ""
+
+    def cite(self, arg: List[Any]) -> str:
+        return "\\cite{" + arg[0][0] + "}"
 
 
 # RTF.
+
 
 class rtf:
     name = "RTF"
@@ -630,7 +796,9 @@ class rtf:
     def __init__(self):
         pass
 
-    def block(self, arg: List[Any]) -> str: return parse(arg[0], inblock=True)
+    def block(self, arg: List[Any]) -> str:
+        return parse(arg[0], inblock=True)
+
     def body(self, arg: List[Any]) -> str:
         status["levels"] = [0, 0, 0, 0, 0, 0, 0]
         status["bookindex"] = 0
@@ -650,8 +818,17 @@ class rtf:
         s += "{\\f3 " + parse(arg[0], inblock=True) + "}"
         s += "\n}"
         return s
-    def title(self, arg: List[Any]) -> str: return "\\par\\pard \\qc\\b\\sb346\\sa173{\\f2{\\fs32 " + parse(arg[0]) + "  \\fs20}}\\b0\n"
-    def table(self, arg: List[Any]) -> str: return parse(arg[0])
+
+    def title(self, arg: List[Any]) -> str:
+        return (
+            "\\par\\pard \\qc\\b\\sb346\\sa173{\\f2{\\fs32 "
+            + parse(arg[0])
+            + "  \\fs20}}\\b0\n"
+        )
+
+    def table(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
     def list(self, arg: List[Any]) -> str:
         s = ""
         for item in arg[0]:
@@ -663,53 +840,140 @@ class rtf:
                 if lc == 0:
                     s += "\\par\\pard"
         return s
+
     def header(self, arg, number):
         if number == 1:
             status["levels"][1] += 1
             status["levels"][2] = 0
             status["levels"][3] = 0
             level = status["levels"][1]
-            return "\\i\\b\\sb346\\sa173{\\f2\\fs22 " + str(level) + ". " + parse(arg[0]) + "\\fs20}\\b0\\i0\n"
+            return (
+                "\\i\\b\\sb346\\sa173{\\f2\\fs22 "
+                + str(level)
+                + ". "
+                + parse(arg[0])
+                + "\\fs20}\\b0\\i0\n"
+            )
         elif number == 2:
             status["levels"][2] += 1
             status["levels"][3] = 0
-            level = str(status["levels"][1]) + "." + str(status["levels"][2]) + " "
-            return "\\b\\par\\pard\\sb346\\sa173{\\fs22 " + level + parse(arg[0]) + "\\fs20}\\b0\n"
+            level = (
+                str(status["levels"][1]) + "." + str(status["levels"][2]) + " "
+            )
+            return (
+                "\\b\\par\\pard\\sb346\\sa173{\\fs22 "
+                + level
+                + parse(arg[0])
+                + "\\fs20}\\b0\n"
+            )
         elif number == 3:
             status["levels"][3] += 1
-            level = str(status["levels"][1]) + "." + str(status["levels"][2]) + "." + str(status["levels"][3]) + " "
-            return "\\parb\\par\\pard\\sb346\\sa173{\\fs20 " + level + parse(arg[0]) + "\\fs20}\\b0\\i0\n"
+            level = (
+                str(status["levels"][1])
+                + "."
+                + str(status["levels"][2])
+                + "."
+                + str(status["levels"][3])
+                + " "
+            )
+            return (
+                "\\parb\\par\\pard\\sb346\\sa173{\\fs20 "
+                + level
+                + parse(arg[0])
+                + "\\fs20}\\b0\\i0\n"
+            )
         elif number == 4:
-            return "\\parpar\\pard\\sb346\\sa173{\\fs20 " + parse(arg[0]) + "\\fs20}\\b0\n"
+            return (
+                "\\parpar\\pard\\sb346\\sa173{\\fs20 "
+                + parse(arg[0])
+                + "\\fs20}\\b0\n"
+            )
         elif number == 5:
             return "\\b\\sb346\\sa173{\\fs20 " + parse(arg[0]) + "\\fs20}\\b0\n"
         elif number == 6:
             return "\\b\\sb346\\sa173{\\fs20 " + parse(arg[0]) + "\\fs20}\\b0\n"
-    def center(self, arg: List[Any]) -> str: return "\\qc" + parse(arg[0])
-    def left(self, arg: List[Any]) -> str: return "\\ql" + parse(arg[0])
-    def right(self, arg: List[Any]) -> str: return "\\qr" + parse(arg[0])
-    def b(self, arg: List[Any]) -> str: return "\n\\b " + parse(arg[0]) + "\\b0\n"
-    def code(self, arg: List[Any]) -> str: return parse(arg[0])
-    def font(self, arg: List[Any]) -> str: return ""
-    def href(self, arg: List[Any]) -> str: return '{\\field{\\*\\fldinst{HYPERLINK  "' + parse(arg[0]) + '"}}{\\fldrslt{\\u1  ' + parse(arg[-1]) +"\n}}}"
-    def i(self, arg: List[Any]) -> str: return "\\i " + parse(arg[0]) + "\\i0\n"
-    def math(self, arg: List[Any]) -> str: return parse(arg[0])
-    def ignore(self, arg: List[Any]) -> str: return parse(arg[0])
-    def image(self, arg: List[Any]) -> str: return parse(arg[0])
-    def shortlist(self, arg: List[Any]) -> str: return parse(arg[0])
-    def ordered(self, arg: List[Any]) -> str: return "\\levelnfc0\\list " + parse(arg[0]) + " \\list0"
-    def s(self, arg: List[Any]) -> str: return "\\strike " + parse(arg[0]) + "\\strike0"
-    def sc(self, arg: List[Any]) -> str: return "\\scaps " + parse(arg[0]) + "\\scaps0\n"
-    def size(self, arg: List[Any]) -> str: return "\\fs" + str(int(parse(arg[0])) * 2) + parse(arg[1])
-    def strike(self, arg: List[Any]) -> str: return parse(arg[0])
-    def sub(self, arg: List[Any]) -> str: return "\\sub " + parse(arg[0]) + "\\nosupersub\n"
-    def super(self, arg: List[Any]) -> str: return "\\super " + parse(arg[0]) + "\\nosupersub\n"
-    def tr(self, arg: List[Any]) -> str: return parse(arg[0]) + "|"
-    def td(self, arg: List[Any]) -> str: return "| " + parse(arg[0])
-    def tt(self, arg: List[Any]) -> str: return "{\\f1 " + parse(arg[0]) + "}"
-    def u(self, arg: List[Any]) -> str: return "\\ul " + parse(arg[0]) + "\\ul0\n"
-    def quote(self, arg: List[Any]) -> str: return parse(arg[0])
-    def book(self, arg: List[Any]) -> str: return parse(arg[0])
+
+    def center(self, arg: List[Any]) -> str:
+        return "\\qc" + parse(arg[0])
+
+    def left(self, arg: List[Any]) -> str:
+        return "\\ql" + parse(arg[0])
+
+    def right(self, arg: List[Any]) -> str:
+        return "\\qr" + parse(arg[0])
+
+    def b(self, arg: List[Any]) -> str:
+        return "\n\\b " + parse(arg[0]) + "\\b0\n"
+
+    def code(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def font(self, arg: List[Any]) -> str:
+        return ""
+
+    def href(self, arg: List[Any]) -> str:
+        return (
+            '{\\field{\\*\\fldinst{HYPERLINK  "'
+            + parse(arg[0])
+            + '"}}{\\fldrslt{\\u1  '
+            + parse(arg[-1])
+            + "\n}}}"
+        )
+
+    def i(self, arg: List[Any]) -> str:
+        return "\\i " + parse(arg[0]) + "\\i0\n"
+
+    def math(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def ignore(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def image(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def shortlist(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def ordered(self, arg: List[Any]) -> str:
+        return "\\levelnfc0\\list " + parse(arg[0]) + " \\list0"
+
+    def s(self, arg: List[Any]) -> str:
+        return "\\strike " + parse(arg[0]) + "\\strike0"
+
+    def sc(self, arg: List[Any]) -> str:
+        return "\\scaps " + parse(arg[0]) + "\\scaps0\n"
+
+    def size(self, arg: List[Any]) -> str:
+        return "\\fs" + str(int(parse(arg[0])) * 2) + parse(arg[1])
+
+    def strike(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def sub(self, arg: List[Any]) -> str:
+        return "\\sub " + parse(arg[0]) + "\\nosupersub\n"
+
+    def super(self, arg: List[Any]) -> str:
+        return "\\super " + parse(arg[0]) + "\\nosupersub\n"
+
+    def tr(self, arg: List[Any]) -> str:
+        return parse(arg[0]) + "|"
+
+    def td(self, arg: List[Any]) -> str:
+        return "| " + parse(arg[0])
+
+    def tt(self, arg: List[Any]) -> str:
+        return "{\\f1 " + parse(arg[0]) + "}"
+
+    def u(self, arg: List[Any]) -> str:
+        return "\\ul " + parse(arg[0]) + "\\ul0\n"
+
+    def quote(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
+    def book(self, arg: List[Any]) -> str:
+        return parse(arg[0])
+
     def books(self, arg: List[Any]) -> str:
         s = ""
         # for item in arg[0]:
@@ -723,6 +987,7 @@ class rtf:
                         s += parse(item[1])
         s += "\\par\\pard"
         return s
+
     def cite(self, arg: List[Any]) -> str:
         s = ""
         cites = arg[0][0].split(", ")
@@ -737,7 +1002,9 @@ class rtf:
             s += ", " + str(status["books"][cite])
         s += "]"
         return s
-    def text(self, arg: List[Any]) -> str: return "\\par\\pard\\qj" + parse(arg[0]) + "\n"
-    def br(self, arg: List[Any]) -> str: return "\\par\\pard"
 
+    def text(self, arg: List[Any]) -> str:
+        return "\\par\\pard\\qj" + parse(arg[0]) + "\n"
 
+    def br(self, arg: List[Any]) -> str:
+        return "\\par\\pard"
