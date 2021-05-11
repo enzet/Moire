@@ -41,6 +41,7 @@ class Tag:
     Moire tag definition. Tag has name and parameters:
     \<tag name> {<parameter 1>} ... {<parameter N>}.
     """
+
     def __init__(self, tag_id, parameters):
         self.id = tag_id
         self.parameters = parameters
@@ -86,8 +87,10 @@ class Tree:
             child.pr()
 
     def find(self, text):
-        if len(self.element.parameters) > 1 and \
-                self.element.parameters[1][0] == text:
+        if (
+            len(self.element.parameters) > 1
+            and self.element.parameters[1][0] == text
+        ):
             return self
         for child in self.children:
             a = child.find(text)
@@ -141,10 +144,10 @@ def comments_preprocessing(text):
     adding = True
     i = 0
     while i < len(text):
-        if text[i:i + 2] == comment_begin:
+        if text[i : i + 2] == comment_begin:
             adding = False
             i += 1
-        elif text[i:i + 2] == comment_end:
+        elif text[i : i + 2] == comment_end:
             adding = True
             i += 1
         else:
@@ -155,8 +158,7 @@ def comments_preprocessing(text):
 
 
 def is_letter_or_digit(char):
-    return "a" <= char <= "z" or "A" <= char <= "Z" or \
-           "0" <= char <= "9"
+    return "a" <= char <= "z" or "A" <= char <= "Z" or "0" <= char <= "9"
 
 
 def lexer(text) -> (List[Lexeme], List[int]):
@@ -242,36 +244,39 @@ def clear(text):
 def escape(text, format_name, from_clear=False):
     if format_name == "Tex":
         if from_clear:
-            return text\
-                .replace("%", "\\%")\
-                .replace("$", "\\$")\
-                .replace("|", "VERTICAL")\
-                .replace("∞", "inf")\
-                .replace("−", "minus")\
-                .replace("[", "[")\
-                .replace("]", "]")\
-                .replace('"', "kav")\
+            return (
+                text.replace("%", "\\%")
+                .replace("$", "\\$")
+                .replace("|", "VERTICAL")
+                .replace("∞", "inf")
+                .replace("−", "minus")
+                .replace("[", "[")
+                .replace("]", "]")
+                .replace('"', "kav")
                 .replace("─", "line")
-                #.replace("#", "sharp")
+            )
+            # .replace("#", "sharp")
         else:
-            return text\
-                .replace("%", "\\%")\
-                .replace("$", "\\$")\
-                .replace("|", "VERTICAL")\
-                .replace("_", "\\_")\
-                .replace("∞", "inf")\
-                .replace("−", "minus")\
-                .replace("[", "[")\
-                .replace("]", "]")\
-                .replace('"', "kav")\
-                .replace("─", "line")\
+            return (
+                text.replace("%", "\\%")
+                .replace("$", "\\$")
+                .replace("|", "VERTICAL")
+                .replace("_", "\\_")
+                .replace("∞", "inf")
+                .replace("−", "minus")
+                .replace("[", "[")
+                .replace("]", "]")
+                .replace('"', "kav")
+                .replace("─", "line")
                 .replace("#", "sharp")
+            )
     elif format_name == "HTML":
-        return text\
-            .replace("&", "&amp;")\
-            .replace("~", "&nbsp;")\
-            .replace("<", "&lt;")\
+        return (
+            text.replace("&", "&amp;")
+            .replace("~", "&nbsp;")
+            .replace("<", "&lt;")
             .replace(">", "&gt;")
+        )
     elif format_name == "RTF":
         result = ""
         for c in text:
@@ -315,9 +320,9 @@ def get_intermediate(lexemes, positions, level, index=0):
             if level < 0:
                 position = positions[index]
                 print("Lexer error at " + str(position) + ".")
-                #print input_file[position - 10:position + 10]\
+                # print input_file[position - 10:position + 10]\
                 #        .replace("\n", " ").replace("\t", " ")
-                #print "          ^"
+                # print "          ^"
                 index += 1
                 sys.exit(1)
             if tag:
@@ -397,8 +402,9 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode="", spec=None):
         return ""
     elif isinstance(text, str):
         if "full_escape" in spec and spec["full_escape"]:
-            return current_format._full_escape(escape(text,
-                current_format.name))
+            return current_format._full_escape(
+                escape(text, current_format.name)
+            )
         if "trim" in spec and not spec["trim"]:
             return escape(text, current_format.name)
         else:
@@ -424,18 +430,36 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode="", spec=None):
         inner_block = []
         for item in text:
             if inblock:
-                if isinstance(item, Tag) and \
-                        item.id in current_format.block_tags:
+                if (
+                    isinstance(item, Tag)
+                    and item.id in current_format.block_tags
+                ):
                     if inner_block:
                         s += process_inner_block(inner_block)
                         inner_block = []
-                    s += str(parse(item, inblock=inblock, depth=depth + 1,
-                        mode=mode, custom_format=custom_format, spec=spec))
+                    s += str(
+                        parse(
+                            item,
+                            inblock=inblock,
+                            depth=depth + 1,
+                            mode=mode,
+                            custom_format=custom_format,
+                            spec=spec,
+                        )
+                    )
                 else:
                     inner_block.append(item)
             else:
-                s += str(parse(item, inblock=inblock, depth=depth + 1,
-                    mode=mode, custom_format=custom_format, spec=spec))
+                s += str(
+                    parse(
+                        item,
+                        inblock=inblock,
+                        depth=depth + 1,
+                        mode=mode,
+                        custom_format=custom_format,
+                        spec=spec,
+                    )
+                )
         if inner_block:
             s += process_inner_block(inner_block)
         return s
@@ -449,12 +473,13 @@ def get_documents(level, intermediate_representation):
         document = Document("_", [])
         level = ["_", "_", "_", "_", "_", "_"]
         for element in intermediate_representation:
-            if isinstance(element, Tag) and \
-                    (element.id == "1" or element.id == "2"):
+            if isinstance(element, Tag) and (
+                element.id == "1" or element.id == "2"
+            ):
                 if document.content:
                     documents.append(document)
                     level[int(element.id)] = element.parameters[1][0]
-                    document = Document(level[:int(element.id) + 1], [element])
+                    document = Document(level[: int(element.id) + 1], [element])
             else:
                 document.content.append(element)
         if document.content:
@@ -462,8 +487,9 @@ def get_documents(level, intermediate_representation):
     return documents
 
 
-def get_ids(content: str, input_file_directory: str, include: bool = True) \
-        -> List[str]:
+def get_ids(
+    content: str, input_file_directory: str, include: bool = True
+) -> List[str]:
     """
     Get all header identifiers.
 
@@ -473,8 +499,9 @@ def get_ids(content: str, input_file_directory: str, include: bool = True) \
     :param include: include files specified in \include tag.
     """
     ids: List[str] = []
-    intermediate_representation = \
-        full_parse(content, input_file_directory, include=include)
+    intermediate_representation = full_parse(
+        content, input_file_directory, include=include
+    )
     for element in intermediate_representation:
         if isinstance(element, Tag) and element.id in "123456":
             if len(element.parameters) >= 2:
@@ -483,10 +510,16 @@ def get_ids(content: str, input_file_directory: str, include: bool = True) \
 
 
 def convert(
-        input: str, format: str = "HTML", remove_comments: bool = True,
-        rules: str = "default", wrap: bool = True, opt: dict = None,
-        input_file_directory: str = None, include: bool = True,
-        import_directory: str = None):
+    input: str,
+    format: str = "HTML",
+    remove_comments: bool = True,
+    rules: str = "default",
+    wrap: bool = True,
+    opt: dict = None,
+    input_file_directory: str = None,
+    include: bool = True,
+    import_directory: str = None,
+):
     """
     Convert Moire text without includes but with comments artifacts to selected
     format.
@@ -512,8 +545,9 @@ def convert(
         return None
 
     index = 0
-    intermediate_representation = \
-        full_parse(input, input_file_directory, include=include)
+    intermediate_representation = full_parse(
+        input, input_file_directory, include=include
+    )
 
     # Construct content table
 
@@ -539,8 +573,9 @@ def convert(
     # Wrap whole text with "body" tag
 
     if wrap:
-        intermediate_representation = \
-            Tag("body", [intermediate_representation, content_root])
+        intermediate_representation = Tag(
+            "body", [intermediate_representation, content_root]
+        )
 
     markup_format.init()
     parse(intermediate_representation, inblock=False, depth=0, mode="pre_")
@@ -550,8 +585,9 @@ def convert(
     return result
 
 
-def full_parse(text, directory, path=None, offset=0, prefix="",
-               include: bool = True):
+def full_parse(
+    text, directory, path=None, offset=0, prefix="", include: bool = True
+):
     if path is None:
         path = []
 
@@ -573,16 +609,19 @@ def full_parse(text, directory, path=None, offset=0, prefix="",
                 found = False
                 if os.path.isfile(file_name):
                     included_text = open(file_name, "r").read()
-                    resulted_IR += full_parse(included_text, directory,
-                        path, offset1, prefix1)
+                    resulted_IR += full_parse(
+                        included_text, directory, path, offset1, prefix1
+                    )
                     found = True
                 else:
                     for direct in [directory] + path:
                         if os.path.isfile(direct + "/" + file_name):
-                            included_text = \
-                                open(direct + "/" + file_name, "r").read()
-                            resulted_IR += full_parse(included_text,
-                                directory, path, offset1, prefix1)
+                            included_text = open(
+                                direct + "/" + file_name, "r"
+                            ).read()
+                            resulted_IR += full_parse(
+                                included_text, directory, path, offset1, prefix1
+                            )
                             found = True
                             break
                 if not found:
@@ -598,8 +637,15 @@ def full_parse(text, directory, path=None, offset=0, prefix="",
     return resulted_IR
 
 
-def construct_book(input_file_name, output_directory, kind="html",
-        rules="default", book_level=2, remove_comments=True, path=None):
+def construct_book(
+    input_file_name,
+    output_directory,
+    kind="html",
+    rules="default",
+    book_level=2,
+    remove_comments=True,
+    path=None,
+):
 
     global markup_format
 
@@ -623,7 +669,7 @@ def construct_book(input_file_name, output_directory, kind="html",
     text = open(input_file_name, "r").read()
     directory = ""
     if "/" in input_file_name:
-        directory = input_file_name[:input_file_name.rfind("/") + 1]
+        directory = input_file_name[: input_file_name.rfind("/") + 1]
 
     intermediate_representation = full_parse(text, directory, path)
 
@@ -666,8 +712,9 @@ def construct_book(input_file_name, output_directory, kind="html",
     markup_format.tree = content_root
 
     for element in intermediate_representation:
-        if isinstance(element, Tag) and \
-                (element.id == "1" or element.id == "2"):
+        if isinstance(element, Tag) and (
+            element.id == "1" or element.id == "2"
+        ):
             if document.content != []:
                 documents.append(document)
                 try:
@@ -675,8 +722,11 @@ def construct_book(input_file_name, output_directory, kind="html",
                 except IndexError:
                     print("No ID for header " + element.parameters[0][0])
                     sys.exit(0)
-                document = Document(level[:int(element.id) + 1], [element],
-                    str(element.parameters[0][0]))
+                document = Document(
+                    level[: int(element.id) + 1],
+                    [element],
+                    str(element.parameters[0][0]),
+                )
         else:
             document.content.append(element)
 
