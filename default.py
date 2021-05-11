@@ -399,7 +399,7 @@ class markdown:
 
     def table(self, arg: List[Any]) -> str:
         s = ""
-        for index, tr in enumerate(arg[0]):
+        for index, tr in enumerate(arg):
             if isinstance(tr, list):
                 s += "|"
                 for td in tr:
