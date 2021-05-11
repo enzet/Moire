@@ -21,19 +21,19 @@ from typing import Dict, List
 index = 0
 markup_format = None
 no_tags = []
-id_list = ['_', '_', '_', '_', '_', '_', '_']
-status = {}
+id_list = ["_", "_", "_", "_", "_", "_", "_"]
+status = {"missing_tags": set()}
 
 # Constants
 
-comment_begin = '/*'
-comment_end = '*/'
+comment_begin = "/*"
+comment_end = "*/"
 
-paragraph_delimiter = '\n\n'
+paragraph_delimiter = "\n\n"
 
 
 def error(message):
-    print(' [ERROR] ' + str(message) + '.')
+    print(" [ERROR] " + str(message) + ".")
 
 
 class Tag:
@@ -46,11 +46,11 @@ class Tag:
         self.parameters = parameters
 
     def __str__(self):
-        s = self.id + ' {' + str(self.parameters) + '}'
+        s = self.id + " {" + str(self.parameters) + "}"
         return s
 
     def __repr__(self):
-        s = self.id + ' {' + str(self.parameters) + '}'
+        s = self.id + " {" + str(self.parameters) + "}"
         return s
 
 
@@ -62,7 +62,7 @@ class Lexeme:
     def __repr__(self):
         s = self.type
         if self.content:
-            s += ' {' + str(self.content.replace('\n', ' ')) + '}'
+            s += " {" + str(self.content.replace("\n", " ")) + "}"
         return s
 
 
@@ -112,18 +112,18 @@ class Argument:
 
 
 def is_space(c):
-    return c in ' \n\t\r'
+    return c in " \n\t\r"
 
 
 def trim_inside(s):
     """
     Replace all space symbol sequences with one space character.
     """
-    ret = ''
+    ret = ""
     i = 0
     while i < len(s):
         if is_space(s[i]):
-            ret += ' '
+            ret += " "
             while i < len(s) and is_space(s[i]):
                 i += 1
             continue
@@ -137,7 +137,7 @@ def comments_preprocessing(text):
     """
     Text to text processing: comments removing.
     """
-    preprocessed = ''
+    preprocessed = ""
     adding = True
     i = 0
     while i < len(text):
@@ -155,59 +155,59 @@ def comments_preprocessing(text):
 
 
 def is_letter_or_digit(char):
-    return 'a' <= char <= 'z' or 'A' <= char <= 'Z' or \
-           '0' <= char <= '9'
+    return "a" <= char <= "z" or "A" <= char <= "Z" or \
+           "0" <= char <= "9"
 
 
-def lexer(text):
+def lexer(text) -> (List[Lexeme], List[int]):
     """
     Parse formatted preprocessed text to a list of lexemes.
     """
     in_tag = False  # Lexer position in tag name
-    in_space = True  # Lexer position in space between tag name and first '{'
-    lexemes = []
-    positions = []
-    tag_name = ''
-    word = ''
+    in_space = True  # Lexer position in space between tag name and first "{"
+    lexemes: List[Lexeme] = []
+    positions: List[int] = []
+    tag_name: str = ""
+    word: str = ""
 
-    index = 0
+    index: int = 0
 
     while index < len(text):
         char = text[index]
-        if char == '\\':
+        if char == "\\":
             if index == len(text) - 1:
-                print('Error: backslash at the end of string.')
+                print("Error: backslash at the end of string.")
             elif not is_letter_or_digit(text[index + 1]):
-                if word != '':
-                    lexemes.append(Lexeme('text', word))
+                if word != "":
+                    lexemes.append(Lexeme("text", word))
                     positions.append(index)
-                word = ''
-                lexemes.append(Lexeme('symbol', text[index + 1]))
+                word = ""
+                lexemes.append(Lexeme("symbol", text[index + 1]))
                 positions.append(index + 1)
                 index += 1
             else:
-                if word != '':
-                    lexemes.append(Lexeme('text', word))
+                if word != "":
+                    lexemes.append(Lexeme("text", word))
                     positions.append(index)
-                word = ''
+                word = ""
                 in_tag = True
-                tag_name = ''
-        elif char == '{':
+                tag_name = ""
+        elif char == "{":
             if in_tag or in_space:
                 in_tag = False
-                if tag_name != '':
-                    lexemes.append(Lexeme('tag', tag_name))
+                if tag_name != "":
+                    lexemes.append(Lexeme("tag", tag_name))
                     positions.append(index)
-            lexemes.append(Lexeme('parameter_begin'))
+            lexemes.append(Lexeme("parameter_begin"))
             positions.append(index)
-            tag_name = ''
-            word = ''
-        elif char == '}':
-            if word != '':
-                lexemes.append(Lexeme('text', word))
+            tag_name = ""
+            word = ""
+        elif char == "}":
+            if word != "":
+                lexemes.append(Lexeme("text", word))
                 positions.append(index)
-            word = ''
-            lexemes.append(Lexeme('parameter_end'))
+            word = ""
+            lexemes.append(Lexeme("parameter_end"))
             positions.append(index)
         elif is_space(char):
             if in_tag:
@@ -215,23 +215,14 @@ def lexer(text):
                 in_space = True
             else:
                 word += char
-        # elif char == '<' or char == '>' or char == '&':
-        #     if word != '':
-        #         lexemes.append(Lexeme('text', word))
-        #         positions.append(index)
-        #     word = ''
-        #     # if char == '<': lexemes.append(Lexeme('symbol', '&lt;'))
-        #     # if char == '>': lexemes.append(Lexeme('symbol', '&gt;'))
-        #     # if char == '&': lexemes.append(Lexeme('symbol', '&amp;'))
-        #     positions.append(index)
         else:
             if in_tag:
                 tag_name += char
             else:
                 word += char
         index += 1
-    if word != '':
-        lexemes.append(Lexeme('text', word))
+    if word != "":
+        lexemes.append(Lexeme("text", word))
         positions.append(index)
 
     return lexemes, positions
@@ -240,7 +231,7 @@ def lexer(text):
 def clear(text):
     global markup_format
     if isinstance(text, list):
-        s = ''
+        s = ""
         for item in text:
             if isinstance(item, str):
                 s += item
@@ -249,49 +240,48 @@ def clear(text):
 
 
 def escape(text, format_name, from_clear=False):
-    if format_name == 'Tex':
+    if format_name == "Tex":
         if from_clear:
             return text\
-                .replace('%', '\\%')\
-                .replace('$', '\\$')\
-                .replace('|', 'VERTICAL')\
-                .replace('∞', 'inf')\
-                .replace('−', 'minus')\
-                .replace('[', '[')\
-                .replace(']', ']')\
-                .replace('"', 'kav')\
-                .replace('─', 'line')
-                #.replace('#', 'sharp')
+                .replace("%", "\\%")\
+                .replace("$", "\\$")\
+                .replace("|", "VERTICAL")\
+                .replace("∞", "inf")\
+                .replace("−", "minus")\
+                .replace("[", "[")\
+                .replace("]", "]")\
+                .replace('"', "kav")\
+                .replace("─", "line")
+                #.replace("#", "sharp")
         else:
             return text\
-                .replace('%', '\\%')\
-                .replace('$', '\\$')\
-                .replace('|', 'VERTICAL')\
-                .replace('_', '\\_')\
-                .replace('∞', 'inf')\
-                .replace('−', 'minus')\
-                .replace('[', '[')\
-                .replace(']', ']')\
-                .replace('"', 'kav')\
-                .replace('─', 'line')\
-                .replace('#', 'sharp')
-    elif format_name == 'HTML':
+                .replace("%", "\\%")\
+                .replace("$", "\\$")\
+                .replace("|", "VERTICAL")\
+                .replace("_", "\\_")\
+                .replace("∞", "inf")\
+                .replace("−", "minus")\
+                .replace("[", "[")\
+                .replace("]", "]")\
+                .replace('"', "kav")\
+                .replace("─", "line")\
+                .replace("#", "sharp")
+    elif format_name == "HTML":
         return text\
-            .replace('&', '&amp;')\
-            .replace('~', '&nbsp;')\
-            .replace('<', '&lt;')\
-            .replace('>', '&gt;')
-    elif format_name == 'RTF':
-        text = text.decode('utf-8')
-        result = u''
+            .replace("&", "&amp;")\
+            .replace("~", "&nbsp;")\
+            .replace("<", "&lt;")\
+            .replace(">", "&gt;")
+    elif format_name == "RTF":
+        result = ""
         for c in text:
-            if c == u'~':
-                result += '\\~'
+            if c == "~":
+                result += "\\~"
             elif ord(c) <= 128:
                 result += c
             else:
-                result += u'\\u' + unicode(ord(c)) + u'  '
-        return result.encode('utf-8')
+                result += "\\u" + unicode(ord(c)) + u"  "
+        return result
     else:
         return text
 
@@ -304,11 +294,11 @@ def get_intermediate(lexemes, positions, level, index=0):
     result = []
     while index < len(lexemes):
         item = lexemes[index]
-        if item.type == 'tag':
+        if item.type == "tag":
             if tag:
                 result.append(tag)
             tag = Tag(item.content, [])
-        elif item.type == 'parameter_begin':
+        elif item.type == "parameter_begin":
             level += 1
             if not tag:
                 index += 1
@@ -320,25 +310,25 @@ def get_intermediate(lexemes, positions, level, index=0):
                 tag.parameters.append(res)
             index += 1
             continue
-        elif item.type == 'parameter_end':
+        elif item.type == "parameter_end":
             level -= 1
             if level < 0:
                 position = positions[index]
-                print('Lexer error at ' + str(position) + '.')
+                print("Lexer error at " + str(position) + ".")
                 #print input_file[position - 10:position + 10]\
-                #        .replace('\n', ' ').replace('\t', ' ')
-                #print '          ^'
+                #        .replace("\n", " ").replace("\t", " ")
+                #print "          ^"
                 index += 1
                 sys.exit(1)
             if tag:
                 result.append(tag)
             return index, result
-        elif item.type == 'text':
+        elif item.type == "text":
             if tag:
                 result.append(tag)
                 tag = None
             result.append(item.content)
-        elif item.type == 'symbol':
+        elif item.type == "symbol":
             if tag:
                 result.append(tag)
                 tag = None
@@ -354,8 +344,8 @@ def process_inner_block(inner_block):
     Wrap parts of inner block element with text tag.
     """
     global status
-    if len(inner_block) == 1 and inner_block[0] == '':
-        return ''
+    if len(inner_block) == 1 and inner_block[0] == "":
+        return ""
     paragraphs = []
     paragraph = []
     for item in inner_block:
@@ -364,7 +354,7 @@ def process_inner_block(inner_block):
             delimiter = item.find(paragraph_delimiter)
             while delimiter != -1:
                 content = item[previous:delimiter]
-                if content != '' or previous == 0:
+                if content != "" or previous == 0:
                     paragraph.append(content)
                     paragraphs.append(paragraph)
                     paragraph = []
@@ -374,17 +364,17 @@ def process_inner_block(inner_block):
         else:
             paragraph.append(item)
     paragraphs.append(paragraph)
-    s = ''
+    s = ""
     for paragraph in paragraphs:
         if isinstance(paragraph[0], str):
             paragraph[0] = paragraph[0].lstrip()
         if isinstance(paragraph[-1], str):
             paragraph[-1] = paragraph[-1].rstrip()
-        s += str(parse(Tag('text', [paragraph])))
+        s += str(parse(Tag("text", [paragraph])))
     return s
 
 
-def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
+def parse(text, custom_format=None, inblock=False, depth=0, mode="", spec=None):
     """
     Element parsing into formatted text. Element may be plain text, tag, or
     list of elements.
@@ -404,49 +394,33 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
         spec = {}
 
     if not text:
-        return ''
+        return ""
     elif isinstance(text, str):
-        if 'full_escape' in spec and spec['full_escape']:
+        if "full_escape" in spec and spec["full_escape"]:
             return current_format._full_escape(escape(text,
                 current_format.name))
-        if 'trim' in spec and not spec['trim']:
+        if "trim" in spec and not spec["trim"]:
             return escape(text, current_format.name)
         else:
             return escape(trim_inside(text), current_format.name)
     elif isinstance(text, Tag):
-        key = 'header' if (text.id in '123456') else text.id
+        key = "header" if (text.id in "123456") else text.id
         method = None
         try:
             method = getattr(current_format, mode + key)
-        except Exception as e:
+        except AttributeError:
             pass
-        arg = Argument(text.parameters, spec)
-        if method:
-            s = ''
-            try:
-                if key == 'header':
-                    s += str(method(arg, int(text.id)))
-                else:
-                    s += str(method(arg))
-            except Exception:
-                error("while " + key + " processing")
-            return s
+        if method is not None:
+            arg = Argument(text.parameters, spec)
+            if key == "header":
+                return method(arg, int(text.id))
+            else:
+                return method(arg)
         else:
-            status["missing_tags"].add(key)
-        '''
-        try:
-            method = getattr(current_format, mode + 'notag')
-        except Exception as e:
-            pass
-        if not mode:
-            no_tags.append(key)
-            error('No such tag: ' + mode + key + ' in ' + \
-                str(current_format.name))
-        if method:
-            return str(method([key] + text.parameters))
-        '''
+            if mode == "":
+                status["missing_tags"].add(key)
     else:  # if text is list of items
-        s = ''
+        s = ""
         inner_block = []
         for item in text:
             if inblock:
@@ -469,14 +443,14 @@ def parse(text, custom_format=None, inblock=False, depth=0, mode='', spec=None):
 
 def get_documents(level, intermediate_representation):
     if level == 0:
-        documents = [Document('_', intermediate_representation)]
+        documents = [Document("_", intermediate_representation)]
     else:
         documents = []
-        document = Document('_', [])
-        level = ['_', '_', '_', '_', '_', '_']
+        document = Document("_", [])
+        level = ["_", "_", "_", "_", "_", "_"]
         for element in intermediate_representation:
             if isinstance(element, Tag) and \
-                    (element.id == '1' or element.id == '2'):
+                    (element.id == "1" or element.id == "2"):
                 if document.content:
                     documents.append(document)
                     level[int(element.id)] = element.parameters[1][0]
@@ -509,9 +483,10 @@ def get_ids(content: str, input_file_directory: str, include: bool = True) \
 
 
 def convert(
-        input: str, format: str = 'HTML', remove_comments: bool = True,
-        rules: str = 'default', wrap: bool = True, opt: dict = None,
-        input_file_directory: str = None, include: bool = True):
+        input: str, format: str = "HTML", remove_comments: bool = True,
+        rules: str = "default", wrap: bool = True, opt: dict = None,
+        input_file_directory: str = None, include: bool = True,
+        import_directory: str = None):
     """
     Convert Moire text without includes but with comments artifacts to selected
     format.
@@ -522,19 +497,14 @@ def convert(
     global markup_format
     global status
 
-    status['language'] = 'en'
-    status['title'] = '_'
-    status['level'] = 0
-    status['root'] = '/Users/Enzet/Program/Book/_'
-    status['image'] = False
-
     if opt:
         for key in opt:
             status[key] = opt[key]
 
     # Initialization
 
-    result = input
+    if import_directory:
+        sys.path.insert(0, import_directory)
     __import__(rules)
     module = sys.modules[rules]
     markup_format = module.__dict__[format]()
@@ -543,14 +513,14 @@ def convert(
 
     index = 0
     intermediate_representation = \
-        full_parse(result, input_file_directory, include=include)
+        full_parse(input, input_file_directory, include=include)
 
     # Construct content table
 
-    tree = Tree(None, [], Tag('0', ['_', '_']))
+    tree = Tree(None, [], Tag("0", ["_", "_"]))
     content_root = tree
     for k in intermediate_representation:
-        if isinstance(k, Tag) and k.id in '123456':
+        if isinstance(k, Tag) and k.id in "123456":
             element = Tree(tree, [], k)
             if int(k.id) > int(tree.element.id):
                 tree.children.append(element)
@@ -563,22 +533,24 @@ def convert(
                 element.number = len(tree.children) - 1
                 element.parent = tree
                 tree = tree.children[-1]
-    status['tree'] = content_root
+    status["tree"] = content_root
     markup_format.tree = content_root
 
     # Wrap whole text with "body" tag
 
     if wrap:
         intermediate_representation = \
-            Tag('body', [intermediate_representation, content_root])
+            Tag("body", [intermediate_representation, content_root])
 
-    parse(intermediate_representation, False, 0, 'pre_')
-    result = parse(intermediate_representation)
+    markup_format.init()
+    parse(intermediate_representation, inblock=False, depth=0, mode="pre_")
+    result: str = parse(intermediate_representation)
+    markup_format.fini()
 
     return result
 
 
-def full_parse(text, directory, path=None, offset=0, prefix='',
+def full_parse(text, directory, path=None, offset=0, prefix="",
                include: bool = True):
     if path is None:
         path = []
@@ -591,31 +563,31 @@ def full_parse(text, directory, path=None, offset=0, prefix='',
 
     for item in raw_IR:
         if isinstance(item, Tag):
-            if item.id == 'include' and include:
+            if item.id == "include" and include:
                 file_name = item.parameters[0][0]
-                offset1, prefix1 = 0, ''
+                offset1, prefix1 = 0, ""
                 if len(item.parameters) > 1:
                     prefix1 = item.parameters[1][0]
                 if len(item.parameters) > 2:
                     offset1 = int(item.parameters[2][0])
                 found = False
                 if os.path.isfile(file_name):
-                    included_text = open(file_name, 'r').read()
+                    included_text = open(file_name, "r").read()
                     resulted_IR += full_parse(included_text, directory,
                         path, offset1, prefix1)
                     found = True
                 else:
                     for direct in [directory] + path:
-                        if os.path.isfile(direct + '/' + file_name):
+                        if os.path.isfile(direct + "/" + file_name):
                             included_text = \
-                                open(direct + '/' + file_name, 'r').read()
+                                open(direct + "/" + file_name, "r").read()
                             resulted_IR += full_parse(included_text,
                                 directory, path, offset1, prefix1)
                             found = True
                             break
                 if not found:
                     status["missing_files"].add(file_name)
-            elif item.id in '123456' and (offset or prefix):
+            elif item.id in "123456" and (offset or prefix):
                 new_item = Tag(str(int(item.id) + offset), item.parameters)
                 resulted_IR.append(new_item)
             else:
@@ -626,16 +598,16 @@ def full_parse(text, directory, path=None, offset=0, prefix='',
     return resulted_IR
 
 
-def construct_book(input_file_name, output_directory, kind='html',
-        rules='default', book_level=2, remove_comments=True, path=None):
+def construct_book(input_file_name, output_directory, kind="html",
+        rules="default", book_level=2, remove_comments=True, path=None):
 
     global markup_format
 
-    status['language'] = 'en'
-    status['title'] = '_'
-    status['level'] = 0
-    status['root'] = '/Users/Enzet/Program/Book/_'
-    status['image'] = True
+    status["language"] = "en"
+    status["title"] = "_"
+    status["level"] = 0
+    status["root"] = "/Users/Enzet/Program/Book/_"
+    status["image"] = True
 
     # Initialization
 
@@ -648,14 +620,14 @@ def construct_book(input_file_name, output_directory, kind='html',
 
     # Comments preprocessing
 
-    text = open(input_file_name, 'r').read()
-    directory = ''
-    if '/' in input_file_name:
-        directory = input_file_name[:input_file_name.rfind('/') + 1]
+    text = open(input_file_name, "r").read()
+    directory = ""
+    if "/" in input_file_name:
+        directory = input_file_name[:input_file_name.rfind("/") + 1]
 
     intermediate_representation = full_parse(text, directory, path)
 
-    '''
+    """
     result = include(input_file, directory, path)
     if remove_comments:
         result = comments_preprocessing(result)
@@ -663,20 +635,20 @@ def construct_book(input_file_name, output_directory, kind='html',
     lexemes, positions = lexer(result)
     index = 0
     intermediate_representation = \
-        get_intermediate(lexemes, positions, status['level'])
-    '''
+        get_intermediate(lexemes, positions, status["level"])
+    """
 
     documents = []
-    document = Document(['_'], [], 'Enzet')
-    level = ['_', '_', '_', '_', '_', '_']
+    document = Document(["_"], [], "Enzet")
+    level = ["_", "_", "_", "_", "_", "_"]
 
     # Construct content table
 
-    tree = Tree(None, [], Tag('0', ['_', '_']))
+    tree = Tree(None, [], Tag("0", ["_", "_"]))
     content_root = tree
 
     for k in intermediate_representation:
-        if isinstance(k, Tag) and k.id in '123456':
+        if isinstance(k, Tag) and k.id in "123456":
             element = Tree(tree, [], k)
             if int(k.id) > int(tree.element.id):
                 tree.children.append(element)
@@ -690,18 +662,18 @@ def construct_book(input_file_name, output_directory, kind='html',
                 element.parent = tree
                 tree = tree.children[-1]
 
-    status['tree'] = content_root
+    status["tree"] = content_root
     markup_format.tree = content_root
 
     for element in intermediate_representation:
         if isinstance(element, Tag) and \
-                (element.id == '1' or element.id == '2'):
+                (element.id == "1" or element.id == "2"):
             if document.content != []:
                 documents.append(document)
                 try:
                     level[int(element.id)] = element.parameters[1][0]
                 except IndexError:
-                    print('No ID for header ' + element.parameters[0][0])
+                    print("No ID for header " + element.parameters[0][0])
                     sys.exit(0)
                 document = Document(level[:int(element.id) + 1], [element],
                     str(element.parameters[0][0]))
@@ -715,22 +687,22 @@ def construct_book(input_file_name, output_directory, kind='html',
 
     for document in documents:
         name = output_directory
-        status['id'] = document.id
+        status["id"] = document.id
         for level in document.id[1:]:
-            name += '/' + level
+            name += "/" + level
         try:
             os.makedirs(name)
         except:
             pass
-        name += '/index.html'
-        output = open(name, 'w+')
-        status['level'] = len(document.id)
-        status['title'] = document.title
+        name += "/index.html"
+        output = open(name, "w+")
+        status["level"] = len(document.id)
+        status["title"] = document.title
 
         begin = datetime.datetime.now()
-        parse(Tag('body', [document.content]), False, 0, 'pre_')
-        output.write(parse(Tag('body', [document.content])))
+        parse(Tag("body", [document.content]), False, 0, "pre_")
+        output.write(parse(Tag("body", [document.content])))
 
-        # print(' [PARSE]', datetime.datetime.now() - begin, name)
+        # print(" [PARSE]", datetime.datetime.now() - begin, name)
 
     markup_format.fini()
