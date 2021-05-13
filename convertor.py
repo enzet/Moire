@@ -26,57 +26,42 @@ import sys
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    '-i', '--input',
-    dest='input_file_name',
-    help='Moire input file')
+    "-i", "--input", dest="input_file_name", help="Moire input file"
+)
 
 parser.add_argument(
-    '-o', '--output',
-    dest='output_destination',
-    help='output file')
+    "-o", "--output", dest="output_destination", help="output file"
+)
+
+parser.add_argument("-f", "--format", help="output format")
+
+parser.add_argument("-r", "--rules", help="rules file")
+
+parser.add_argument("--import-directory", help="path to rules file")
+
+parser.add_argument("--config", help="configuration file name")
+
+parser.add_argument("-b", "--book-level", help="book level")
 
 parser.add_argument(
-    '-f', '--format',
-    help='output format')
+    "-pl", dest="print_lexemes", action="store_true", help="print lexemes"
+)
 
 parser.add_argument(
-    '-r', '--rules',
-    help='rules file')
+    "-pp",
+    dest="print_preprocessed",
+    action="store_true",
+    help="print preprocessed file",
+)
 
 parser.add_argument(
-    '--import-directory',
-    help='path to rules file')
+    "-pi",
+    dest="print_intermediate",
+    action="store_true",
+    help="print intermediate representation",
+)
 
-parser.add_argument(
-    '--config',
-    help='configuration file name')
-
-parser.add_argument(
-    '-b', '--book-level',
-    help='book level')
-
-parser.add_argument(
-    '-pl',
-    dest='print_lexemes',
-    action='store_true',
-    help='print lexemes')
-
-parser.add_argument(
-    '-pp',
-    dest='print_preprocessed',
-    action='store_true',
-    help='print preprocessed file')
-
-parser.add_argument(
-    '-pi',
-    dest='print_intermediate',
-    action='store_true',
-    help='print intermediate representation')
-
-parser.add_argument(
-    '-opt',
-    dest='opt',
-    help='additional options')
+parser.add_argument("-opt", dest="opt", help="additional options")
 
 options = parser.parse_args(sys.argv[1:])
 
@@ -87,33 +72,39 @@ if options.import_directory:
 
 if not options.input_file_name:
     options.input_file_name = input(
-        'Please, specify the input file name (or use -i <file name>): ')
+        "Please, specify the input file name (or use -i <file name>): "
+    )
 
 while True:
     if os.path.isfile(options.input_file_name):
         break
     else:
         answer = input(
-            'Input file "' + options.input_file_name +
-            '" is not found. Do you want to specity correct? [y/n] ')
-        if answer.lower() in ['y', 'yes']:
+            'Input file "'
+            + options.input_file_name
+            + '" is not found. Do you want to specity correct? [y/n] '
+        )
+        if answer.lower() in ["y", "yes"]:
             options.input_file_name = input(
-                'Please, specify the input '
-                'file name (or use -i <file name>): ')
+                "Please, specify the input "
+                "file name (or use -i <file name>): "
+            )
         else:
             sys.exit(0)
 
 if not options.format:
     options.format = input(
-        'Please, specify the output format (html, '
-        'tex, etc.) (or use -f <format>): ')
+        "Please, specify the output format (html, "
+        "tex, etc.) (or use -f <format>): "
+    )
 
 if not options.output_destination:
     answer = input(
-        'You aren\'t specify output destination. Should I '
-        'create file "out.' + options.format + '"? [y/n] ')
-    if answer.lower() in ['y', 'yes', 'ok']:
-        options.output_destination = 'out.' + options.format
+        "You aren't specify output destination. Should I "
+        'create file "out.' + options.format + '"? [y/n] '
+    )
+    if answer.lower() in ["y", "yes", "ok"]:
+        options.output_destination = "out." + options.format
     else:
         sys.exit(0)
 
@@ -124,21 +115,29 @@ options.book_level = int(options.book_level) if options.book_level else 0
 if not options.book_level or options.book_level == 0:
 
     output = moire.convert(
-        open(options.input_file_name, "r").read(), options.format, True,
-        options.rules, True)
+        open(options.input_file_name, "r").read(),
+        options.format,
+        True,
+        options.rules,
+        True,
+    )
 
     if not output:
-        print('Fatal: output was no produced.')
+        print("Fatal: output was no produced.")
         sys.exit(1)
 
-    output_file = open(options.output_destination, 'w+')
-    print('Writing result to ' + options.output_destination + '...')
+    output_file = open(options.output_destination, "w+")
+    print("Writing result to " + options.output_destination + "...")
     output_file.write(output)
     output_file.close()
-    print('Done.')
+    print("Done.")
 
 else:
 
     moire.construct_book(
-        options.input_file_name, output_directory=options.output_destination,
-        kind=options.format, rules=options.rules, book_level=options.book_level)
+        options.input_file_name,
+        output_directory=options.output_destination,
+        kind=options.format,
+        rules=options.rules,
+        book_level=options.book_level,
+    )
