@@ -7,7 +7,7 @@ Moire is a simple multipurpose markup.
 You can convert your Moire file to other formats using Python 2.7:
 
 \code
-{python convertor.py -i <Moire input file> -f <format> -o <output destination> -r <style> <other options>}
+{python converter.py -i <Moire input file> -f <format> -o <output destination> -r <style> <other options>}
 
 \3 {Options}
 
