@@ -1,143 +1,32 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 Command line Python tool for file conversion from Moire markup language to other 
 formats, such as HTML, TeX, etc.
-
-Usage: python moire.py 
-       -i <input file> 
-       -o <output file> 
-       -f <format> 
-       -r <rules file>
-       -b <book level>
-
-This file is a part of Moire project—light markup language.
-
-Author: Sergey Vartanov (me@enzet.ru).
-See http://github.com/enzet/moire
 """
-
 import argparse
-import moire
-import os
 import sys
 
-parser = argparse.ArgumentParser()
+from moire import Moire
 
-parser.add_argument(
-    "-i", "--input", dest="input_file_name", help="Moire input file"
-)
+__author__: str = "Sergey Vartanov"
+__email__: str = "me@enzet.ru"
 
-parser.add_argument(
-    "-o", "--output", dest="output_destination", help="output file"
-)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
 
-parser.add_argument("-f", "--format", help="output format")
+    parser.add_argument("-i", "--input", help="Moire input file", required=True)
+    parser.add_argument("-o", "--output", help="output file", required=True)
+    parser.add_argument("-f", "--format", help="output format", required=True)
 
-parser.add_argument("-r", "--rules", help="rules file")
+    options = parser.parse_args(sys.argv[1:])
 
-parser.add_argument("--import-directory", help="path to rules file")
-
-parser.add_argument("--config", help="configuration file name")
-
-parser.add_argument("-b", "--book-level", help="book level")
-
-parser.add_argument(
-    "-pl", dest="print_lexemes", action="store_true", help="print lexemes"
-)
-
-parser.add_argument(
-    "-pp",
-    dest="print_preprocessed",
-    action="store_true",
-    help="print preprocessed file",
-)
-
-parser.add_argument(
-    "-pi",
-    dest="print_intermediate",
-    action="store_true",
-    help="print intermediate representation",
-)
-
-parser.add_argument("-opt", dest="opt", help="additional options")
-
-options = parser.parse_args(sys.argv[1:])
-
-if options.import_directory:
-    sys.path.insert(0, options.import_directory)
-
-# Arguments check
-
-if not options.input_file_name:
-    options.input_file_name = input(
-        "Please, specify the input file name (or use -i <file name>): "
-    )
-
-while True:
-    if os.path.isfile(options.input_file_name):
-        break
-    else:
-        answer = input(
-            'Input file "'
-            + options.input_file_name
-            + '" is not found. Do you want to specity correct? [y/n] '
-        )
-        if answer.lower() in ["y", "yes"]:
-            options.input_file_name = input(
-                "Please, specify the input "
-                "file name (or use -i <file name>): "
-            )
-        else:
-            sys.exit(0)
-
-if not options.format:
-    options.format = input(
-        "Please, specify the output format (html, "
-        "tex, etc.) (or use -f <format>): "
-    )
-
-if not options.output_destination:
-    answer = input(
-        "You aren't specify output destination. Should I "
-        'create file "out.' + options.format + '"? [y/n] '
-    )
-    if answer.lower() in ["y", "yes", "ok"]:
-        options.output_destination = "out." + options.format
-    else:
-        sys.exit(0)
-
-options.book_level = int(options.book_level) if options.book_level else 0
-
-# Parsing
-
-if not options.book_level or options.book_level == 0:
-
-    output = moire.convert(
-        open(options.input_file_name, "r").read(),
-        options.format,
-        True,
-        options.rules,
-        True,
-    )
+    with open(options.input, "r") as input_file:
+        converter: Moire = getattr(sys.modules[__name__], options.format)
+        output: str = converter.convert(input_file.read())
 
     if not output:
         print("Fatal: output was no produced.")
         sys.exit(1)
 
-    output_file = open(options.output_destination, "w+")
-    print("Writing result to " + options.output_destination + "...")
-    output_file.write(output)
-    output_file.close()
-    print("Done.")
-
-else:
-
-    moire.construct_book(
-        options.input_file_name,
-        output_directory=options.output_destination,
-        kind=options.format,
-        rules=options.rules,
-        book_level=options.book_level,
-    )
+    with open(options.output, "w+") as output_file:
+        output_file.write(output)
+        print(f"Converted to {options.output}.")
