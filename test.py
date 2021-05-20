@@ -10,7 +10,7 @@ Author: Sergey Vartanov (me@enzet.ru).
 See http://github.com/enzet/moire
 """
 
-import moire
+from default import DefaultHTML, DefaultRTF, DefaultTeX
 
 red_color = "\033[31m"
 green_color = "\033[32m"
@@ -96,17 +96,17 @@ tests = {
             "Tag with multiple parameters with spaces",
         ],
         [
-            "\\table{{{td}}}",
+            "\\table{{td}}",
             "<table><tr><td><p>td</p></td></tr></table>",
             "Tag with nested parameters",
         ],
         [
-            "\\table{{{\\i {td}}}}",
+            "\\table{{\\i {td}}}",
             "<table><tr><td><p><i>td</i></p></td></tr></table>",
             "Tag in tag with nested parameters",
         ],
         [
-            "\\table{{{td}{td}}}",
+            "\\table{{td}{td}}",
             "<table><tr><td><p>td</p></td><td><p>td</p></td></tr></table>",
             "Tag with more nested parameters",
         ],
@@ -119,17 +119,29 @@ tests = {
     ],
 }
 
-for current_format in tests:
-    for test in tests[current_format]:
-        converted = moire.convert(test[0], wrap=False, format=current_format)
-        if converted == test[1]:
-            print(
-                f" {green_color} OK {clear_color}  [{current_format}] {test[2]}"
-            )
-        else:
-            print(
-                f" {red_color} OK {clear_color}  [{current_format}] {test[2]}"
-            )
-            print("       Rule: " + repr(test[0]))
-            print("             " + red_color + repr(converted) + clear_color)
-            print("             " + green_color + repr(test[1]) + clear_color)
+
+if __name__ == "__main__":
+    for current_format in tests:
+        if current_format == "html":
+            converter = DefaultHTML()
+        if current_format == "rtf":
+            converter = DefaultRTF()
+        if current_format == "tex":
+            converter = DefaultTeX()
+        for test in tests[current_format]:
+            converted = converter.convert(test[0], wrap=False)
+            if converted == test[1]:
+                print(
+                    f" {green_color} OK {clear_color}  [{current_format}] {test[2]}"
+                )
+            else:
+                print(
+                    f" {red_color} OK {clear_color}  [{current_format}] {test[2]}"
+                )
+                print("       Rule: " + repr(test[0]))
+                print(
+                    "             " + red_color + repr(converted) + clear_color
+                )
+                print(
+                    "             " + green_color + repr(test[1]) + clear_color
+                )

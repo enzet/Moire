@@ -747,7 +747,7 @@ class DefaultRTF(Moire):
             elif ord(c) <= 128:
                 result += c
             else:
-                result += "\\u" + unicode(ord(c)) + "  "
+                result += "\\u" + str(ord(c)) + "  "
         return result
 
     def block(self, arg: List[Any]) -> str:
