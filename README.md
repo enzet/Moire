@@ -65,10 +65,16 @@ Markdown rendering:
 Conversion Moire code into other formats
 ----------------------------------------
 
-You can convert your Moire file to other formats using Python 2.7:
+You can convert your Moire file to other formats using Python 3.9:
 
 ```bash
-python convertor.py -i <Moire input file> -f <format> -o <output file> <other options>
+python converter.py -i <Moire input file> -f <format> -o <output file> <other options>
+```
+
+E.g., this file is generated from Moire code using this command:
+
+```bash
+python3.9 converter.py -i doc/manual/readme.moi -o README.md -f DefaultMarkdown
 ```
 
 ### Options ###
