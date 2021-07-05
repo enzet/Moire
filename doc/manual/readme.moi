@@ -6,12 +6,12 @@ Moire is a simple multipurpose markup.
 
 \3 {Default formatter} {default-formatter}
 
-\4 {Headers} {}
+\4 {Headers} {headers}
 
 There are 6 possible header levels\: \tt {\\1}, \tt {\\2}, ..., \tt {\\6} with syntax \tt {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\:
 \tt{\\2 \{Section 3\} \{section-3\}}.
 
-\4 {Formatting} {}
+\4 {Formatting} {formatting}
 
 Italic (\tt {\\i}), bold (\tt {\\b}), underlined (\tt {\\u}), subscript (\tt {\\sub}), superscript (\tt {\\super}).
 
@@ -21,14 +21,14 @@ Italic (\tt {\\i}), bold (\tt {\\b}), underlined (\tt {\\u}), subscript (\tt {\\
     {{\tt {\\b \{text\}}} {\b {text}}}
     {{\tt {\\tt \{text\}}} {\tt {text}}}
 
-\4 {Links} {}
+\4 {Links} {links}
 
 \table
     {{Example Moire code} {Markdown rendering}}
     {{\tt {\\href \{http://example.com\} \{external link\}}} {\href {http://example.com} {external link}}}
     {{\tt {\\href \{#example-section\} \{internal link\}}} {\href {#example-section} {internal link}}}
 
-\4 {Lists} {}
+\4 {Lists} {lists}
 
 Example Moire code\:
 
@@ -42,23 +42,23 @@ Markdown rendering\:
     {Item 1,}
     {item 2.}
 
-\4 {Tables} {}
+\4 {Tables} {tables}
 
 Example Moire code\:
 
 \code {\\table
-    \{\{\\th \{Header 1\}\} \{\\th \{Header 2\}\}\}
+    \{\{Header 1\} \{Header 2\}\}
     \{\{Cell 1, 1\} \{Cell 1, 2\}\}
     \{\{Cell 2, 1\} \{Cell 2, 2\}\}} {moire}
 
 Markdown rendering\:
 
 \table
-    {{\th {Header 1}} {\th {Header 2}}}
+    {{Header 1} {Header 2}}
     {{Cell 1, 1} {Cell 1, 2}}
     {{Cell 2, 1} {Cell 2, 2}}
 
-\2 {Conversion Moire code into other formats} {}
+\2 {Conversion Moire code into other formats} {conversion-moire-code-into-other-formats}
 
 You can convert your Moire file to other formats using Python 3.9\:
 
@@ -66,16 +66,6 @@ You can convert your Moire file to other formats using Python 3.9\:
 
 E.g., this file is generated from Moire code using this command\:
 
-\code {python3.9 converter.py -i doc/manual/readme.moi -o README.md -f DefaultMarkdown} {bash}
-
-\3 {Options} {options}
-
-\tt {-i} or \tt {--input}—input file in \i {Moire} format;
-
-\tt {-o} or \tt {--output}—output file;
-
-\tt {-t} or \tt {--to}—format of output file. May be \tt {html}, \tt {text} or \tt {markdown};
-
-\tt {-s} or \tt {--scheme}—scheme file name.
+\code {python converter.py -i doc/manual/readme.moi -o README.md -f DefaultMarkdown} {bash}
 
 \2 {Example section} {example-section}

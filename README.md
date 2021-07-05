@@ -50,14 +50,14 @@ Example Moire code:
 
 ```moire
 \table
-    {{\th {Header 1}} {\th {Header 2}}}
+    {{Header 1} {Header 2}}
     {{Cell 1, 1} {Cell 1, 2}}
     {{Cell 2, 1} {Cell 2, 2}}
 ```
 
 Markdown rendering:
 
-| <NO TAG> | <NO TAG> |
+| Header 1 | Header 2 |
 |---|---|
 | Cell 1, 1 | Cell 1, 2 |
 | Cell 2, 1 | Cell 2, 2 |
@@ -74,18 +74,8 @@ python converter.py -i <Moire input file> -f <format> -o <output file> <other op
 E.g., this file is generated from Moire code using this command:
 
 ```bash
-python3.9 converter.py -i doc/manual/readme.moi -o README.md -f DefaultMarkdown
+python converter.py -i doc/manual/readme.moi -o README.md -f DefaultMarkdown
 ```
-
-### Options ###
-
-`-i` or `--input`—input file in *Moire* format;
-
-`-o` or `--output`—output file;
-
-`-t` or `--to`—format of output file. May be `html`, `text` or `markdown`;
-
-`-s` or `--scheme`—scheme file name.
 
 Example section
 ---------------
