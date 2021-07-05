@@ -1,20 +1,77 @@
+\1 {Moire} {moire}
+
 Moire is a simple multipurpose markup.
 
-\2 {Writing on Moire}
+\2 {Writing on Moire} {writing-on-moire}
 
-\2 {Conversion Moire code into other formats}
+\3 {Default formatter} {default-formatter}
+
+\4 {Headers} {}
+
+There are 6 possible header levels\: \tt {\\1}, \tt {\\2}, ..., \tt {\\6} with syntax \tt {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\:
+\tt{\\2 \{Section 3\} \{section-3\}}.
+
+\4 {Formatting} {}
+
+Italic (\tt {\\i}), bold (\tt {\\b}), underlined (\tt {\\u}), subscript (\tt {\\sub}), superscript (\tt {\\super}).
+
+\table
+    {{Example Moire code} {Markdown rendering}}
+    {{\tt {\\i \{text\}}} {\i {text}}}
+    {{\tt {\\b \{text\}}} {\b {text}}}
+    {{\tt {\\tt \{text\}}} {\tt {text}}}
+
+\4 {Links} {}
+
+\table
+    {{Example Moire code} {Markdown rendering}}
+    {{\tt {\\href \{http://example.com\} \{external link\}}} {\href {http://example.com} {external link}}}
+    {{\tt {\\href \{#example-section\} \{internal link\}}} {\href {#example-section} {internal link}}}
+
+\4 {Lists} {}
+
+Example Moire code\:
+
+\code {\\list
+    \{Item 1,\}
+    \{item 2.\}} {moire}
+
+Markdown rendering\:
+
+\list
+    {Item 1,}
+    {item 2.}
+
+\4 {Tables} {}
+
+Example Moire code\:
+
+\code {\\table
+    \{\{\\th \{Header 1\}\} \{\\th \{Header 2\}\}\}
+    \{\{Cell 1, 1\} \{Cell 1, 2\}\}
+    \{\{Cell 2, 1\} \{Cell 2, 2\}\}} {moire}
+
+Markdown rendering\:
+
+\table
+    {{\th {Header 1}} {\th {Header 2}}}
+    {{Cell 1, 1} {Cell 1, 2}}
+    {{Cell 2, 1} {Cell 2, 2}}
+
+\2 {Conversion Moire code into other formats} {}
 
 You can convert your Moire file to other formats using Python 2.7:
 
-\code
-{python converter.py -i <Moire input file> -f <format> -o <output destination> -r <style> <other options>}
+\code {python convertor.py -i <Moire input file> -f <format> -o <output file> <other options>} {bash}
 
-\3 {Options}
+\3 {Options} {options}
 
-\tt {-i} or \tt {--input}—input file in Moire format;
+\tt {-i} or \tt {--input}—input file in \i {Moire} format;
 
 \tt {-o} or \tt {--output}—output file;
 
 \tt {-t} or \tt {--to}—format of output file. May be \tt {html}, \tt {text} or \tt {markdown};
 
-\tt {-r} or \tt {--rules}—parsing rules identifier.
+\tt {-s} or \tt {--scheme}—scheme file name.
+
+\2 {Example section} {example-section}

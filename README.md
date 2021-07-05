@@ -10,14 +10,11 @@ Writing on Moire
 
 #### Headers ####
 
-There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax
-`\<header level> {<header name>} {<header label>}`.  E.g.:
-`\2 {Section 3} {section-3}`.
+There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header level> {<header name>} {<header label>}`. E.g.: `\2 {Section 3} {section-3}`.
 
 #### Formatting ####
 
-Italic (`\i`), bold (`\b`), underlined (`\u`), subscript (`\sub`), superscript
-(`\super`).
+Italic (`\i`), bold (`\b`), underlined (`\u`), subscript (`\sub`), superscript (`\super`).
 
 | Example Moire code | Markdown rendering |
 |---|---|
@@ -27,10 +24,10 @@ Italic (`\i`), bold (`\b`), underlined (`\u`), subscript (`\sub`), superscript
 
 #### Links ####
 
-| Example Moire code | Markdown rendering|
+| Example Moire code | Markdown rendering |
 |---|---|
-| `\href {http://example.com} {external link}` | [external link](http://example.com)
-| `\href {#example-section} {internal link}` | [internal link](#example-section)
+| `\href {http://example.com} {external link}` | [external link](http://example.com) |
+| `\href {#example-section} {internal link}` | [internal link](#example-section) |
 
 #### Lists ####
 
@@ -60,8 +57,8 @@ Example Moire code:
 
 Markdown rendering:
 
-| Header 1  | Header 2  |
-|-----------|-----------|
+| <NO TAG> | <NO TAG> |
+|---|---|
 | Cell 1, 1 | Cell 1, 2 |
 | Cell 2, 1 | Cell 2, 2 |
 
@@ -70,17 +67,20 @@ Conversion Moire code into other formats
 
 You can convert your Moire file to other formats using Python 2.7:
 
-    python convertor.py -i <Moire input file> -f <format> -o <output file> <other options>
+```bash
+python convertor.py -i <Moire input file> -f <format> -o <output file> <other options>
+```
 
 ### Options ###
 
-``-i`` or ``--input``—input file in *Moire* format;
+`-i` or `--input`—input file in *Moire* format;
 
-``-o`` or ``--output``—output file;
+`-o` or `--output`—output file;
 
-``-t`` or ``--to``—format of output file. May be ``html``, ``text`` or ``markdown``;
+`-t` or `--to`—format of output file. May be `html`, `text` or `markdown`;
 
-``-s`` or ``--scheme``—scheme file name.
+`-s` or `--scheme`—scheme file name.
 
 Example section
 ---------------
+
