@@ -459,21 +459,15 @@ class DefaultWiki(Moire):
         return s
 
     def table(self, arg: List[Any]) -> str:
-        s = ""
-        for index, tr in enumerate(arg[0]):
-            if isinstance(tr, list):
-                s += "|"
-                for td in tr:
-                    if isinstance(td, list):
-                        s += " " + self.parse(td) + " |"
-                s += "\n"
-                if index == 0:
-                    s += "|"
-                    for td in tr:
-                        if isinstance(td, list):
-                            s += "---|"
-                    s += "\n"
-        return s
+        s = (
+            '{| class="wikitable" border="1" cellspacing="0" cellpadding="2"\n'
+            '! Tag || Rendering\n'
+         )
+        for index, tr in enumerate(arg):
+            s += "|-\n"
+            for td in tr:
+                s += "| " + self.parse(td) + "\n"
+        return s + "|}\n"
 
     def b(self, arg: List[Any]) -> str:
         return f"'''{self.parse(arg[0])}'''"
@@ -487,12 +481,11 @@ class DefaultWiki(Moire):
         else:
             return f"<pre><tt>{self.clear(arg[0])}\n</tt></pre>"
 
+    def _get_href(self, link: str, text: str) -> str:
+        return f"[[{link}|{text}]]"
+
     def href(self, arg: List[Any]) -> str:
-        OSM_WIKI_PREFIX: str = "https://wiki.openstreetmap.org/wiki/"
-        link: str = self.parse(arg[0])
-        if link.startswith(OSM_WIKI_PREFIX):
-            return f"[[{link[len(OSM_WIKI_PREFIX):]}|{self.parse(arg[1])}]]"
-        return "[" + link + " " + self.parse(arg[1]) + "]"
+        return self._get_href(self.clear(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: List[Any]) -> str:
         return f"''{self.parse(arg[0])}''"
