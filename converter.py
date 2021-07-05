@@ -6,6 +6,7 @@ import argparse
 import sys
 
 from moire.moire import Moire
+from moire import default
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -20,7 +21,9 @@ if __name__ == "__main__":
     options = parser.parse_args(sys.argv[1:])
 
     with open(options.input, "r") as input_file:
-        converter: Moire = getattr(sys.modules[__name__], options.format)
+        converter: Moire = getattr(
+            sys.modules["moire.default"], options.format
+        )()
         output: str = converter.convert(input_file.read())
 
     if not output:
