@@ -5,7 +5,7 @@ formats, such as HTML, TeX, etc.
 import argparse
 import sys
 
-from moire import Moire
+from moire.moire import Moire
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"

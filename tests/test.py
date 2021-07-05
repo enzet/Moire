@@ -10,7 +10,7 @@ Author: Sergey Vartanov (me@enzet.ru).
 See http://github.com/enzet/moire
 """
 
-from default import DefaultHTML, DefaultRTF, DefaultTeX
+from moire.default import DefaultHTML, DefaultRTF, DefaultTeX
 
 red_color = "\033[31m"
 green_color = "\033[32m"

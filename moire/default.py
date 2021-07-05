@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import Any, List, Set
 
-from moire import Moire
+from moire.moire import Moire
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
