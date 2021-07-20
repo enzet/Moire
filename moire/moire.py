@@ -4,6 +4,7 @@ Moire library.  This file is a part of Moire project—light markup language.
 See http://github.com/enzet/Moire
 """
 
+import logging
 import sys
 
 from typing import List, Dict
@@ -11,18 +12,12 @@ from typing import List, Dict
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
 
-# Global variables
-
 # Constants
 
-comment_begin = "/*"
-comment_end = "*/"
+COMMENT_BEGIN: str = "/*"
+COMMENT_END: str = "*/"
 
 paragraph_delimiter = "\n\n"
-
-
-def error(message):
-    print(" [ERROR] " + str(message) + ".")
 
 
 class Tag:
@@ -31,19 +26,15 @@ class Tag:
     \<tag name> {<parameter 1>} ... {<parameter N>}.
     """
 
-    def __init__(self, tag_id, parameters):
-        self.id = tag_id
-        self.parameters = parameters
+    def __init__(self, tag_id: str, parameters: List):
+        self.id: str = tag_id
+        self.parameters: List = parameters
 
-    def __str__(self):
-        s = self.id + " {" + str(self.parameters) + "}"
+    def __str__(self) -> str:
+        s = f"{self.id}{{{self.parameters}}}"
         return s
 
-    def __repr__(self):
-        s = self.id + " {" + str(self.parameters) + "}"
-        return s
-
-    def is_header(self):
+    def is_header(self) -> bool:
         return self.id in "123456"
 
 
@@ -129,10 +120,10 @@ def comments_preprocessing(text):
     adding = True
     i = 0
     while i < len(text):
-        if text[i : i + 2] == comment_begin:
+        if text[i : i + len(COMMENT_BEGIN)] == COMMENT_BEGIN:
             adding = False
             i += 1
-        elif text[i : i + 2] == comment_end:
+        elif text[i : i + len(COMMENT_END)] == COMMENT_END:
             adding = True
             i += 1
         else:
@@ -163,7 +154,7 @@ def lexer(text) -> (List[Lexeme], List[int]):
         char = text[index]
         if char == "\\":
             if index == len(text) - 1:
-                print("Error: backslash at the end of string.")
+                logging.error("Backslash at the end of string.")
             elif not is_letter_or_digit(text[index + 1]):
                 if word != "":
                     lexemes.append(Lexeme("text", word))
@@ -243,10 +234,7 @@ def get_intermediate(lexemes, positions, level, index=0):
             level -= 1
             if level < 0:
                 position = positions[index]
-                print("Lexer error at " + str(position) + ".")
-                # print input_file[position - 10:position + 10]\
-                #        .replace("\n", " ").replace("\t", " ")
-                # print "          ^"
+                logging.error("Lexer error at " + str(position) + ".")
                 index += 1
                 sys.exit(1)
             if tag:
@@ -415,33 +403,29 @@ class Moire:
         else:
             assert False
 
-    def clear(self, text):
+    def clear(self, text) -> str:
         if isinstance(text, list):
-            s = ""
-            for item in text:
-                if isinstance(item, str):
-                    s += item
-            return self.escape(s)
+            return self.escape("".join([x for x in text if isinstance(x, str)]))
         return self.escape(text)
 
     def full_parse(self, text: str, offset: int = 0, prefix: str = ""):
         text = comments_preprocessing(text)
         lexemes, positions = lexer(text)
-        index, raw_IR = get_intermediate(lexemes, positions, 0, 0)
+        index, raw_ir = get_intermediate(lexemes, positions, 0, 0)
 
-        resulted_IR = []
+        resulted_ir = []
 
-        for item in raw_IR:
+        for item in raw_ir:
             if isinstance(item, Tag):
                 if item.is_header() and (offset or prefix):
                     new_item = Tag(str(int(item.id) + offset), item.parameters)
-                    resulted_IR.append(new_item)
+                    resulted_ir.append(new_item)
                 else:
-                    resulted_IR.append(item)
+                    resulted_ir.append(item)
             else:
-                resulted_IR.append(item)
+                resulted_ir.append(item)
 
-        return resulted_IR
+        return resulted_ir
 
     def process_inner_block(self, inner_block):
         """

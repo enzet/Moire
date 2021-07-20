@@ -3,6 +3,7 @@ Command line Python tool for file conversion from Moire markup language to other
 formats, such as HTML, TeX, etc.
 """
 import argparse
+import logging
 import sys
 
 from moire.moire import Moire
@@ -12,6 +13,8 @@ __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
@@ -27,9 +30,9 @@ if __name__ == "__main__":
         output: str = converter.convert(input_file.read())
 
     if not output:
-        print("Fatal: output was no produced.")
+        logging.fatal("Fatal: output was no produced.")
         sys.exit(1)
 
     with open(options.output, "w+") as output_file:
         output_file.write(output)
-        print(f"Converted to {options.output}.")
+        logging.info(f"Converted to {options.output}.")

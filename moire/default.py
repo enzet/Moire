@@ -15,7 +15,19 @@ BLOCK_TAGS: Set[str] = {
 }
 
 
-class DefaultHTML(Moire):
+class Default(Moire):
+    """
+    Default tag declaration.
+    """
+
+    def tt(self, arg: List[Any]) -> str:
+        raise NotImplementedError
+
+    def get_href_(self, link: str, text: str) -> str:
+        raise NotImplementedError
+
+
+class DefaultHTML(Default):
     """
     Default HTML format.
     """
@@ -86,11 +98,11 @@ class DefaultHTML(Moire):
         return "<br />"
 
     @staticmethod
-    def _get_href(link: str, text: str) -> str:
+    def get_href_(link: str, text: str) -> str:
         return f'<a href="{link}">{text}</a>'
 
     def href(self, arg: List[Any]) -> str:
-        return self._get_href(self.clear(arg[0]), self.parse(arg[1]))
+        return self.get_href_(self.clear(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: List[Any]) -> str:
         return f"<i>{self.parse(arg[0])}</i>"
@@ -123,7 +135,7 @@ class DefaultHTML(Moire):
         return f"<blockquote>{self.parse(arg[0])}</blockquote>"
 
 
-class DefaultText(Moire):
+class DefaultText(Default):
     """
     Plain text.
     """
@@ -187,11 +199,11 @@ class DefaultText(Moire):
     def b(self, arg: List[Any]) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
-    def _get_href(self, link, text):
+    def get_href_(self, link, text):
         return f"{text} + ({link})"
 
     def href(self, arg: List[Any]) -> str:
-        return self._get_href(self.clear(arg[0]), self.parse(arg[1]))
+        return self.get_href_(self.clear(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: List[Any]) -> str:
         return self.parse(arg[0], depth=depth + 1)
@@ -224,7 +236,7 @@ class DefaultText(Moire):
 # Plain text without formatting.
 
 
-class DefaultRawText(Moire):
+class DefaultRawText(Default):
     name = "Text"
     extension = "txt"
 
@@ -298,7 +310,7 @@ class DefaultRawText(Moire):
 # Markdown.
 
 
-class DefaultMarkdown(Moire):
+class DefaultMarkdown(Default):
     name = "Markdown"
     extensions = ["md", "markdown"]
     block_tags = BLOCK_TAGS
@@ -381,11 +393,11 @@ class DefaultMarkdown(Moire):
         s += f"\n{self.clear(arg[0])}\n```"
         return s
 
-    def _get_href(self, link: str, text: str) -> str:
+    def get_href_(self, link: str, text: str) -> str:
         return f"[{text}]({link})"
 
     def href(self, arg: List[Any]) -> str:
-        return self._get_href(self.parse(arg[0]), self.parse(arg[1]))
+        return self.get_href_(self.parse(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: List[Any]) -> str:
         return "*" + self.parse(arg[0]) + "*"
@@ -409,7 +421,7 @@ class DefaultMarkdown(Moire):
         return ">" + self.parse(arg[0]) + ""
 
 
-class DefaultWiki(Moire):
+class DefaultWiki(Default):
     """
     Wiki syntax of Wikipedia.
     """
@@ -481,11 +493,11 @@ class DefaultWiki(Moire):
         else:
             return f"<pre><tt>{self.clear(arg[0])}\n</tt></pre>"
 
-    def _get_href(self, link: str, text: str) -> str:
+    def get_href_(self, link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
 
     def href(self, arg: List[Any]) -> str:
-        return self._get_href(self.clear(arg[0]), self.parse(arg[1]))
+        return self.get_href_(self.clear(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: List[Any]) -> str:
         return f"''{self.parse(arg[0])}''"
@@ -518,7 +530,7 @@ class DefaultWiki(Moire):
 # TeX.
 
 
-class DefaultTeX(Moire):
+class DefaultTeX(Default):
     name = "Tex"
     extension = "tex"
 
@@ -729,7 +741,7 @@ class DefaultTeX(Moire):
 # RTF.
 
 
-class DefaultRTF(Moire):
+class DefaultRTF(Default):
     name = "RTF"
 
     def escape(self, text: str) -> str:
