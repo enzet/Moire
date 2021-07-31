@@ -7,10 +7,11 @@ import logging
 import sys
 
 from moire.moire import Moire
-from moire import default
+import moire.default  # Do not delete!
 
-__author__: str = "Sergey Vartanov"
-__email__: str = "me@enzet.ru"
+__author__ = "Sergey Vartanov"
+__email__ = "me@enzet.ru"
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
