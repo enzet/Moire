@@ -6,6 +6,7 @@ See http://github.com/enzet/Moire
 
 import logging
 import sys
+from io import StringIO
 
 from typing import List, Dict
 
@@ -23,7 +24,7 @@ paragraph_delimiter = "\n\n"
 class Tag:
     """
     Moire tag definition. Tag has name and parameters:
-    \<tag name> {<parameter 1>} ... {<parameter N>}.
+    <backslash><tag name> {<parameter 1>} ... {<parameter N>}.
     """
 
     def __init__(self, tag_id: str, parameters: List):
@@ -335,8 +336,7 @@ class Moire:
         return result
 
     def parse(
-        self, text, inblock=False, depth=0, mode="",
-        spec=None
+        self, text, inblock=False, depth=0, mode="", spec=None
     ) -> str:
         """
         Element parsing into formatted text. Element may be plain text, tag, or
@@ -370,9 +370,11 @@ class Moire:
             else:
                 if mode == "":
                     self.status["missing_tags"].add(key)
-                return "<NO TAG>"
+                    assert False, f"Unknown tag {mode}{key}"
+                else:
+                    return ""
         elif isinstance(text, list):
-            s = ""
+            builder = StringIO()
             inner_block = []
             for item in text:
                 if inblock:
@@ -380,9 +382,9 @@ class Moire:
                         isinstance(item, Tag) and item.id in self.block_tags
                     ):
                         if inner_block:
-                            s += self.process_inner_block(inner_block)
+                            builder.write(self.process_inner_block(inner_block))
                             inner_block = []
-                        s += str(
+                        builder.write(
                             self.parse(
                                 item, inblock=inblock, depth=depth + 1,
                                 mode=mode, spec=spec,
@@ -391,15 +393,14 @@ class Moire:
                     else:
                         inner_block.append(item)
                 else:
-                    s += str(
-                        self.parse(
-                            item, inblock=inblock, depth=depth + 1, mode=mode,
-                            spec=spec,
-                        )
+                    parsed = self.parse(
+                        item, inblock=inblock, depth=depth + 1, mode=mode,
+                        spec=spec,
                     )
+                    builder.write(parsed)
             if inner_block:
-                s += self.process_inner_block(inner_block)
-            return s
+                builder.write(self.process_inner_block(inner_block))
+            return builder.getvalue()
         else:
             assert False
 
