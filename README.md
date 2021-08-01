@@ -20,14 +20,14 @@ Italic (`\i`), bold (`\b`), underlined (`\u`), subscript (`\sub`), superscript (
 |---|---|
 | `\i {text}` | *text* |
 | `\b {text}` | **text** |
-| `\tt {text}` | `text` |
+| `\m {text}` | `text` |
 
 #### Links ####
 
 | Example Moire code | Markdown rendering |
 |---|---|
-| `\href {http://example.com} {external link}` | [external link](http://example.com) |
-| `\href {#example-section} {internal link}` | [internal link](#example-section) |
+| `\ref {http://example.com} {external link}` | [external link](http://example.com) |
+| `\ref {#example-section} {internal link}` | [internal link](#example-section) |
 
 #### Lists ####
 

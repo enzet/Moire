@@ -8,25 +8,25 @@ Moire is a simple multipurpose markup.
 
 \4 {Headers} {headers}
 
-There are 6 possible header levels\: \tt {\\1}, \tt {\\2}, ..., \tt {\\6} with syntax \tt {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\:
-\tt{\\2 \{Section 3\} \{section-3\}}.
+There are 6 possible header levels\: \m {\\1}, \m {\\2}, ..., \m {\\6} with syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\:
+\m{\\2 \{Section 3\} \{section-3\}}.
 
 \4 {Formatting} {formatting}
 
-Italic (\tt {\\i}), bold (\tt {\\b}), underlined (\tt {\\u}), subscript (\tt {\\sub}), superscript (\tt {\\super}).
+Italic (\m {\\i}), bold (\m {\\b}), underlined (\m {\\u}), subscript (\m {\\sub}), superscript (\m {\\super}).
 
 \table
     {{Example Moire code} {Markdown rendering}}
-    {{\tt {\\i \{text\}}} {\i {text}}}
-    {{\tt {\\b \{text\}}} {\b {text}}}
-    {{\tt {\\tt \{text\}}} {\tt {text}}}
+    {{\m {\\i \{text\}}} {\i {text}}}
+    {{\m {\\b \{text\}}} {\b {text}}}
+    {{\m {\\m \{text\}}} {\m {text}}}
 
 \4 {Links} {links}
 
 \table
     {{Example Moire code} {Markdown rendering}}
-    {{\tt {\\href \{http://example.com\} \{external link\}}} {\href {http://example.com} {external link}}}
-    {{\tt {\\href \{#example-section\} \{internal link\}}} {\href {#example-section} {internal link}}}
+    {{\m {\\ref \{http://example.com\} \{external link\}}} {\ref {http://example.com} {external link}}}
+    {{\m {\\ref \{#example-section\} \{internal link\}}} {\ref {#example-section} {internal link}}}
 
 \4 {Lists} {lists}
 
