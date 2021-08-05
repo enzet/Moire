@@ -7,12 +7,6 @@ from moire.default import DefaultHTML, DefaultRTF, DefaultTeX
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
-red_color = "\033[31m"
-green_color = "\033[32m"
-clear_color = "\033[0m"
-
-# Positive tests list: Moire code, HTML equivalent, description.
-
 
 converter_html = DefaultHTML()
 converter_rtf = DefaultRTF()

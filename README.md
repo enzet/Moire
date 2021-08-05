@@ -1,7 +1,7 @@
 Moire
 =====
 
-Moire is a simple multipurpose markup.
+Moire (pronounced as /mwɑː/) is a simple extendable multipurpose markup language.
 
 Writing on Moire
 ----------------

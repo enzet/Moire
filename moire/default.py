@@ -11,8 +11,8 @@ depth = 0
 status = {}
 BLOCK_TAGS: Set[str] = {
     "block", "body", "code", "title", "number", "list", "shortlist", "image",
-    "table"
-}
+    "table",
+}  # fmt: skip
 Arguments = List[Any]
 
 
@@ -62,6 +62,20 @@ class Default(Moire):
         Arguments:
             (required) code
             (optional) language specification (i.e. `java`)
+        """
+        raise NotImplementedError
+
+    def list(self, arg: Arguments) -> str:
+        """List of items. """
+        raise NotImplementedError
+
+    def ref(self, arg: Arguments) -> str:
+        """
+        Hypertext reference.
+
+        Arguments:
+            (required) reference
+            (optional) text
         """
         raise NotImplementedError
 
@@ -116,7 +130,7 @@ class DefaultHTML(Default):
         return f"<ul>{items}</ul>"
 
     def image(self, arg: Arguments) -> str:
-        title: str = (f' alt="{self.parse(arg[1])}"' if len(arg) >= 2 else "")
+        title: str = f' alt="{self.parse(arg[1])}"' if len(arg) >= 2 else ""
         return f'<img src="{self.clear(arg[0])}"{title} />'
 
     def table(self, arg: Arguments) -> str:
@@ -372,7 +386,9 @@ class DefaultMarkdown(Default):
 
     def list(self, arg: Arguments) -> str:
         self.list_level += 1
-        s: str = "".join("  " * self.list_level + f"* {self.parse(item)}\n" for item in arg)
+        s: str = "".join(
+            "  " * self.list_level + f"* {self.parse(item)}\n" for item in arg
+        )
         self.list_level -= 1
         return s
 
@@ -383,9 +399,7 @@ class DefaultMarkdown(Default):
             if isinstance(item, list):
                 n += 1
                 self.level += 1
-                s += (
-                    f"\n{('   ' * (self.level - 1))}* {self.parse(item)}\n"
-                )
+                s += f"\n{('   ' * (self.level - 1))}* {self.parse(item)}\n"
                 self.level -= 1
         return s
 
@@ -495,8 +509,8 @@ class DefaultWiki(Default):
     def table(self, arg: Arguments) -> str:
         s = (
             '{| class="wikitable" border="1" cellspacing="0" cellpadding="2"\n'
-            '! Tag || Rendering\n'
-         )
+            "! Tag || Rendering\n"
+        )
         for index, tr in enumerate(arg):
             s += "|-\n"
             for td in tr:
