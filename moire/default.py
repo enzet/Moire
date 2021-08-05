@@ -10,9 +10,8 @@ __email__ = "me@enzet.ru"
 depth = 0
 status = {}
 BLOCK_TAGS: Set[str] = {
-    "block", "body", "code", "title", "number", "list", "shortlist", "image",
-    "table",
-}  # fmt: skip
+    "block", "body", "code", "title", "number", "list", "image", "table"
+}
 Arguments = List[Any]
 
 
@@ -370,18 +369,17 @@ class DefaultMarkdown(Default):
             .replace("\n\n\n", "\n\n")
         )
 
-    def header(self, arg, number):
+    def header(self, arg: Arguments, number: int):
         s = ""
         if number == 1:
-            parsed = self.parse(arg[0])
+            parsed: str = self.parse(arg[0])
             s += parsed + "\n" + "=" * len(parsed)
         elif number == 2:
-            parsed = self.parse(arg[0])
+            parsed: str = self.parse(arg[0])
             s += parsed + "\n" + "-" * len(parsed)
         else:
-            s += (
-                (number * "#") + " " + self.parse(arg[0]) + " " + (number * "#")
-            )
+            wrapper: str = number * "#"
+            s += f"{wrapper} {self.parse(arg[0])} {wrapper}"
         return s
 
     def list(self, arg: Arguments) -> str:
@@ -390,17 +388,6 @@ class DefaultMarkdown(Default):
             "  " * self.list_level + f"* {self.parse(item)}\n" for item in arg
         )
         self.list_level -= 1
-        return s
-
-    def shortlist(self, arg: Arguments) -> str:
-        s = ""
-        n = 0
-        for item in arg:
-            if isinstance(item, list):
-                n += 1
-                self.level += 1
-                s += f"\n{('   ' * (self.level - 1))}* {self.parse(item)}\n"
-                self.level -= 1
         return s
 
     def table(self, arg: Arguments) -> str:
@@ -487,23 +474,6 @@ class DefaultWiki(Default):
         for item in arg:
             if isinstance(item, list):
                 s += "* " + self.parse(item) + "\n"
-        return s
-
-    def shortlist(self, arg: Arguments) -> str:
-        s = ""
-        n = 0
-        for item in arg:
-            if isinstance(item, list):
-                n += 1
-                self.level += 1
-                s += (
-                    "\n"
-                    + ("   " * (self.level - 1))
-                    + "* "
-                    + self.parse(item)
-                    + "\n"
-                )
-                self.level -= 1
         return s
 
     def table(self, arg: Arguments) -> str:
@@ -646,14 +616,6 @@ class DefaultTeX(Default):
             if isinstance(item, list):
                 s += "\\item " + self.parse(item) + "\n\n"
         s += "\\end{itemize}\n"
-        return s
-
-    def shortlist(self, arg: Arguments) -> str:
-        s = "\\begin{itemize}[itemsep=-0.5ex]\n"
-        for item in arg[0]:
-            if isinstance(item, list):
-                s += "\\item " + self.parse(item) + "\n\n"
-        s += "\\end{itemize}\n\n"
         return s
 
     def ordered(self, arg: Arguments) -> str:
@@ -937,9 +899,6 @@ class DefaultRTF(Default):
         return self.parse(arg[0])
 
     def image(self, arg: Arguments) -> str:
-        return self.parse(arg[0])
-
-    def shortlist(self, arg: Arguments) -> str:
         return self.parse(arg[0])
 
     def ordered(self, arg: Arguments) -> str:

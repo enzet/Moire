@@ -9,8 +9,6 @@ __email__ = "me@enzet.ru"
 
 
 converter_html = DefaultHTML()
-converter_rtf = DefaultRTF()
-converter_tex = DefaultTeX()
 
 
 def check(converter, code: str, result: str, _):
@@ -207,11 +205,3 @@ def test_html_table_2_cells() -> None:
         "<table><tr><td><p>td</p></td><td><p>td</p></td></tr></table>",
         "Tag with more nested parameters",
     )
-
-
-def test_rtf() -> None:
-    check_rtf("АБВ", "\\u1040  \\u1041  \\u1042  ", "Unicode")
-
-
-def test_tex() -> None:
-    check_tex("_", "\\_", "Escape sequences")
