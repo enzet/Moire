@@ -15,6 +15,16 @@ BLOCK_TAGS: Set[str] = {
 Arguments = List[Any]
 
 
+class TagNotImplementedError(NotImplementedError):
+    """Tag is not implemented in the parser."""
+
+    def __init__(self, tag: str = ""):
+        self.tag: str = tag
+
+    def __str__(self) -> str:
+        return f"Tag \\{self.tag} is not implemented in the parser"
+
+
 class Default(Moire):
     """
     Default tag declaration.
@@ -22,7 +32,7 @@ class Default(Moire):
 
     def title(self, arg: Arguments) -> str:
         """Document title."""
-        raise NotImplementedError
+        raise TagNotImplementedError("title")
 
     def header(self, arg: Arguments, level: int) -> str:
         """
@@ -32,27 +42,27 @@ class Default(Moire):
             (required) header text
             (optional) header identifier
         """
-        raise NotImplementedError
+        raise TagNotImplementedError("header")
 
     def i(self, arg: Arguments) -> str:
         """Italic text."""
-        raise NotImplementedError
+        raise TagNotImplementedError("i")
 
     def b(self, arg: Arguments) -> str:
         """Bold text."""
-        raise NotImplementedError
+        raise TagNotImplementedError("b")
 
     def u(self, arg: Arguments) -> str:
         """Underlined text."""
-        raise NotImplementedError
+        raise TagNotImplementedError("u")
 
     def strike(self, arg: Arguments) -> str:
         """Strikethrough text."""
-        raise NotImplementedError
+        raise TagNotImplementedError("strike")
 
     def m(self, arg: Arguments) -> str:
         """Monospaced text."""
-        raise NotImplementedError
+        raise TagNotImplementedError("m")
 
     def code(self, arg: Arguments) -> str:
         """
@@ -62,11 +72,11 @@ class Default(Moire):
             (required) code
             (optional) language specification (i.e. `java`)
         """
-        raise NotImplementedError
+        raise TagNotImplementedError("code")
 
     def list(self, arg: Arguments) -> str:
         """List of items."""
-        raise NotImplementedError
+        raise TagNotImplementedError("list")
 
     def ref(self, arg: Arguments) -> str:
         """
@@ -76,11 +86,11 @@ class Default(Moire):
             (required) reference
             (optional) text
         """
-        raise NotImplementedError
+        raise TagNotImplementedError("ref")
 
     @staticmethod
     def get_ref_(link: str, text: str) -> str:
-        raise NotImplementedError
+        raise TagNotImplementedError
 
 
 class DefaultHTML(Default):
