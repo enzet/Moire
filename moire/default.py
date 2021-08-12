@@ -167,7 +167,10 @@ class DefaultHTML(Default):
         return f"<s>{self.parse(arg[0])}</s>"
 
     def sc(self, arg: Arguments) -> str:
-        return f'<span style="font-variant: small-caps;">{self.parse(arg[0])}</span>'
+        return (
+            f'<span style="font-variant: small-caps;">{self.parse(arg[0])}'
+            '</span>'
+        )
 
     def sub(self, arg: Arguments) -> str:
         return f"<sub>{self.parse(arg[0])}</sub>"
@@ -764,17 +767,17 @@ class DefaultRTF(Default):
         status["bookindex"] = 0
         status["books"] = {}
         s = """{\\rtf0\\ansi\\deff0\n{\\*\\listtable{\\list\\listtemplateid1
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u8226 ?;}\\li720}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u9702 ?;}\\li1080}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li1440}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u8226 ?;}\\li1800}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u9702 ?;}\\li2160}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li2520}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u8226 ?;}\\li2880}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u9702 ?;}\\li3240}
-        {\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li3600}\\listid1}}
-        {\\listoverridetable{\\listoverride\\listid1\\ls1}}
-        {\\fonttbl{\\f1 Courier 10 Pitch;}{\\f2 Arial;}{\\f3 Times New Roman;}}\\fs20"""
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u8226 ?;}\\li720}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9702 ?;}\\li1080}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li1440}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u8226 ?;}\\li1800}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9702 ?;}\\li2160}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li2520}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u8226 ?;}\\li2880}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9702 ?;}\\li3240}
+{\\listlevel\\levelnfc23{\\leveltext \\'01\\u9642 ?;}\\li3600}\\listid1}}
+{\\listoverridetable{\\listoverride\\listid1\\ls1}}
+{\\fonttbl{\\f1 Courier 10 Pitch;}{\\f2 Arial;}{\\f3 Times New Roman;}}\\fs20"""
         s += "{\\f3 " + self.parse(arg[0], inblock=True) + "}"
         s += "\n}"
         return s
@@ -933,41 +936,6 @@ class DefaultRTF(Default):
 
     def u(self, arg: Arguments) -> str:
         return "\\ul " + self.parse(arg[0]) + "\\ul0\n"
-
-    def quote(self, arg: Arguments) -> str:
-        return self.parse(arg[0])
-
-    def book(self, arg: Arguments) -> str:
-        return self.parse(arg[0])
-
-    def books(self, arg: Arguments) -> str:
-        s = ""
-        # for item in arg[0]:
-        #   if isinstance(item, list):
-        #       s += "\\par\\pard [" + status[] + "] " + self.parse(item[1]) + "\n\n"
-        for index in range(status["bookindex"]):
-            s += "\\par\\pard\\li720\\fi-360[" + str(index + 1) + "]\\tab "
-            for item in arg[0]:
-                if isinstance(item, list):
-                    if status["books"][self.clear(item[0])] == index + 1:
-                        s += self.parse(item[1])
-        s += "\\par\\pard"
-        return s
-
-    def cite(self, arg: Arguments) -> str:
-        s = ""
-        cites = self.clear(arg[0]).split(", ")
-        for cite in cites:
-            print(cite, status["books"])
-            if not (cite in status["books"]):
-                status["bookindex"] += 1
-                status["books"][cite] = status["bookindex"]
-        s += "["
-        s += str(status["books"][cites[0]])
-        for cite in cites[1:]:
-            s += ", " + str(status["books"][cite])
-        s += "]"
-        return s
 
     def text(self, arg: Arguments) -> str:
         return "\\par\\pard\\qj" + self.parse(arg[0]) + "\n"

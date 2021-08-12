@@ -2,7 +2,7 @@
 Tests for Moire markup parsing.
 """
 
-from moire.default import DefaultHTML, DefaultRTF, DefaultTeX
+from moire.default import DefaultHTML
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -17,14 +17,6 @@ def check(converter, code: str, result: str, _):
 
 def check_html(code: str, result: str, _):
     check(converter_html, code, result, _)
-
-
-def check_rtf(code: str, result: str, _):
-    check(converter_rtf, code, result, _)
-
-
-def check_tex(code: str, result: str, _):
-    check(converter_tex, code, result, _)
 
 
 def test_html_text():

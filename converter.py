@@ -1,5 +1,5 @@
 """
-Command line Python tool for file conversion from Moire markup language to other 
+Command line Python tool for file conversion from Moire markup language to other
 formats, such as HTML, TeX, etc.
 """
 import argparse
@@ -7,7 +7,7 @@ import logging
 import sys
 
 from moire.moire import Moire
-import moire.default  # Do not delete!
+import moire.default  # noqa: F401
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
