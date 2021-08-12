@@ -17,5 +17,3 @@ def check(code: str, result: str):
 
 def test_rtf() -> None:
     check("АБВ", "\\u1040  \\u1041  \\u1042  ")
-
-

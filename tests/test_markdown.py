@@ -17,4 +17,3 @@ def check(code: str, result: str):
 
 def test_markdown() -> None:
     check("\\m {text}", "`text`")
-        
