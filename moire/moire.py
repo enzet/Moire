@@ -329,15 +329,15 @@ class Moire:
             )
 
         self.init()
-        self.parse(intermediate_representation, inblock=False, depth=0, mode="pre_")
+        self.parse(
+            intermediate_representation, inblock=False, depth=0, mode="pre_"
+        )
         result: str = self.parse(intermediate_representation)
         self.finish()
 
         return result
 
-    def parse(
-        self, text, inblock=False, depth=0, mode="", spec=None
-    ) -> str:
+    def parse(self, text, inblock=False, depth=0, mode="", spec=None) -> str:
         """
         Element parsing into formatted text. Element may be plain text, tag, or
         list of elements.
@@ -378,23 +378,27 @@ class Moire:
             inner_block = []
             for item in text:
                 if inblock:
-                    if (
-                        isinstance(item, Tag) and item.id in self.block_tags
-                    ):
+                    if isinstance(item, Tag) and item.id in self.block_tags:
                         if inner_block:
                             builder.write(self.process_inner_block(inner_block))
                             inner_block = []
                         builder.write(
                             self.parse(
-                                item, inblock=inblock, depth=depth + 1,
-                                mode=mode, spec=spec,
+                                item,
+                                inblock=inblock,
+                                depth=depth + 1,
+                                mode=mode,
+                                spec=spec,
                             )
                         )
                     else:
                         inner_block.append(item)
                 else:
                     parsed = self.parse(
-                        item, inblock=inblock, depth=depth + 1, mode=mode,
+                        item,
+                        inblock=inblock,
+                        depth=depth + 1,
+                        mode=mode,
                         spec=spec,
                     )
                     builder.write(parsed)

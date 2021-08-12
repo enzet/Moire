@@ -11,7 +11,7 @@ depth = 0
 status = {}
 BLOCK_TAGS: Set[str] = {
     "block", "body", "code", "title", "number", "list", "image", "table"
-}
+}  # fmt: skip
 Arguments = List[Any]
 
 
@@ -65,7 +65,7 @@ class Default(Moire):
         raise NotImplementedError
 
     def list(self, arg: Arguments) -> str:
-        """List of items. """
+        """List of items."""
         raise NotImplementedError
 
     def ref(self, arg: Arguments) -> str:
