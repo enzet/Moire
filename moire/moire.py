@@ -1,5 +1,5 @@
 """
-Moire library.  This file is a part of Moire project—light markup language.
+Moire library.
 
 See http://github.com/enzet/Moire
 """
@@ -17,8 +17,11 @@ __email__: str = "me@enzet.ru"
 
 COMMENT_BEGIN: str = "/*"
 COMMENT_END: str = "*/"
-
-paragraph_delimiter = "\n\n"
+TAG_MARKER: str = "\\"
+ARGUMENT_START: str = "{"
+ARGUMENT_END: str = "}"
+SPACES: str = " \n\t\r"
+PARAGRAPH_DELIMITER: str = "\n\n"
 
 
 class Tag:
@@ -31,9 +34,21 @@ class Tag:
         self.id: str = tag_id
         self.parameters: List = parameters
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         s = f"{self.id}{{{self.parameters}}}"
         return s
+
+    def __eq__(self, other: "Tag") -> bool:
+        if not isinstance(other, type(self)):
+            return False
+        if self.id != other.id:
+            return False
+        if len(self.parameters) != len(other.parameters):
+            return False
+        for i in range(len(self.parameters)):
+            if self.parameters[i] != other.parameters[i]:
+                return False
+        return True
 
     def is_header(self) -> bool:
         return self.id in "123456"
@@ -91,10 +106,6 @@ class Argument:
         return self.spec
 
 
-def is_space(c):
-    return c in " \n\t\r"
-
-
 def trim_inside(s):
     """
     Replace all space symbol sequences with one space character.
@@ -102,9 +113,9 @@ def trim_inside(s):
     ret = ""
     i = 0
     while i < len(s):
-        if is_space(s[i]):
+        if s[i] in SPACES:
             ret += " "
-            while i < len(s) and is_space(s[i]):
+            while i < len(s) and s[i] in SPACES:
                 i += 1
             continue
         else:
@@ -142,8 +153,9 @@ def lexer(text) -> (List[Lexeme], List[int]):
     """
     Parse formatted preprocessed text to a list of lexemes.
     """
-    in_tag = False  # Lexer position in tag name
-    in_space = True  # Lexer position in space between tag name and first "{"
+    in_tag: bool = False  # Lexer position in tag name
+    # Lexer position in space between tag name and first "{"
+    in_space: bool = True
     lexemes: List[Lexeme] = []
     positions: List[int] = []
     tag_name: str = ""
@@ -153,7 +165,7 @@ def lexer(text) -> (List[Lexeme], List[int]):
 
     while index < len(text):
         char = text[index]
-        if char == "\\":
+        if char == TAG_MARKER:
             if index == len(text) - 1:
                 logging.error("Backslash at the end of string.")
             elif not is_letter_or_digit(text[index + 1]):
@@ -171,7 +183,7 @@ def lexer(text) -> (List[Lexeme], List[int]):
                 word = ""
                 in_tag = True
                 tag_name = ""
-        elif char == "{":
+        elif char == ARGUMENT_START:
             if in_tag or in_space:
                 in_tag = False
                 if tag_name != "":
@@ -181,14 +193,14 @@ def lexer(text) -> (List[Lexeme], List[int]):
             positions.append(index)
             tag_name = ""
             word = ""
-        elif char == "}":
+        elif char == ARGUMENT_END:
             if word != "":
                 lexemes.append(Lexeme("text", word))
                 positions.append(index)
             word = ""
             lexemes.append(Lexeme("parameter_end"))
             positions.append(index)
-        elif is_space(char):
+        elif char in SPACES:
             if in_tag:
                 in_tag = False
                 in_space = True
@@ -300,6 +312,7 @@ class Moire:
         selected format.
         """
         intermediate_representation = self.full_parse(input_data)
+        print(intermediate_representation)
 
         # Construct content table
 
@@ -443,15 +456,15 @@ class Moire:
         for item in inner_block:
             if isinstance(item, str):
                 previous = 0
-                delimiter = item.find(paragraph_delimiter)
+                delimiter = item.find(PARAGRAPH_DELIMITER)
                 while delimiter != -1:
                     content = item[previous:delimiter]
                     if content != "" or previous == 0:
                         paragraph.append(content)
                         paragraphs.append(paragraph)
                         paragraph = []
-                    previous = delimiter + len(paragraph_delimiter)
-                    delimiter = item.find(paragraph_delimiter, delimiter + 1)
+                    previous = delimiter + len(PARAGRAPH_DELIMITER)
+                    delimiter = item.find(PARAGRAPH_DELIMITER, delimiter + 1)
                 paragraph.append(item[previous:])
             else:
                 paragraph.append(item)

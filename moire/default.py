@@ -90,7 +90,7 @@ class Default(Moire):
 
     @staticmethod
     def get_ref_(link: str, text: str) -> str:
-        raise TagNotImplementedError
+        raise NotImplementedError
 
 
 class DefaultHTML(Default):
@@ -103,8 +103,6 @@ class DefaultHTML(Default):
     escape_symbols: Dict[str, str] = {"<": "&lt;", ">": "&gt;"}
     block_tags = BLOCK_TAGS
 
-    # Block tags.
-
     def escape(self, text: str) -> str:
         return super().escape(text.replace("&", "&amp;"))
 
@@ -113,7 +111,7 @@ class DefaultHTML(Default):
 
     def body(self, arg: Arguments) -> str:
         status["content"] = []
-        s = """<html>
+        s: str = """<html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" href="style.css">
