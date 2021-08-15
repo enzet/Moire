@@ -312,7 +312,6 @@ class Moire:
         selected format.
         """
         intermediate_representation = self.full_parse(input_data)
-        print(intermediate_representation)
 
         # Construct content table
 
