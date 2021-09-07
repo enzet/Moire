@@ -62,19 +62,28 @@ Markdown rendering:
 | Cell 1, 1 | Cell 1, 2 |
 | Cell 2, 1 | Cell 2, 2 |
 
+Installation
+------------
+
+Requirements: Python 3.9.
+
+```bash
+pip install .
+```
+
 Conversion Moire code into other formats
 ----------------------------------------
 
-You can convert your Moire file to other formats using Python 3.9:
+Convert Moire file to other formats:
 
 ```bash
-python converter.py -i <Moire input file> -f <format> -o <output file> <other options>
+moire -i <Moire input file> -f <format> -o <output file> <other options>
 ```
 
 E.g., this file is generated from Moire code using this command:
 
 ```bash
-python converter.py -i doc/manual/readme.moi -o README.md -f DefaultMarkdown
+moire -i doc/readme.moi -o README.md -f DefaultMarkdown
 ```
 
 Example section

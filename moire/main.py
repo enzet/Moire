@@ -13,7 +13,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-if __name__ == "__main__":
+def main():
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     parser = argparse.ArgumentParser()
@@ -37,3 +37,7 @@ if __name__ == "__main__":
     with open(options.output, "w+") as output_file:
         output_file.write(output)
         logging.info(f"Converted to {options.output}.")
+
+
+if __name__ == "__main__":
+    main()

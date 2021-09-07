@@ -333,7 +333,7 @@ class Moire:
         in_block: bool = False,
         depth: int = 0,
         mode: str = "",
-        spec: Optional[dict[str, Any]] = None
+        spec: Optional[dict[str, Any]] = None,
     ) -> str:
         """
         Element parsing into formatted text. Element may be plain text, tag, or
