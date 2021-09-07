@@ -8,7 +8,7 @@ import logging
 import sys
 from io import StringIO
 
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -122,7 +122,7 @@ def trim_inside(s: str) -> str:
     return ret
 
 
-def comments_preprocessing(text: str):
+def proprocess_comments(text: str):
     """Text to text processing: comments removing."""
     preprocessed: str = ""
     adding: bool = True
@@ -146,9 +146,7 @@ def is_letter_or_digit(char: str) -> bool:
 
 
 def lexer(text) -> (list[Lexeme], list[int]):
-    """
-    Parse formatted preprocessed text to a list of lexemes.
-    """
+    """Parse formatted preprocessed text to a list of lexemes."""
     in_tag: bool = False  # Lexer position in tag name
     # Lexer position in space between tag name and first "{"
     in_space: bool = True
@@ -216,9 +214,7 @@ def lexer(text) -> (list[Lexeme], list[int]):
 
 
 def get_intermediate(lexemes, positions, level, index=0):
-    """
-    Get intermediate representation.
-    """
+    """Get intermediate representation."""
     tag: Optional[Tag] = None
     result = []
     while index < len(lexemes):
@@ -295,7 +291,7 @@ class Moire:
         :param content: input content in the Moire format
         """
         ids: list[str] = []
-        intermediate_representation = self.full_parse(content)
+        intermediate_representation = self.get_ir(content)
         for element in intermediate_representation:
             if isinstance(element, Tag) and element.is_header():
                 if len(element.parameters) >= 2:
@@ -307,40 +303,41 @@ class Moire:
         Convert Moire text without includes but with comments artifacts to
         selected format.
         """
-        intermediate_representation = self.full_parse(input_data)
+        ir = self.get_ir(input_data)
 
         # Construct content table
 
         tree: Tree = Tree(None, [], Tag("0", ["_", "_"]))
         content_root: Tree = tree
-        for k in intermediate_representation:
-            if isinstance(k, Tag) and k.id in "123456":
-                element: Tree = Tree(tree, [], k)
-                if int(k.id) > int(tree.element.id):
-                    tree.children.append(element)
-                    element.number = len(tree.children) - 1
-                    tree = tree.children[-1]
-                else:
-                    while int(k.id) <= int(tree.element.id):
-                        tree = tree.parent
-                    tree.children.append(element)
-                    element.number = len(tree.children) - 1
-                    element.parent = tree
-                    tree = tree.children[-1]
+        for part in ir:
+            if not isinstance(part, Tag) or part.id not in "123456":
+                continue
+            element: Tree = Tree(tree, [], part)
+            if int(part.id) > int(tree.element.id):
+                tree.children.append(element)
+                element.number = len(tree.children) - 1
+                tree = tree.children[-1]
+            else:
+                while int(part.id) <= int(tree.element.id):
+                    tree = tree.parent
+                tree.children.append(element)
+                element.number = len(tree.children) - 1
+                element.parent = tree
+                tree = tree.children[-1]
         self.status["tree"] = content_root
 
         # Wrap whole text with "body" tag
 
         if wrap:
-            intermediate_representation = Tag(
-                "body", [intermediate_representation, content_root]
+            ir = Tag(
+                "body", [ir, content_root]
             )
 
         self.init()
         self.parse(
-            intermediate_representation, inblock=False, depth=0, mode="pre_"
+            ir, inblock=False, depth=0, mode="pre_"
         )
-        result: str = self.parse(intermediate_representation)
+        result: str = self.parse(ir)
         self.finish()
 
         return result
@@ -361,8 +358,8 @@ class Moire:
             else:
                 return self.escape(trim_inside(text))
         elif isinstance(text, Tag):
-            key = "header" if (text.id in "123456") else text.id
-            method = None
+            key: str = "header" if (text.id in "123456") else text.id
+            method: Optional[Callable] = None
             try:
                 method = getattr(self, mode + key)
             except AttributeError:
@@ -420,8 +417,9 @@ class Moire:
             return self.escape("".join([x for x in text if isinstance(x, str)]))
         return self.escape(text)
 
-    def full_parse(self, text: str, offset: int = 0, prefix: str = ""):
-        text = comments_preprocessing(text)
+    def get_ir(self, text: str, offset: int = 0, prefix: str = ""):
+        """Get intermediate representation."""
+        text = proprocess_comments(text)
         lexemes, positions = lexer(text)
         index, raw_ir = get_intermediate(lexemes, positions, 0, 0)
 

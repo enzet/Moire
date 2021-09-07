@@ -6,7 +6,7 @@ converter: Moire = Moire()
 
 
 def check(moire_code: str, intermediate_representation: Any) -> None:
-    assert converter.full_parse(moire_code) == intermediate_representation
+    assert converter.get_ir(moire_code) == intermediate_representation
 
 
 def test_text() -> None:
