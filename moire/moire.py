@@ -413,12 +413,13 @@ class Moire:
                         mode=mode,
                         spec=spec,
                     )
-                    builder.write(parsed)
+                    if parsed is not None:
+                        builder.write(parsed)
             if inner_block:
                 builder.write(self.process_inner_block(inner_block))
             return builder.getvalue()
         else:
-            assert False
+            assert False, f"Part is of type {type(text)}"
 
     def clear(self, text) -> str:
         if isinstance(text, list):

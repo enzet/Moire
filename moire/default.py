@@ -18,7 +18,7 @@ Arguments = List[Any]
 class TagNotImplementedError(NotImplementedError):
     """Tag is not implemented in the parser."""
 
-    def __init__(self, tag: str = ""):
+    def __init__(self, tag: str = "") -> None:
         self.tag: str = tag
 
     def __str__(self) -> str:
@@ -32,7 +32,7 @@ class Default(Moire):
 
     def title(self, arg: Arguments) -> str:
         """Document title."""
-        raise TagNotImplementedError("title")
+        return ""
 
     def header(self, arg: Arguments, level: int) -> str:
         """
@@ -63,6 +63,9 @@ class Default(Moire):
     def m(self, arg: Arguments) -> str:
         """Monospaced text."""
         raise TagNotImplementedError("m")
+
+    def formal(self, arg: Arguments) -> str:
+        raise TagNotImplementedError("formal")
 
     def code(self, arg: Arguments) -> str:
         """
@@ -123,12 +126,12 @@ class DefaultHTML(Default):
         return s
 
     def code(self, arg: Arguments) -> str:
-        return f"<pre><tt>{self.clear(arg[0])}</tt></pre>"
+        return f"<pre><tt>{self.parse(arg[0], spec={'trim': False})}</tt></pre>"
 
     def title(self, arg: Arguments) -> str:
         return f"<title>{self.parse(arg[0])}</title>"
 
-    def header(self, arg, number):
+    def header(self, arg: Arguments, number: int) -> str:
         id_: str = "" if len(arg) <= 1 else f' id="{self.clear(arg[1])}"'
         return f"<h{number}{id_}>{self.parse(arg[0])}</h{number}>"
 
@@ -217,10 +220,10 @@ class DefaultText(Default):
     def code(self, arg: Arguments) -> str:
         return self.clear(arg[0]) + "\n"
 
-    def header(self, arg, number):
+    def header(self, arg: Arguments, number: int) -> str:
         return "  " * (number - 1) + self.parse(arg[0], depth=depth + 1)
 
-    def image(self, arg) -> str:
+    def image(self, arg: Arguments) -> str:
         return f"[{self.parse(arg[1]) if len(arg) > 1 else ''}]"
 
     def list(self, arg: Arguments) -> str:
@@ -256,7 +259,7 @@ class DefaultText(Default):
     def b(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
-    def get_ref_(self, link, text):
+    def get_ref_(self, link: str, text: str) -> str:
         return f"{text} + ({link})"
 
     def ref(self, arg: Arguments) -> str:
@@ -299,7 +302,7 @@ class DefaultMarkdown(Default):
     extensions = ["md", "markdown"]
     block_tags = BLOCK_TAGS
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.list_level = 0
 
@@ -313,7 +316,7 @@ class DefaultMarkdown(Default):
             .replace("\n\n\n", "\n\n")
         )
 
-    def header(self, arg: Arguments, number: int):
+    def header(self, arg: Arguments, number: int) -> str:
         if number == 1:
             parsed: str = self.parse(arg[0])
             return parsed + "\n" + "=" * len(parsed)
@@ -354,7 +357,7 @@ class DefaultMarkdown(Default):
         s: str = "```"
         if len(arg) > 1:
             s += self.clear(arg[1])
-        s += f"\n{self.clear(arg[0])}\n```"
+        s += f"\n{self.parse(arg[0], spec={'trim': False})}\n```"
         return s
 
     def get_ref_(self, link: str, text: str) -> str:
@@ -404,7 +407,7 @@ class DefaultWiki(Default):
             .replace("\n\n\n", "\n\n")
         )
 
-    def header(self, arg, number):
+    def header(self, arg: Arguments, number: int) -> str:
         return (number * "=") + " " + self.parse(arg[0]) + " " + (number * "=")
 
     def list(self, arg: Arguments) -> str:
@@ -456,7 +459,7 @@ class DefaultWiki(Default):
         )
 
     def formal(self, arg: Arguments) -> str:
-        return "<" + self.parse(arg[0]) + ">"
+        return f"<{self.parse(arg[0])}>"
 
     def m(self, arg: Arguments) -> str:
         return "<code>" + str(self.parse(arg[0])) + "</code>"
@@ -511,7 +514,7 @@ class DefaultTeX(Default):
         )
         return s
 
-    def header(self, arg, number):
+    def header(self, arg: Arguments, number: int) -> str:
         if number < 6:
             return f"\\{self.headers[number - 1]}{{{self.parse(arg[0])}}}"
         return self.parse(arg[0])
