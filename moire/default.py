@@ -110,7 +110,7 @@ class DefaultHTML(Default):
         return super().escape(text.replace("&", "&amp;"))
 
     def block(self, arg: Arguments) -> str:
-        return self.parse(arg[0], inblock=True)
+        return self.parse(arg[0], in_block=True)
 
     def body(self, arg: Arguments) -> str:
         status["content"] = []
@@ -120,7 +120,7 @@ class DefaultHTML(Default):
         <link rel="stylesheet" href="style.css">
     </head>
     <body>"""
-        s += self.parse(arg[0], inblock=True)
+        s += self.parse(arg[0], in_block=True)
         s += """    </body>
         </html>"""
         return s
@@ -147,7 +147,7 @@ class DefaultHTML(Default):
         content: str = ""
         for tr in arg:
             cell: str = "".join(
-                ["<td>" + self.parse(td, inblock=True) + "</td>" for td in tr]
+                ["<td>" + self.parse(td, in_block=True) + "</td>" for td in tr]
             )
             content += f"<tr>{cell}</tr>"
         return f"<table>{content}</table>"
@@ -212,7 +212,7 @@ class DefaultText(Default):
     escape_symbols = {}
 
     def body(self, arg: Arguments) -> str:
-        return self.parse(arg[0], inblock=True, depth=1) + "\n"
+        return self.parse(arg[0], in_block=True, depth=1) + "\n"
 
     def title(self, arg: Arguments) -> str:
         return self.parse(arg[0])
@@ -230,7 +230,7 @@ class DefaultText(Default):
         s = ""
         for item in arg:
             if isinstance(item, list):
-                s += "  * " + self.parse(item, inblock=True, depth=depth + 1)
+                s += "  * " + self.parse(item, in_block=True, depth=depth + 1)
         return s
 
     def table(self, arg: Arguments) -> str:
@@ -307,11 +307,11 @@ class DefaultMarkdown(Default):
         self.list_level = 0
 
     def block(self, arg: Arguments) -> str:
-        return self.parse(arg[0], inblock=True)
+        return self.parse(arg[0], in_block=True)
 
     def body(self, arg: Arguments) -> str:
         return (
-            self.parse(arg[0], inblock=True)
+            self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
             .replace("\n\n\n", "\n\n")
         )
@@ -398,11 +398,11 @@ class DefaultWiki(Default):
     block_tags = BLOCK_TAGS
 
     def block(self, arg: Arguments) -> str:
-        return self.parse(arg[0], inblock=True)
+        return self.parse(arg[0], in_block=True)
 
     def body(self, arg: Arguments) -> str:
         return (
-            self.parse(arg[0], inblock=True)
+            self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
             .replace("\n\n\n", "\n\n")
         )
@@ -501,7 +501,7 @@ class DefaultTeX(Default):
         \\usepackage{hyperref}
         \\usepackage{multicol}
         \\begin{document}"""
-        s += self.parse(arg[0], inblock=True)
+        s += self.parse(arg[0], in_block=True)
         s += "\\end {document}"
         return s
 
@@ -565,7 +565,7 @@ class DefaultTeX(Default):
     def annotation(self, arg: Arguments) -> str:
         return (
             "\\begin {abstract}\n\n"
-            + self.parse(arg[0], inblock=True)
+            + self.parse(arg[0], in_block=True)
             + "\\end {abstract}\n\n"
         )
 

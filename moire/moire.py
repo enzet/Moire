@@ -6,6 +6,7 @@ See http://github.com/enzet/Moire
 
 import logging
 import sys
+from dataclasses import dataclass
 from io import StringIO
 
 from typing import Any, Callable, Optional
@@ -20,23 +21,20 @@ COMMENT_END: str = "*/"
 TAG_MARKER: str = "\\"
 ARGUMENT_START: str = "{"
 ARGUMENT_END: str = "}"
-SPACES: str = " \n\t\r"
 PARAGRAPH_DELIMITER: str = "\n\n"
 
+SPACES: str = " \n\t\r"
 
+
+@dataclass
 class Tag:
     """
     Moire tag definition. Tag has name and parameters:
     <backslash><tag name> {<parameter 1>} ... {<parameter N>}.
     """
 
-    def __init__(self, tag_id: str, parameters: list):
-        self.id: str = tag_id
-        self.parameters: list = parameters
-
-    def __repr__(self) -> str:
-        s = f"{self.id}{{{self.parameters}}}"
-        return s
+    id: str
+    parameters: list
 
     def __eq__(self, other: "Tag") -> bool:
         if not isinstance(other, type(self)):
@@ -54,16 +52,10 @@ class Tag:
         return self.id in "123456"
 
 
+@dataclass
 class Lexeme:
-    def __init__(self, lexeme_type: str, content=None) -> None:
-        self.type: str = lexeme_type
-        self.content: Optional[str] = content
-
-    def __repr__(self) -> str:
-        s: str = self.type
-        if self.content:
-            s += " {" + str(self.content.replace("\n", " ")) + "}"
-        return s
+    type: str
+    content: Optional[str] = None
 
 
 class Tree:
@@ -91,10 +83,10 @@ class Tree:
         return None
 
 
+@dataclass
 class Argument:
-    def __init__(self, array: list, spec):
-        self.array: list = array
-        self.spec = spec
+    array: list
+    spec: dict[str, Any]
 
     def __getitem__(self, key: int):
         return self.array[key]
@@ -102,27 +94,24 @@ class Argument:
     def __len__(self):
         return len(self.array)
 
-    def spec(self):
-        return self.spec
 
-
-def trim_inside(s: str) -> str:
+def trim_inside(text: str) -> str:
     """Replace all space symbol sequences with one space character."""
-    ret: str = ""
-    i: int = 0
-    while i < len(s):
-        if s[i] in SPACES:
-            ret += " "
-            while i < len(s) and s[i] in SPACES:
-                i += 1
+    result: str = ""
+    index: int = 0
+    while index < len(text):
+        if text[index] in SPACES:
+            result += " "
+            while index < len(text) and text[index] in SPACES:
+                index += 1
             continue
         else:
-            ret += s[i]
-        i += 1
-    return ret
+            result += text[index]
+        index += 1
+    return result
 
 
-def proprocess_comments(text: str):
+def preprocess_comments(text: str):
     """Text to text processing: comments removing."""
     preprocessed: str = ""
     adding: bool = True
@@ -329,20 +318,23 @@ class Moire:
         # Wrap whole text with "body" tag
 
         if wrap:
-            ir = Tag(
-                "body", [ir, content_root]
-            )
+            ir = Tag("body", [ir, content_root])
 
         self.init()
-        self.parse(
-            ir, inblock=False, depth=0, mode="pre_"
-        )
+        self.parse(ir, in_block=False, depth=0, mode="pre_")
         result: str = self.parse(ir)
         self.finish()
 
         return result
 
-    def parse(self, text, inblock=False, depth=0, mode="", spec=None) -> str:
+    def parse(
+        self,
+        text,
+        in_block: bool = False,
+        depth: int = 0,
+        mode: str = "",
+        spec: Optional[dict[str, Any]] = None
+    ) -> str:
         """
         Element parsing into formatted text. Element may be plain text, tag, or
         list of elements.
@@ -380,7 +372,7 @@ class Moire:
             builder = StringIO()
             inner_block = []
             for item in text:
-                if inblock:
+                if in_block:
                     if isinstance(item, Tag) and item.id in self.block_tags:
                         if inner_block:
                             builder.write(self.process_inner_block(inner_block))
@@ -388,7 +380,7 @@ class Moire:
                         builder.write(
                             self.parse(
                                 item,
-                                inblock=inblock,
+                                in_block=in_block,
                                 depth=depth + 1,
                                 mode=mode,
                                 spec=spec,
@@ -399,7 +391,7 @@ class Moire:
                 else:
                     parsed = self.parse(
                         item,
-                        inblock=inblock,
+                        in_block=in_block,
                         depth=depth + 1,
                         mode=mode,
                         spec=spec,
@@ -419,7 +411,7 @@ class Moire:
 
     def get_ir(self, text: str, offset: int = 0, prefix: str = ""):
         """Get intermediate representation."""
-        text = proprocess_comments(text)
+        text = preprocess_comments(text)
         lexemes, positions = lexer(text)
         index, raw_ir = get_intermediate(lexemes, positions, 0, 0)
 
