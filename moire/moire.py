@@ -8,7 +8,7 @@ import logging
 import sys
 from io import StringIO
 
-from typing import List, Dict
+from typing import Any, Optional
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -30,9 +30,9 @@ class Tag:
     <backslash><tag name> {<parameter 1>} ... {<parameter N>}.
     """
 
-    def __init__(self, tag_id: str, parameters: List):
+    def __init__(self, tag_id: str, parameters: list):
         self.id: str = tag_id
-        self.parameters: List = parameters
+        self.parameters: list = parameters
 
     def __repr__(self) -> str:
         s = f"{self.id}{{{self.parameters}}}"
@@ -55,30 +55,30 @@ class Tag:
 
 
 class Lexeme:
-    def __init__(self, lexeme_type, content=None):
-        self.type = lexeme_type
-        self.content = content
+    def __init__(self, lexeme_type: str, content=None) -> None:
+        self.type: str = lexeme_type
+        self.content: Optional[str] = content
 
-    def __repr__(self):
-        s = self.type
+    def __repr__(self) -> str:
+        s: str = self.type
         if self.content:
             s += " {" + str(self.content.replace("\n", " ")) + "}"
         return s
 
 
 class Tree:
-    def __init__(self, parent, children, element):
+    def __init__(self, parent, children, element) -> None:
         self.element = element
         self.parent = parent
         self.children = children
         self.number = 0
 
-    def pr(self):
+    def pr(self) -> None:
         print(self.element)
         for child in self.children:
             child.pr()
 
-    def find(self, text):
+    def find(self, text: str) -> Optional["Tree"]:
         if (
             len(self.element.parameters) > 1
             and self.element.parameters[1][0] == text
@@ -92,11 +92,11 @@ class Tree:
 
 
 class Argument:
-    def __init__(self, array, spec):
-        self.array = array
+    def __init__(self, array: list, spec):
+        self.array: list = array
         self.spec = spec
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int):
         return self.array[key]
 
     def __len__(self):
@@ -106,12 +106,10 @@ class Argument:
         return self.spec
 
 
-def trim_inside(s):
-    """
-    Replace all space symbol sequences with one space character.
-    """
-    ret = ""
-    i = 0
+def trim_inside(s: str) -> str:
+    """Replace all space symbol sequences with one space character."""
+    ret: str = ""
+    i: int = 0
     while i < len(s):
         if s[i] in SPACES:
             ret += " "
@@ -124,13 +122,11 @@ def trim_inside(s):
     return ret
 
 
-def comments_preprocessing(text):
-    """
-    Text to text processing: comments removing.
-    """
-    preprocessed = ""
-    adding = True
-    i = 0
+def comments_preprocessing(text: str):
+    """Text to text processing: comments removing."""
+    preprocessed: str = ""
+    adding: bool = True
+    i: int = 0
     while i < len(text):
         if text[i : i + len(COMMENT_BEGIN)] == COMMENT_BEGIN:
             adding = False
@@ -145,19 +141,19 @@ def comments_preprocessing(text):
     return preprocessed
 
 
-def is_letter_or_digit(char):
+def is_letter_or_digit(char: str) -> bool:
     return "a" <= char <= "z" or "A" <= char <= "Z" or "0" <= char <= "9"
 
 
-def lexer(text) -> (List[Lexeme], List[int]):
+def lexer(text) -> (list[Lexeme], list[int]):
     """
     Parse formatted preprocessed text to a list of lexemes.
     """
     in_tag: bool = False  # Lexer position in tag name
     # Lexer position in space between tag name and first "{"
     in_space: bool = True
-    lexemes: List[Lexeme] = []
-    positions: List[int] = []
+    lexemes: list[Lexeme] = []
+    positions: list[int] = []
     tag_name: str = ""
     word: str = ""
 
@@ -223,7 +219,7 @@ def get_intermediate(lexemes, positions, level, index=0):
     """
     Get intermediate representation.
     """
-    tag = None
+    tag: Optional[Tag] = None
     result = []
     while index < len(lexemes):
         item = lexemes[index]
@@ -272,12 +268,12 @@ def get_intermediate(lexemes, positions, level, index=0):
 class Moire:
 
     name: str = "Empty format"
-    block_tags = []
-    escape_symbols: Dict[str, str] = {}
+    block_tags: list[str] = []
+    escape_symbols: dict[str, str] = {}
 
     def __init__(self):
-        self.index = 0
-        self.status = {"missing_tags": set()}
+        self.index: int = 0
+        self.status: dict[str, Any] = {"missing_tags": set()}
 
     def init(self):
         """Some preliminary actions."""
@@ -292,13 +288,13 @@ class Moire:
             text = text.replace(key, self.escape_symbols[key])
         return text
 
-    def get_ids(self, content: str) -> List[str]:
+    def get_ids(self, content: str) -> list[str]:
         """
         Get all header identifiers.
 
         :param content: input content in the Moire format
         """
-        ids: List[str] = []
+        ids: list[str] = []
         intermediate_representation = self.full_parse(content)
         for element in intermediate_representation:
             if isinstance(element, Tag) and element.is_header():
@@ -315,11 +311,11 @@ class Moire:
 
         # Construct content table
 
-        tree = Tree(None, [], Tag("0", ["_", "_"]))
-        content_root = tree
+        tree: Tree = Tree(None, [], Tag("0", ["_", "_"]))
+        content_root: Tree = tree
         for k in intermediate_representation:
             if isinstance(k, Tag) and k.id in "123456":
-                element = Tree(tree, [], k)
+                element: Tree = Tree(tree, [], k)
                 if int(k.id) > int(tree.element.id):
                     tree.children.append(element)
                     element.number = len(tree.children) - 1
@@ -360,8 +356,6 @@ class Moire:
         if not text:
             return ""
         elif isinstance(text, str):
-            if "full_escape" in spec and spec["full_escape"]:
-                return self._full_escape(self.escape(text))
             if "trim" in spec and not spec["trim"]:
                 return self.escape(text)
             else:
