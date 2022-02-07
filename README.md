@@ -14,9 +14,9 @@ There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header 
 
 #### Formatting ####
 
-Italic (`\i`), bold (`\b`), underlined (`\u`), subscript (`\sub`), superscript (`\super`).
+Italic (`\i`), bold (`\b`), underlined (`\u`), monospaced (`\m`), subscript (`\sub`), superscript (`\super`).
 
-| Example Moire code | Markdown rendering |
+| Example Moire code | Rendering |
 |---|---|
 | `\i {text}` | *text* |
 | `\b {text}` | **text** |
@@ -24,7 +24,7 @@ Italic (`\i`), bold (`\b`), underlined (`\u`), subscript (`\sub`), superscript (
 
 #### Links ####
 
-| Example Moire code | Markdown rendering |
+| Example Moire code | Rendering |
 |---|---|
 | `\ref {http://example.com} {external link}` | [external link](http://example.com) |
 | `\ref {#example-section} {internal link}` | [internal link](#example-section) |
@@ -39,7 +39,8 @@ Example Moire code:
     {item 2.}
 ```
 
-Markdown rendering:
+Rendering:
+
 
   * Item 1,
   * item 2.
@@ -55,7 +56,7 @@ Example Moire code:
     {{Cell 2, 1} {Cell 2, 2}}
 ```
 
-Markdown rendering:
+Rendering:
 
 | Header 1 | Header 2 |
 |---|---|

@@ -8,15 +8,14 @@ Moire (pronounced as /mwɑː/) is a simple extendable multipurpose markup langua
 
 \4 {Headers} {headers}
 
-There are 6 possible header levels\: \m {\\1}, \m {\\2}, ..., \m {\\6} with syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\:
-\m{\\2 \{Section 3\} \{section-3\}}.
+There are 6 possible header levels\: \m {\\1}, \m {\\2}, ..., \m {\\6} with syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\: \m {\\2 \{Section 3\} \{section-3\}}.
 
 \4 {Formatting} {formatting}
 
-Italic (\m {\\i}), bold (\m {\\b}), underlined (\m {\\u}), subscript (\m {\\sub}), superscript (\m {\\super}).
+Italic (\m {\\i}), bold (\m {\\b}), underlined (\m {\\u}), monospaced (\m {\\m}), subscript (\m {\\sub}), superscript (\m {\\super}).
 
 \table
-    {{Example Moire code} {Markdown rendering}}
+    {{Example Moire code} {Rendering}}
     {{\m {\\i \{text\}}} {\i {text}}}
     {{\m {\\b \{text\}}} {\b {text}}}
     {{\m {\\m \{text\}}} {\m {text}}}
@@ -24,7 +23,7 @@ Italic (\m {\\i}), bold (\m {\\b}), underlined (\m {\\u}), subscript (\m {\\sub}
 \4 {Links} {links}
 
 \table
-    {{Example Moire code} {Markdown rendering}}
+    {{Example Moire code} {Rendering}}
     {{\m {\\ref \{http://example.com\} \{external link\}}} {\ref {http://example.com} {external link}}}
     {{\m {\\ref \{#example-section\} \{internal link\}}} {\ref {#example-section} {internal link}}}
 
@@ -36,7 +35,7 @@ Example Moire code\:
     \{Item 1,\}
     \{item 2.\}} {moire}
 
-Markdown rendering\:
+Rendering\:
 
 \list
     {Item 1,}
@@ -51,7 +50,7 @@ Example Moire code\:
     \{\{Cell 1, 1\} \{Cell 1, 2\}\}
     \{\{Cell 2, 1\} \{Cell 2, 2\}\}} {moire}
 
-Markdown rendering\:
+Rendering\:
 
 \table
     {{Header 1} {Header 2}}
