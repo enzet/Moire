@@ -14,13 +14,16 @@ There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header 
 
 #### Formatting ####
 
-Italic (`\i`), bold (`\b`), underlined (`\u`), monospaced (`\m`), subscript (`\sub`), superscript (`\super`).
+Italic (`\i`), bold (`\b`), underlined (`\u`), monospaced (`\m`), strikethrough (`\strike`), subscript (`\sub`), superscript (`\super`).
 
 | Example Moire code | Rendering |
 |---|---|
 | `\i {text}` | *text* |
 | `\b {text}` | **text** |
 | `\m {text}` | `text` |
+| `\strike {text}` | ~~text~~ |
+| `\sub {text}` | <sub>text</sub> |
+| `\super {text}` | <sup>text</sup> |
 
 #### Links ####
 
