@@ -1,0 +1,233 @@
+%YAML 1.2
+---
+name: Moire
+file_extensions:
+  - moi
+scope: markup.moire
+contexts:
+  main:
+    - match: '\\[\\{}:]'
+      scope: markup.raw
+
+    - match: '\\b\b'
+      scope: punctuation.definition.argument
+      push: bold
+    - match: '\\i\b'
+      scope: punctuation.definition.argument
+      push: italic
+    - match: '\\ref\b'
+      scope: punctuation.definition.argument
+      push: ref
+    - match: '\\\d+\b'
+      scope: punctuation.definition.argument
+      push: header
+
+    - match: \\[A-Za-z0-9_]*
+      scope: punctuation.definition.argument
+    - match: '{'
+      scope: punctuation.definition.argument
+    - match: '}'
+      scope: punctuation.definition.argument
+
+  bold:
+    - {match: '{', scope: punctuation.definition.argument}
+    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - include: main
+    - {match: '.', scope: markup.bold}
+  italic:
+    - {match: '{', scope: punctuation.definition.argument}
+    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - include: main
+    - {match: '.', scope: markup.italic}
+
+  ref:
+    - match: '{'
+      scope: punctuation.definition.argument
+      set: ref_link
+    - include: main
+  ref_link:
+    - match: '{'
+      meta_scope: punctuation.definition.argument
+      set: ref_value
+    - include: main
+  ref_value:
+    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - include: main
+    - match: '.'
+      scope: markup.link
+
+  header:
+    - {match: '{', scope: punctuation.definition.argument}
+    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - include: main
+    - {match: '.', scope: markup.bold}
+
+
+
+
+
+
+
+
+  # main:
+  #   # Strings begin and end with quotes, and use backslashes as an escape
+  #   # character
+  #   - match: '\\b {'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: bold
+  #   - match: '\\i {'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: italic
+  #   - match: '\\u {'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: underline
+  #   - match: '\\tt {'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: raw_inline
+  #   - match: '\\code {'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: raw_block
+  #   - match: '\\href {'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: href
+  #   - match: '"'
+  #     scope: punctuation.definition.string.begin.moire
+  #     push: double_quoted_string
+  #   - match: '{'
+  #     scope: punctuation.definition.argument.moire
+  #     push: argument
+  #   - match: '/\*'
+  #     scope: punctuation.definition.comment.moire
+  #     push: block_comment
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+
+  #   # Comments begin with a '//' and finish at the end of the line
+  #   # match: '//'
+  #   # scope: punctuation.definition.comment.moire
+  #   # push: line_comment
+
+  #   - match: '\\[0-9] {.*} {.*}'
+  #     scope: markup.heading.moire
+
+  #   # Keywords are if, else for and while.
+  #   # Note that blackslashes don't need to be escaped within single quoted
+  #   # strings in YAML. When using single quoted strings, only single quotes
+  #   # need to be escaped: this is done by using two single quotes next to each
+  #   # other.
+
+  #   # match: '\b(if|else|for|while)\b'
+  #   # scope: keyword.control.moire
+  #   - match: '[a-z]*:'
+  #     scope: keyword.control.moire
+  #   - match: '[;]'
+  #     scope: keyword.control.moire
+
+  #   # Numbers
+  #   # match: '\b(-)?[0-9.]+\b'
+  #   # scope: constant.numeric.moire
+
+  # beginend:
+  #   - match: begin
+  #     scope: beginend.begin.moire
+  #     push:
+  #       - meta_scope: comment.block.moire
+  #       - match: end
+  #         scope: beginend.end.moire
+  #         pop: true
+
+
+
+  # # flow-mapping:
+  # #   - match: \{
+  # #     scope: punctuation.definition.mapping.begin.moire
+  # #     push:
+  # #       - meta_scope: comment.block.moire  # meta.flow-mapping.moire
+  # #       - match: \}
+  # #         scope: punctuation.definition.mapping.end.moire
+  # #         pop: true
+  # #       # - match: '\} \{'
+  # #       #   scope: punctuation.separator.mapping.moire
+
+  # double_quoted_string:
+  #   - meta_scope: string.quoted.double.moire
+  #   - match: '\\.'
+  #     scope: constant.character.escape.moire
+  #   - match: '"'
+  #     scope: punctuation.definition.string.end.moire
+  #     pop: true
+
+  # argument:
+  #   # meta_scope: string.quoted.double.moire
+  #   # match: '\\.'
+  #   # scope: constant.character.escape.moire
+  #   # meta_scope: markup.moire
+  #   - match: '}'
+  #     scope: punctuation.definition.argument.end.moire
+  #     pop: true
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+  #   - match: '{'
+  #     scope: punctuation.definition.argument.begin.moire
+  #     push: argument
+
+  # block_comment:
+  #   - meta_scope: comment.block.moire
+  #   - match: '\*/'
+  #     pop: true
+
+  # line_comment:
+  #   - meta_scope: comment.line.moire
+  #   - match: $
+  #     pop: true
+
+  # bold:
+  #   - meta_scope: markup.bold.moire
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+  #   - match: '\\.'
+  #     scope: constant.character.escape.moire
+  #   - match: '}'
+  #     pop: true
+
+  # italic:
+  #   - meta_scope: markup.italic.moire
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+  #   - match: '\\.'
+  #     scope: constant.character.escape.moire
+  #   - match: '}'
+  #     pop: true
+
+  # underline:
+  #   - meta_scope: markup.underline.moire
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+  #   - match: '\\.'
+  #     scope: constant.character.escape.moire
+  #   - match: '}'
+  #     pop: true
+
+  # raw_inline:
+  #   - meta_scope: markup.raw.inline.moire
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+  #   - match: '\\.'
+  #     scope: constant.character.escape.moire
+  #   - match: '}'
+  #     pop: true
+
+  # raw_block:
+  #   - meta_scope: markup.raw.block.moire
+  #   - match: '\\[a-z_][a-z_]*'
+  #     scope: keyword.control.moire
+  #   - match: '\\.'
+  #     scope: constant.character.escape.moire
+  #   - match: '}\n'
+  #     pop: true
+
+  # href:
+  #   - meta_scope: markup.underline.link.moire
+  #   - match: '}'
+  #     pop: true
+
