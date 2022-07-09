@@ -386,6 +386,15 @@ class DefaultMarkdown(Default):
     def u(self, arg: Arguments) -> str:
         return self.parse(arg[0])
 
+    def strike(self, arg: Arguments) -> str:
+        return f"~~{self.parse(arg[0])}~~"
+
+    def sub(self, arg: Arguments) -> str:
+        return DefaultHTML.sub(self, arg[0])
+
+    def super(self, arg: Arguments) -> str:
+        return DefaultHTML.super(self, arg[0])
+
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
 
