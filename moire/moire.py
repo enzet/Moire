@@ -356,6 +356,11 @@ class Moire:
                 method = getattr(self, mode + key)
             except AttributeError:
                 pass
+            if method is None:
+                try:
+                    method = getattr(self, mode + key + "__")
+                except AttributeError:
+                    pass
             if method is not None:
                 arg = Argument(text.parameters, spec)
                 if key == "header":

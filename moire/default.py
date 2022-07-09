@@ -77,7 +77,7 @@ class Default(Moire):
         """
         raise TagNotImplementedError("code")
 
-    def list(self, arg: Arguments) -> str:
+    def list__(self, arg: Arguments) -> str:
         """List of items."""
         raise TagNotImplementedError("list")
 
@@ -135,7 +135,7 @@ class DefaultHTML(Default):
         id_: str = "" if len(arg) <= 1 else f' id="{self.clear(arg[1])}"'
         return f"<h{number}{id_}>{self.parse(arg[0])}</h{number}>"
 
-    def list(self, arg: Arguments) -> str:
+    def list__(self, arg: Arguments) -> str:
         items: str = "".join(f"<li>{self.parse(x)}</li>" for x in arg)
         return f"<ul>{items}</ul>"
 
@@ -226,7 +226,7 @@ class DefaultText(Default):
     def image(self, arg: Arguments) -> str:
         return f"[{self.parse(arg[1]) if len(arg) > 1 else ''}]"
 
-    def list(self, arg: Arguments) -> str:
+    def list__(self, arg: Arguments) -> str:
         s = ""
         for item in arg:
             if isinstance(item, list):
@@ -325,7 +325,7 @@ class DefaultMarkdown(Default):
             return parsed + "\n" + "-" * len(parsed)
         return f"{number * '#'} {self.parse(arg[0])} {number * '#'}"
 
-    def list(self, arg: Arguments) -> str:
+    def list__(self, arg: Arguments) -> str:
         self.list_level += 1
         s: str = "".join(
             "  " * self.list_level + f"* {self.parse(item)}\n" for item in arg
@@ -410,7 +410,7 @@ class DefaultWiki(Default):
     def header(self, arg: Arguments, number: int) -> str:
         return (number * "=") + " " + self.parse(arg[0]) + " " + (number * "=")
 
-    def list(self, arg: Arguments) -> str:
+    def list__(self, arg: Arguments) -> str:
         s = ""
         for item in arg:
             if isinstance(item, list):
@@ -546,7 +546,7 @@ class DefaultTeX(Default):
         s += "\\end{tabular}\n\\end{center}\n\\end{table}\n"
         return s
 
-    def list(self, arg: Arguments) -> str:
+    def list__(self, arg: Arguments) -> str:
         s = "\\begin{itemize}\n"
         for item in arg[0]:
             if isinstance(item, list):
