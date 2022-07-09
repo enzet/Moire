@@ -91,6 +91,9 @@ class Default(Moire):
         """
         raise TagNotImplementedError("ref")
 
+    def ignore(self, arg: Arguments) -> str:
+        return arg[0][0]
+
     @staticmethod
     def get_ref_(link: str, text: str) -> str:
         raise NotImplementedError
@@ -126,7 +129,7 @@ class DefaultHTML(Default):
         return s
 
     def code(self, arg: Arguments) -> str:
-        return f"<pre><tt>{self.parse(arg[0], spec={'trim': False})}</tt></pre>"
+        return f"<pre><tt>{self.trim(self.parse(arg[0], spec={'trim': False}))}</tt></pre>"
 
     def title(self, arg: Arguments) -> str:
         return f"<title>{self.parse(arg[0])}</title>"
@@ -218,7 +221,7 @@ class DefaultText(Default):
         return self.parse(arg[0])
 
     def code(self, arg: Arguments) -> str:
-        return self.clear(arg[0]) + "\n"
+        return self.trim(self.parse(arg[0], spec={'trim': False})) + "\n"
 
     def header(self, arg: Arguments, number: int) -> str:
         return "  " * (number - 1) + self.parse(arg[0], depth=depth + 1)
@@ -354,10 +357,8 @@ class DefaultMarkdown(Default):
         return "**" + self.parse(arg[0]) + "**"
 
     def code(self, arg: Arguments) -> str:
-        s: str = "```"
-        if len(arg) > 1:
-            s += self.clear(arg[1])
-        s += f"\n{self.parse(arg[0], spec={'trim': False})}\n```"
+        s: str = "```" + (self.clear(arg[1]) if len(arg) > 1 else "")
+        s += f"\n{self.trim(self.parse(arg[0], spec={'trim': False}))}\n```"
         return s
 
     def get_ref_(self, link: str, text: str) -> str:
@@ -435,10 +436,10 @@ class DefaultWiki(Default):
         if len(arg) > 1:
             return (
                 f'<syntaxhighlight lang="{self.clear(arg[1])}">'
-                f"\n{self.clear(arg[0])}\n</syntaxhighlight>"
+                f"\n{self.trim(self.clear(arg[0]))}\n</syntaxhighlight>"
             )
         else:
-            return f"<pre><tt>{self.clear(arg[0])}\n</tt></pre>"
+            return f"<pre><tt>{self.trim(self.parse(arg[0], spec={'trim': False}))}\n</tt></pre>"
 
     def get_ref_(self, link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
@@ -594,7 +595,10 @@ class DefaultTeX(Default):
         return "\\cite {" + self.clear(arg[0]) + "}"
 
     def code(self, arg: Arguments) -> str:
-        return "\\begin{verbatim}" + self.clear(arg[0]) + "\\end{verbatim}"
+        return (
+            f"\\begin{{verbatim}}{self.trim(self.parse(arg[0], spec={'trim': False}))}"
+            f"\\end{{verbatim}}"
+        )
 
     def date(self, arg: Arguments) -> str:
         pass

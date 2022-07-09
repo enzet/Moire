@@ -274,6 +274,13 @@ class Moire:
             text = text.replace(key, self.escape_symbols[key])
         return text
 
+    def trim(self, text: str) -> str:
+        if text.startswith("\n"):
+            text = text[1:]
+        if text.endswith("\n"):
+            text = text[:-1]
+        return text
+
     def get_ids(self, content: str) -> list[str]:
         """
         Get all header identifiers.
