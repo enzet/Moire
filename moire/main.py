@@ -28,6 +28,7 @@ def main():
         converter: Moire = getattr(
             sys.modules["moire.default"], options.format
         )()
+        converter.file_name = options.input
         output: str = converter.convert(input_file.read())
 
     if not output:

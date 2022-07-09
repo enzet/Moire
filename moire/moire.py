@@ -256,9 +256,10 @@ class Moire:
     block_tags: list[str] = []
     escape_symbols: dict[str, str] = {}
 
-    def __init__(self):
+    def __init__(self, file_name: Optional[str] = None):
         self.index: int = 0
         self.status: dict[str, Any] = {"missing_tags": set()}
+        self.file_name: Optional[str] = file_name
 
     def init(self):
         """Some preliminary actions."""
@@ -370,7 +371,9 @@ class Moire:
             else:
                 if mode == "":
                     self.status["missing_tags"].add(key)
-                    assert False, f"Unknown tag {mode}{key}"
+                    assert False, f"Unknown tag {mode}{key}" + (
+                        f" in {self.file_name}" if self.file_name else ""
+                    )
                 else:
                     return ""
         elif isinstance(text, list):
