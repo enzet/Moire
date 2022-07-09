@@ -169,7 +169,10 @@ class DefaultHTML(Default):
         return f'<a href="{link}">{text}</a>'
 
     def ref(self, arg: Arguments) -> str:
-        return self.get_ref_(self.clear(arg[0]), self.parse(arg[1]))
+        link: str = self.clear(arg[0])
+        return self.get_ref_(
+            link, link if len(arg) == 1 else self.parse(arg[1])
+        )
 
     def i(self, arg: Arguments) -> str:
         return f"<i>{self.parse(arg[0])}</i>"
@@ -331,7 +334,8 @@ class DefaultMarkdown(Default):
     def list__(self, arg: Arguments) -> str:
         self.list_level += 1
         s: str = "".join(
-            "  " * self.list_level + f"* {self.parse(item)}\n" for item in arg
+            ("\n" + "  " * self.list_level + f"* {self.parse(item)}")
+            for item in arg
         )
         self.list_level -= 1
         return s
@@ -377,7 +381,7 @@ class DefaultMarkdown(Default):
         return f"<{self.parse(arg[0])}>"
 
     def m(self, arg: Arguments) -> str:
-        return f"`{str(self.parse(arg[0]))}`"
+        return f"`{self.parse(arg[0])}`"
 
     def u(self, arg: Arguments) -> str:
         return self.parse(arg[0])
@@ -641,9 +645,6 @@ class DefaultTeX(Default):
 
     def item(self, arg: Arguments) -> str:
         return "\\item " + self.parse(arg[0]) + ""
-
-    def page(self, arg: Arguments) -> str:
-        return "\\textsuperscript{" + self.parse(arg[0]) + "}"
 
     def sc(self, arg: Arguments) -> str:
         return "{\\sc " + self.parse(arg[0]) + "}"

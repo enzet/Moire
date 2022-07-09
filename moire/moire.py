@@ -295,7 +295,7 @@ class Moire:
                     ids.append(element.parameters[1][0])
         return ids
 
-    def convert(self, input_data: str, wrap: bool = True):
+    def convert(self, input_data: str, wrap: bool = True) -> str:
         """
         Convert Moire text without includes but with comments artifacts to
         selected format.
@@ -329,7 +329,7 @@ class Moire:
             ir = Tag("body", [ir, content_root])
 
         self.init()
-        self.parse(ir, in_block=False, depth=0, mode="pre_")
+        self.parse(ir, mode="pre_")
         result: str = self.parse(ir)
         self.finish()
 
@@ -428,7 +428,7 @@ class Moire:
         """Get intermediate representation."""
         text = preprocess_comments(text)
         lexemes, positions = lexer(text)
-        index, raw_ir = get_intermediate(lexemes, positions, 0, 0)
+        index, raw_ir = get_intermediate(lexemes, positions, 0)
 
         resulted_ir = []
 
