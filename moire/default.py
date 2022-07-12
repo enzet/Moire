@@ -224,7 +224,7 @@ class DefaultText(Default):
         return self.parse(arg[0])
 
     def code(self, arg: Arguments) -> str:
-        return self.trim(self.parse(arg[0], spec={'trim': False})) + "\n"
+        return self.trim(self.parse(arg[0], spec={"trim": False})) + "\n"
 
     def header(self, arg: Arguments, number: int) -> str:
         return "  " * (number - 1) + self.parse(arg[0], depth=depth + 1)
