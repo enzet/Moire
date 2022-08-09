@@ -8,6 +8,9 @@ contexts:
   main:
     - match: '\\[\\{}:]'
       scope: markup.raw
+    - match: '/\*'
+      scope: comment
+      push: comment
 
     - match: '\\b\b'
       scope: punctuation.definition.argument
@@ -28,6 +31,11 @@ contexts:
       scope: punctuation.definition.argument
     - match: '}'
       scope: punctuation.definition.argument
+
+  comment:
+    - match: '\*/'
+      scope: comment
+      pop: true
 
   bold:
     - {match: '{', scope: punctuation.definition.argument}
