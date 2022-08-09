@@ -1,3 +1,7 @@
 .idea
+Moire.egg-info
 __pycache__
 archive
+data
+venv
+work
