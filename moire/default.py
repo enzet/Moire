@@ -129,7 +129,10 @@ class DefaultHTML(Default):
         return s
 
     def code(self, arg: Arguments) -> str:
-        return f"<pre><tt>{self.trim(self.parse(arg[0], spec={'trim': False}))}</tt></pre>"
+        return (
+            f"<pre><tt>{self.trim(self.parse(arg[0], spec={'trim': False}))}"
+            "</tt></pre>"
+        )
 
     def title(self, arg: Arguments) -> str:
         return f"<title>{self.parse(arg[0])}</title>"
@@ -452,7 +455,11 @@ class DefaultWiki(Default):
                 f"\n{self.trim(self.clear(arg[0]))}\n</syntaxhighlight>"
             )
         else:
-            return f"<pre><tt>{self.trim(self.parse(arg[0], spec={'trim': False}))}\n</tt></pre>"
+            return (
+                "<pre><tt>"
+                f"{self.trim(self.parse(arg[0], spec={'trim': False}))}\n"
+                "</tt></pre>"
+            )
 
     def get_ref_(self, link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
@@ -510,7 +517,8 @@ class DefaultTeX(Default):
         \\usepackage[russian]{babel}
         \\usepackage{enumitem}
         \\usepackage{float}
-        \\usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry}
+        \\usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]
+            {geometry}
         \\usepackage{graphicx}
         \\usepackage{hyperref}
         \\usepackage{multicol}
@@ -609,8 +617,9 @@ class DefaultTeX(Default):
 
     def code(self, arg: Arguments) -> str:
         return (
-            f"\\begin{{verbatim}}{self.trim(self.parse(arg[0], spec={'trim': False}))}"
-            f"\\end{{verbatim}}"
+            "\\begin{verbatim}"
+            + self.trim(self.parse(arg[0], spec={"trim": False}))
+            + "\\end{verbatim}"
         )
 
     def date(self, arg: Arguments) -> str:
