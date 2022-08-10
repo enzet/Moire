@@ -34,9 +34,14 @@ Italic (\m {\\i}), bold (\m {\\b}), underlined (\m {\\u}), monospaced (\m {\\m})
 
 Example Moire code\:
 
-\code {\\list
+\i {italic \b {bold italic}}
+\b {italic \i {bold italic}}
+
+\code {moire} {
+\\list
     \{Item 1,\}
-    \{item 2.\}} {moire}
+    \{item 2.\}
+}
 
 Rendering\:
 
@@ -48,10 +53,12 @@ Rendering\:
 
 Example Moire code\:
 
-\code {\\table
+\code {moire} {
+\\table
     \{\{Header 1\} \{Header 2\}\}
     \{\{Cell 1, 1\} \{Cell 1, 2\}\}
-    \{\{Cell 2, 1\} \{Cell 2, 2\}\}} {moire}
+    \{\{Cell 2, 1\} \{Cell 2, 2\}\}
+}
 
 Rendering\:
 
@@ -64,16 +71,16 @@ Rendering\:
 
 Requirements: Python 3.9.
 
-\code {pip install .} {bash}
+\code {bash} {pip install .}
 
 \2 {Conversion Moire code into other formats} {conversion-moire-code-into-other-formats}
 
 Convert Moire file to other formats\:
 
-\code {moire -i <Moire input file> -f <format> -o <output file> <other options>} {bash}
+\code {bash} {moire -i <Moire input file> -f <format> -o <output file> <other options>}
 
 E.g., this file is generated from Moire code using this command\:
 
-\code {moire -i doc/readme.moi -o README.md -f DefaultMarkdown} {bash}
+\code {bash} {moire -i doc/readme.moi -o README.md -f DefaultMarkdown}
 
 \2 {Example section} {example-section}

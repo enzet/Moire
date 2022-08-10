@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Any, List, Set, Dict
+from typing import Any, Dict, List, Set
 
 from moire.moire import Moire
 
@@ -67,6 +67,16 @@ class Default(Moire):
     def formal(self, arg: Arguments) -> str:
         raise TagNotImplementedError("formal")
 
+    def _parse_code_arguments(self, arg: Arguments) -> tuple[str, str]:
+        """Parse trimmed code and possible language identifier."""
+        if len(arg) == 1:
+            return self.trim(self.parse(arg[0], spec={"trim": False})), ""
+
+        return (
+            self.trim(self.parse(arg[1], spec={"trim": False})),
+            self.clear(arg[0]),
+        )
+
     def code(self, arg: Arguments) -> str:
         """
         Code block.
@@ -129,10 +139,8 @@ class DefaultHTML(Default):
         return s
 
     def code(self, arg: Arguments) -> str:
-        return (
-            f"<pre><tt>{self.trim(self.parse(arg[0], spec={'trim': False}))}"
-            "</tt></pre>"
-        )
+        code_, _ = self._parse_code_arguments(arg)
+        return f"<pre><tt>{code_}</tt></pre>"
 
     def title(self, arg: Arguments) -> str:
         return f"<title>{self.parse(arg[0])}</title>"
@@ -227,7 +235,8 @@ class DefaultText(Default):
         return self.parse(arg[0])
 
     def code(self, arg: Arguments) -> str:
-        return self.trim(self.parse(arg[0], spec={"trim": False})) + "\n"
+        code_, _ = self._parse_code_arguments(arg)
+        return code_ + "\n"
 
     def header(self, arg: Arguments, number: int) -> str:
         return "  " * (number - 1) + self.parse(arg[0], depth=depth + 1)
@@ -364,9 +373,8 @@ class DefaultMarkdown(Default):
         return "**" + self.parse(arg[0]) + "**"
 
     def code(self, arg: Arguments) -> str:
-        s: str = "```" + (self.clear(arg[1]) if len(arg) > 1 else "")
-        s += f"\n{self.trim(self.parse(arg[0], spec={'trim': False}))}\n```"
-        return s
+        code_, language = self._parse_code_arguments(arg)
+        return f"```{language}\n{code_}\n```"
 
     def get_ref_(self, link: str, text: str) -> str:
         return f"[{text}]({link})"
@@ -449,17 +457,14 @@ class DefaultWiki(Default):
         return f"'''{self.parse(arg[0])}'''"
 
     def code(self, arg: Arguments) -> str:
-        if len(arg) > 1:
+        code_, language = self._parse_code_arguments(arg)
+        if language:
             return (
-                f'<syntaxhighlight lang="{self.clear(arg[1])}">'
-                f"\n{self.trim(self.clear(arg[0]))}\n</syntaxhighlight>"
+                f'<syntaxhighlight lang="{language}">'
+                f"\n{code_}\n</syntaxhighlight>"
             )
         else:
-            return (
-                "<pre><tt>"
-                f"{self.trim(self.parse(arg[0], spec={'trim': False}))}\n"
-                "</tt></pre>"
-            )
+            return f"<pre><tt>{code_}\n</tt></pre>"
 
     def get_ref_(self, link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
@@ -616,11 +621,8 @@ class DefaultTeX(Default):
         return "\\cite {" + self.clear(arg[0]) + "}"
 
     def code(self, arg: Arguments) -> str:
-        return (
-            "\\begin{verbatim}"
-            + self.trim(self.parse(arg[0], spec={"trim": False}))
-            + "\\end{verbatim}"
-        )
+        code_, language = self._parse_code_arguments(arg)
+        return f"\\begin{{verbatim}}{code_}\\end{{verbatim}}"
 
     def date(self, arg: Arguments) -> str:
         pass
