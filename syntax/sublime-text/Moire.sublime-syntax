@@ -63,11 +63,15 @@ contexts:
     - include: main
   ref_link:
     - match: '{'
-      meta_scope: punctuation.definition.argument
+      scope: punctuation.definition.argument
       set: ref_value
     - include: main
+    - match: '.'
+      scope: punctuation.definition.argument
   ref_value:
-    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - match: '}'
+      scope: punctuation.definition.argument
+      pop: true
     - include: main
     - match: '.'
       scope: markup.link
