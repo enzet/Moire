@@ -18,6 +18,9 @@ contexts:
     - match: '\\i\b'
       scope: punctuation.definition.argument
       push: italic
+    - match: '\\m\b'
+      scope: punctuation.definition.argument
+      push: monospace
     - match: '\\ref\b'
       scope: punctuation.definition.argument
       push: ref
@@ -47,6 +50,11 @@ contexts:
     - {match: '}', scope: punctuation.definition.argument, pop: true}
     - include: main
     - {match: '.', scope: markup.italic}
+  monospace:
+    - {match: '{', scope: punctuation.definition.argument}
+    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - include: main
+    - {match: '.', scope: markup.raw}
 
   ref:
     - match: '{'
