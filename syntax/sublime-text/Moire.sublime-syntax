@@ -38,6 +38,14 @@ contexts:
           scope: punctuation.definition.argument
           pop: true
 
+    - match: '\\code {c} {'
+      scope: punctuation.definition.argument
+      push: Packages/User/C.sublime-syntax
+      with_prototype:
+        - match: '}'
+          scope: punctuation.definition.argument
+          pop: true
+
     - match: \\[A-Za-z0-9_]*
       scope: punctuation.definition.argument
     - match: '{'
