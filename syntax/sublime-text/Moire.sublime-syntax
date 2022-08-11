@@ -91,6 +91,11 @@ contexts:
     - {match: '}', scope: punctuation.definition.argument, pop: true}
     - include: main
     - {match: '.', scope: markup.raw}
+  code:
+    - {match: '{', scope: punctuation.definition.argument}
+    - {match: '}', scope: punctuation.definition.argument, pop: true}
+    - include: main
+    - {match: '.', scope: markup.raw}
 
   ref:
     - match: '{'
