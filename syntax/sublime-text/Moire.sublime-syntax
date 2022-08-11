@@ -11,6 +11,8 @@ contexts:
     - match: '/\*'
       scope: comment
       push: comment
+    - match: '~'
+      scope: punctuation.definition.argument
 
     - match: '\\b\b'
       scope: punctuation.definition.argument
