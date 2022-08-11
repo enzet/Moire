@@ -28,6 +28,16 @@ contexts:
       scope: punctuation.definition.argument
       push: header
 
+      # External languages.
+
+    - match: '\\code {java} {'
+      scope: punctuation.definition.argument
+      push: Packages/User/Java.sublime-syntax
+      with_prototype:
+        - match: '}'
+          scope: punctuation.definition.argument
+          pop: true
+
     - match: \\[A-Za-z0-9_]*
       scope: punctuation.definition.argument
     - match: '{'
