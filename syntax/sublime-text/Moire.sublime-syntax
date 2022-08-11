@@ -39,6 +39,8 @@ contexts:
     - match: '\*/'
       scope: comment
       pop: true
+    - match: '.'
+      scope: comment
 
   bold:
     - {match: '{', scope: punctuation.definition.argument}
