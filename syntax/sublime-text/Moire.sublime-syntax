@@ -32,7 +32,15 @@ contexts:
 
     - match: '\\code {java} {'
       scope: punctuation.definition.argument
-      push: Packages/User/Java.sublime-syntax
+      push: Packages/Java/Java.sublime-syntax
+      with_prototype:
+        - match: '}'
+          scope: punctuation.definition.argument
+          pop: true
+
+    - match: '\\code {cpp} {'
+      scope: punctuation.definition.argument
+      push: Packages/C++/C++.sublime-syntax
       with_prototype:
         - match: '}'
           scope: punctuation.definition.argument
@@ -40,7 +48,7 @@ contexts:
 
     - match: '\\code {c} {'
       scope: punctuation.definition.argument
-      push: Packages/User/C.sublime-syntax
+      push: Packages/C++/C.sublime-syntax
       with_prototype:
         - match: '}'
           scope: punctuation.definition.argument
