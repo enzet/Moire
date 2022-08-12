@@ -62,6 +62,10 @@ contexts:
           scope: punctuation.definition.argument
           pop: true
 
+    - match: '\\code {llvm} {'
+      scope: punctuation.definition.argument
+      push: code_llvm
+
     - match: \\[A-Za-z0-9_]*
       scope: punctuation.definition.argument
     - match: '{'
@@ -123,3 +127,16 @@ contexts:
     - {match: '}', scope: punctuation.definition.argument, pop: true}
     - include: main
     - {match: '.', scope: markup.bold}
+
+  # External.
+
+  code_llvm:
+    - match: '\b(alloca|store|load|ret)\b'
+      scope: keyword
+    - match: '%[a-z0-9]+'
+      scope: variable.member
+    - match: '\b\d+\b'
+      scope: constant.numeric
+    - match: '}'
+      scope: punctuation.definition.argument
+      pop: true
