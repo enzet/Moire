@@ -65,6 +65,9 @@ contexts:
     - match: '\\code {llvm} {'
       scope: punctuation.definition.argument
       push: code_llvm
+    - match: '\\code {java_bytecode} {'
+      scope: punctuation.definition.argument
+      push: code_java_bytecode
 
     - match: \\[A-Za-z0-9_]*
       scope: punctuation.definition.argument
@@ -135,6 +138,23 @@ contexts:
       scope: keyword
     - match: '%[a-z0-9]+'
       scope: variable.member
+    - match: '\b\d+\b'
+      scope: constant.numeric
+    - match: '}'
+      scope: punctuation.definition.argument
+      pop: true
+
+  code_java_bytecode:
+    - match: '\b(nop|[i]*const_[0-9]*|[i]*store_[0-9]*|[i]*load_[0-9]*|return)\b'
+      scope: keyword
+    - match: '(RET branch)'
+      scope: keyword
+    - match: 'instr![a-z]+'
+      scope: keyword
+    - match: "sid[a-z0-9']+"
+      scope: variable.member
+    - match: '\d+:'
+      scope: comment
     - match: '\b\d+\b'
       scope: constant.numeric
     - match: '}'
