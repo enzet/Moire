@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
-    parser.add_argument("-o", "--output", help="output file", required=True)
+    parser.add_argument("-o", "--output", help="output file")
     parser.add_argument("-f", "--format", help="output format", required=True)
 
     options = parser.parse_args(sys.argv[1:])
@@ -35,9 +35,12 @@ def main():
         logging.fatal("Fatal: output was no produced.")
         sys.exit(1)
 
-    with open(options.output, "w+") as output_file:
-        output_file.write(output)
-        logging.info(f"Converted to {options.output}.")
+    if options.output:
+        with open(options.output, "w+") as output_file:
+            output_file.write(output)
+            logging.info(f"Converted to {options.output}.")
+    else:
+        sys.stdout.write(output)
 
 
 if __name__ == "__main__":
