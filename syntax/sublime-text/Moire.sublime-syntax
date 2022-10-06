@@ -52,6 +52,16 @@ contexts:
           scope: punctuation.definition.argument
           pop: true
 
+    - match: '\\code\b\s*{go}\s*{'
+      scope: punctuation.definition.argument
+      push: Packages/Go/Go.sublime-syntax
+      with_prototype:
+        - match: '\\[\\{}:]'
+          scope: markup.raw
+        - match: '}'
+          scope: punctuation.definition.argument
+          pop: true
+
     - match: '\\code\b\s*{java}\s*{'
       scope: punctuation.definition.argument
       push: Packages/Java/Java.sublime-syntax
@@ -65,16 +75,6 @@ contexts:
     - match: '\\code\b\s*{python}\s*{'
       scope: punctuation.definition.argument
       push: Packages/Python/Python.sublime-syntax
-      with_prototype:
-        - match: '\\[\\{}:]'
-          scope: markup.raw
-        - match: '}'
-          scope: punctuation.definition.argument
-          pop: true
-
-    - match: '\\code\b\s*{c}\s*{'
-      scope: punctuation.definition.argument
-      push: Packages/C++/C.sublime-syntax
       with_prototype:
         - match: '\\[\\{}:]'
           scope: markup.raw
