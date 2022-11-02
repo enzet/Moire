@@ -1,5 +1,5 @@
-import argparse
 import sys
+from argparse import ArgumentParser, Namespace
 from typing import Any, Dict, List, Set
 
 from moire.moire import Moire
@@ -312,9 +312,7 @@ class DefaultText(Default):
 
 
 class DefaultMarkdown(Default):
-    """
-    Markdown.
-    """
+    """Markdown."""
 
     name = "Markdown"
     extensions = ["md", "markdown"]
@@ -414,9 +412,7 @@ class DefaultMarkdown(Default):
 
 
 class DefaultWiki(Default):
-    """
-    Wiki syntax of Wikipedia.
-    """
+    """Wiki syntax of Wikipedia."""
 
     name = "Wiki"
     extensions = ["wiki"]
@@ -501,9 +497,7 @@ class DefaultWiki(Default):
 
 
 class DefaultTeX(Default):
-    """
-    TeX syntax.
-    """
+    """TeX syntax."""
 
     name = "Tex"
     extension = "tex"
@@ -695,13 +689,13 @@ class DefaultTeX(Default):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser: ArgumentParser = ArgumentParser()
 
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
     parser.add_argument("-o", "--output", help="output file", required=True)
     parser.add_argument("-f", "--format", help="output format", required=True)
 
-    options = parser.parse_args(sys.argv[1:])
+    options: Namespace = parser.parse_args(sys.argv[1:])
 
     with open(options.input, "r") as input_file:
         converter: Moire = getattr(sys.modules[__name__], options.format)()

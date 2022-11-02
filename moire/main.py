@@ -2,9 +2,9 @@
 Command line Python tool for file conversion from Moire markup language to other
 formats, such as HTML, TeX, etc.
 """
-import argparse
 import logging
 import sys
+from argparse import ArgumentParser, Namespace
 
 from moire.moire import Moire
 import moire.default  # noqa: F401
@@ -16,13 +16,13 @@ __email__ = "me@enzet.ru"
 def main():
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-    parser = argparse.ArgumentParser()
+    parser: ArgumentParser = ArgumentParser()
 
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
     parser.add_argument("-o", "--output", help="output file")
     parser.add_argument("-f", "--format", help="output format", required=True)
 
-    options = parser.parse_args(sys.argv[1:])
+    options: Namespace = parser.parse_args(sys.argv[1:])
 
     with open(options.input, "r") as input_file:
         converter: Moire = getattr(
