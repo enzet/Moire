@@ -210,7 +210,7 @@ class DefaultHTML(Default):
         return f"<p>{self.parse(arg[0])}</p>"
 
     def m(self, arg: Arguments) -> str:
-        return f"<tt>{self.parse(arg[0])}</tt>"
+        return f"<code>{self.parse(arg[0])}</code>"
 
     def u(self, arg: Arguments) -> str:
         return f"<u>{self.parse(arg[0])}</u>"
