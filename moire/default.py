@@ -579,9 +579,8 @@ class DefaultTeX(Default):
 
     def list__(self, arg: Arguments) -> str:
         s = "\\begin{itemize}\n"
-        for item in arg[0]:
-            if isinstance(item, list):
-                s += f"\\item {self.parse(item)}\n\n"
+        for item in arg:
+            s += f"\\item {self.parse(item)}\n\n"
         s += "\\end{itemize}\n"
         return s
 
