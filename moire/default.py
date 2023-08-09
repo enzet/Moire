@@ -101,6 +101,16 @@ class Default(Moire):
         """
         raise TagNotImplementedError("ref")
 
+    def nospell(self, arg: Arguments) -> str:
+        """
+        Text that shouldn't be checked for spelling.
+
+        This method will do nothing and just resume the process of parsing its
+        content, it is an indication to the Moire code viewer or editor not to
+        check the content for spelling with automatic tools.
+        """
+        return self.parse(arg[0])
+
     def ignore(self, arg: Arguments) -> str:
         return arg[0][0]
 
