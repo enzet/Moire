@@ -102,7 +102,7 @@ def test_html_text_around_tag_and_spaces() -> None:
 def test_html_nested_tags_and_spaces() -> None:
     check(
         "\\block {a\n\nt \\m {tt} t\n\na}",
-        "<p>a</p><p>t <tt>tt</tt> t</p><p>a</p>",
+        "<p>a</p><p>t <code>tt</code> t</p><p>a</p>",
         "Text around two tags with spaces",
     )
 
@@ -110,7 +110,7 @@ def test_html_nested_tags_and_spaces() -> None:
 def test_html_nested_tags_and_spaces_around() -> None:
     check(
         "\\block {a\n\n t \\m {tt} t \n\na}",
-        "<p>a</p><p>t <tt>tt</tt> t</p><p>a</p>",
+        "<p>a</p><p>t <code>tt</code> t</p><p>a</p>",
         "Text around two tags with spaces",
     )
 
@@ -118,7 +118,7 @@ def test_html_nested_tags_and_spaces_around() -> None:
 def test_html_nested_tags_and_multiple_spaces() -> None:
     check(
         "\\block {a\n\n t  \\m {tt}  t \n\na}",
-        "<p>a</p><p>t <tt>tt</tt> t</p><p>a</p>",
+        "<p>a</p><p>t <code>tt</code> t</p><p>a</p>",
         "Text around two tags with spaces",
     )
 
