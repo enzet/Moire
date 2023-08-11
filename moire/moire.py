@@ -228,7 +228,7 @@ def get_intermediate(lexemes, positions, level, index=0):
             level -= 1
             if level < 0:
                 position = positions[index]
-                logging.error("Lexer error at " + str(position) + ".")
+                logging.error(f"Lexer error at {position}.")
                 index += 1
                 sys.exit(1)
             if tag:
@@ -251,7 +251,6 @@ def get_intermediate(lexemes, positions, level, index=0):
 
 
 class Moire:
-
     name: str = "Empty format"
     block_tags: list[str] = []
     escape_symbols: dict[str, str] = {}
