@@ -1,6 +1,7 @@
 import sys
 from argparse import ArgumentParser, Namespace
 from typing import Any, Dict, List, Set
+from textwrap import dedent
 
 from moire.moire import Moire
 
@@ -521,17 +522,20 @@ class DefaultTeX(Default):
     ]  # fmt: skip
 
     def body(self, arg: Arguments) -> str:
-        s = """\\documentclass[twoside,psfig]{article}:
-        \\usepackage[utf8]{inputenc}
-        \\usepackage[russian]{babel}
-        \\usepackage{enumitem}
-        \\usepackage{float}
-        \\usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]
-            {geometry}
-        \\usepackage{graphicx}
-        \\usepackage{hyperref}
-        \\usepackage{multicol}
-        \\begin{document}"""
+        s = dedent(
+            """\
+            \\documentclass[twoside,psfig]{article}
+            \\usepackage[utf8]{inputenc}
+            \\usepackage[russian]{babel}
+            \\usepackage{enumitem}
+            \\usepackage{float}
+            \\usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]
+                {geometry}
+            \\usepackage{graphicx}
+            \\usepackage{hyperref}
+            \\usepackage{multicol}
+            \\begin{document}"""
+        )
         s += self.parse(arg[0], in_block=True)
         s += "\\end {document}"
         return s
