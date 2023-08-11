@@ -12,16 +12,14 @@ There are 6 possible header levels\: \m {\\1}, \m {\\2}, ..., \m {\\6} with synt
 
 \4 {Formatting} {formatting}
 
-Italic (\m {\\i}), bold (\m {\\b}), underlined (\m {\\u}), monospaced (\m {\\m}), strikethrough (\m {\\strike}), subscript (\m {\\sub}), superscript (\m {\\super}).
-
 \table
-    {{Example Moire code} {Rendering}}
-    {{\m {\\i \{text\}}} {\i {text}}}
-    {{\m {\\b \{text\}}} {\b {text}}}
-    {{\m {\\m \{text\}}} {\m {text}}}
-    {{\m {\\strike \{text\}}} {\strike {text}}}
-    {{\m {\\sub \{text\}}} {\sub {text}}}
-    {{\m {\\super \{text\}}} {\super {text}}}
+    {{} {Example Moire code} {Rendering}}
+    {{Italic} {\m {\\i \{text\}}} {\i {text}}}
+    {{Bold} {\m {\\b \{text\}}} {\b {text}}}
+    {{Monospaced} {\m {\\m \{text\}}} {\m {text}}}
+    {{Strikethrough} {\m {\\strike \{text\}}} {\strike {text}}}
+    {{Subscript} {\m {\\sub \{text\}}} {\sub {text}}}
+    {{Superscript} {\m {\\super \{text\}}} {\super {text}}}
 
 \4 {Links} {links}
 
