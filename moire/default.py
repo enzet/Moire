@@ -138,15 +138,24 @@ class DefaultHTML(Default):
 
     def body(self, arg: Arguments) -> str:
         status["content"] = []
-        s: str = """<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>"""
+        s: str = dedent(
+            """
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html;
+                        charset=utf-8">
+                    <link rel="stylesheet" href="style.css">
+                </head>
+                <body>
+            """
+        )
         s += self.parse(arg[0], in_block=True)
-        s += """    </body>
-        </html>"""
+        s += dedent(
+            """
+                </body>
+            </html>
+            """
+        )
         return s
 
     def code(self, arg: Arguments) -> str:
@@ -534,7 +543,8 @@ class DefaultTeX(Default):
             \\usepackage{graphicx}
             \\usepackage{hyperref}
             \\usepackage{multicol}
-            \\begin{document}"""
+            \\begin{document}
+            """
         )
         s += self.parse(arg[0], in_block=True)
         s += "\\end {document}"

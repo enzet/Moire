@@ -39,9 +39,10 @@ class Root:
 
 @dataclass
 class Tag:
-    """
-    Moire tag definition. Tag has name and parameters:
-    <backslash><tag name> {<parameter 1>} ... {<parameter N>}.
+    """Moire tag definition.
+
+    Tag has name and parameters:
+        <backslash><tag name> {<parameter 1>} ... {<parameter N>}.
     """
 
     id: str
@@ -297,11 +298,11 @@ class Moire:
             text = text[:-1]
         return text
 
-    def get_ids(self, content: str) -> list[str]:
-        """
-        Get all header identifiers.
+    def get_ids(self, content: str) -> list[tuple[str, int]]:
+        """Get all header identifiers.
 
         :param content: input content in the Moire format
+        :return: list of tuples (id, level), level is 0 for labels
         """
         ids: list[str] = []
         intermediate_representation = self.get_ir(content)
@@ -312,8 +313,7 @@ class Moire:
         return ids
 
     def convert(self, input_data: str, wrap: bool = True) -> str:
-        """
-        Convert Moire text without includes but with comments artifacts to
+        """Convert Moire text without includes but with comments artifacts to
         selected format.
         """
         ir = self.get_ir(input_data)
@@ -359,9 +359,9 @@ class Moire:
         mode: str = "",
         spec: Optional[dict[str, Any]] = None,
     ) -> str:
-        """
-        Element parsing into formatted text. Element may be plain text, tag, or
-        list of elements.
+        """Element parsing into formatted text.
+
+        Element may be plain text, tag, or list of elements.
         """
         if spec is None:
             spec = {}
@@ -461,9 +461,7 @@ class Moire:
         return resulted_ir
 
     def process_inner_block(self, inner_block):
-        """
-        Wrap parts of inner block element with text tag.
-        """
+        """Wrap parts of inner block element with text tag."""
         if len(inner_block) == 1 and inner_block[0] == "":
             return ""
         paragraphs = []
