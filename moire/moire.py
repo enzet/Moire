@@ -329,7 +329,7 @@ class Moire:
 
         self.init()
         self.parse(ir, mode="pre_")
-        result: str = self.parse(ir)
+        result: str = self.parse(ir, in_block=True)
         self.finish()
 
         return result
