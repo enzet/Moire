@@ -494,7 +494,6 @@ class Moire:
         return s
 
 
-
 def serialize(object_) -> str:
     """Serialize Moire elements into a text form."""
     if isinstance(object_, str):

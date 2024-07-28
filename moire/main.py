@@ -2,6 +2,7 @@
 Command line Python tool for file conversion from Moire markup language to other
 formats, such as HTML, TeX, etc.
 """
+
 import logging
 import sys
 from argparse import ArgumentParser, Namespace
