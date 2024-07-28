@@ -304,12 +304,14 @@ class Moire:
         :param content: input content in the Moire format
         :return: list of tuples (id, level), level is 0 for labels
         """
-        ids: list[str] = []
+        ids: list[tuple[str, int]] = []
         intermediate_representation = self.get_ir(content)
         for element in intermediate_representation:
-            if isinstance(element, Tag) and element.is_header():
-                if len(element.parameters) >= 2:
-                    ids.append(element.parameters[1][0])
+            if isinstance(element, Tag):
+                if element.is_header() and len(element.parameters) >= 2:
+                    ids.append((element.parameters[1][0], int(element.id)))
+                if element.id == "label":
+                    ids.append((element.parameters[0][0], 0))
         return ids
 
     def convert(
