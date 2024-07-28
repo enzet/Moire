@@ -26,6 +26,17 @@ PARAGRAPH_DELIMITER: str = "\n\n"
 SPACES: str = " \n\t\r"
 
 
+class Root:
+    def __init__(self):
+        self.elements: list = []
+
+    def add(self, element) -> None:
+        self.elements.append(element)
+
+    def serialize(self) -> str:
+        return "\n".join(serialize(x) for x in self.elements)
+
+
 @dataclass
 class Tag:
     """
@@ -50,6 +61,12 @@ class Tag:
 
     def is_header(self) -> bool:
         return self.id in "123456"
+
+    def serialize(self) -> str:
+        """Serialize the tag into a text form."""
+        return f"\\{self.id} " + " ".join(
+            "{" + serialize(x) + "}" for x in self.parameters
+        )
 
 
 @dataclass
@@ -475,3 +492,20 @@ class Moire:
                 paragraph[-1] = paragraph[-1].rstrip()
             s += str(self.parse(Tag("text", [paragraph])))
         return s
+
+
+
+def serialize(object_) -> str:
+    """Serialize Moire elements into a text form."""
+    if isinstance(object_, str):
+        return object_
+    if isinstance(object_, list):
+        if object_:
+            if isinstance(object_[0], list):
+                return " ".join("{" + serialize(x) + "}" for x in object_)
+            else:
+                return "".join(serialize(x) for x in object_)
+        else:
+            return ""
+    if isinstance(object_, Tag):
+        return object_.serialize()
