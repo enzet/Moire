@@ -565,6 +565,12 @@ class DefaultTeX(Default):
         )
         return s
 
+    def author(self, arg: Arguments) -> str:
+        return f"\\author{{{self.parse(arg[0])}}}"
+
+    def abstract(self, arg: Arguments) -> str:
+        return f"\\abstract{{\n{self.parse(arg[0])}\n}}\n\n"
+
     def header(self, arg: Arguments, number: int) -> str:
         if number < 6:
             return f"\\{self.headers[number - 1]}{{{self.parse(arg[0])}}}"
