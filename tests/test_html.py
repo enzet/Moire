@@ -12,7 +12,9 @@ converter = DefaultHTML()
 
 
 def check(code: str, result: str, message: str):
-    assert converter.convert(code, wrap=False) == result, message
+    assert (
+        converter.convert(code, wrap=False, in_block=False) == result
+    ), message
 
 
 def test_html_text():
@@ -166,7 +168,7 @@ def test_html_text_around_tag_with_2_parameters_and_spaces() -> None:
 def test_html_tag_2_parameters_with_spaces() -> None:
     check(
         "\\ref {  link  } {  text  }",
-        '<a href="  link  "> text </a>',
+        '<a href=" link "> text </a>',
         "Tag with multiple parameters with spaces",
     )
 

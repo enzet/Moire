@@ -200,8 +200,8 @@ class DefaultHTML(Default):
         return f'<a href="{link}">{text}</a>'
 
     def ref(self, arg: Arguments) -> str:
-        link: str = self.clear(arg[0])
-        return self.get_ref_(
+        link: str = self.parse(arg[0])
+        return self._get_ref(
             link, link if len(arg) == 1 else self.parse(arg[1])
         )
 

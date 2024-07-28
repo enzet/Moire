@@ -312,7 +312,9 @@ class Moire:
                     ids.append(element.parameters[1][0])
         return ids
 
-    def convert(self, input_data: str, wrap: bool = True) -> str:
+    def convert(
+        self, input_data: str, wrap: bool = True, in_block: bool = True
+    ) -> str:
         """Convert Moire text without includes but with comments artifacts to
         selected format.
         """
@@ -346,7 +348,7 @@ class Moire:
 
         self.init()
         self.parse(ir, mode="pre_")
-        result: str = self.parse(ir, in_block=True)
+        result: str = self.parse(ir, in_block=in_block)
         self.finish()
 
         return result
