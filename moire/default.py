@@ -31,6 +31,9 @@ class Default(Moire):
     Default tag declaration.
     """
 
+    def __init__(self) -> None:
+        super().__init__()
+
     def title(self, arg: Arguments) -> str:
         """Document title."""
         return ""
@@ -116,7 +119,7 @@ class Default(Moire):
         return arg[0][0]
 
     @staticmethod
-    def get_ref_(link: str, text: str) -> str:
+    def _get_ref(link: str, text: str) -> str:
         raise NotImplementedError
 
 
@@ -129,6 +132,9 @@ class DefaultHTML(Default):
     extensions: List[str] = ["html", "htm"]
     escape_symbols: Dict[str, str] = {"<": "&lt;", ">": "&gt;"}
     block_tags = BLOCK_TAGS
+
+    def __init__(self) -> None:
+        super().__init__()
 
     def escape(self, text: str) -> str:
         return super().escape(text.replace("&", "&amp;"))
@@ -196,7 +202,7 @@ class DefaultHTML(Default):
         return "<br />"
 
     @staticmethod
-    def get_ref_(link: str, text: str) -> str:
+    def _get_ref(link: str, text: str) -> str:
         return f'<a href="{link}">{text}</a>'
 
     def ref(self, arg: Arguments) -> str:
@@ -297,11 +303,11 @@ class DefaultText(Default):
     def b(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
-    def get_ref_(self, link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f"{text} + ({link})"
 
     def ref(self, arg: Arguments) -> str:
-        return self.get_ref_(self.clear(arg[0]), self.parse(arg[1]))
+        return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
@@ -394,11 +400,11 @@ class DefaultMarkdown(Default):
         code_, language = self._parse_code_arguments(arg)
         return f"```{language}\n{code_}\n```"
 
-    def get_ref_(self, link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f"[{text}]({link})"
 
     def ref(self, arg: Arguments) -> str:
-        return self.get_ref_(self.parse(arg[0]), self.parse(arg[1]))
+        return self._get_ref(self.parse(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: Arguments) -> str:
         return "*" + self.parse(arg[0]) + "*"
@@ -482,11 +488,11 @@ class DefaultWiki(Default):
         else:
             return f"<pre><tt>{code_}\n</tt></pre>"
 
-    def get_ref_(self, link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
 
     def ref(self, arg: Arguments) -> str:
-        return self.get_ref_(self.clear(arg[0]), self.parse(arg[1]))
+        return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: Arguments) -> str:
         return f"''{self.parse(arg[0])}''"
