@@ -129,6 +129,7 @@ class DefaultHTML(Default):
     """
 
     name: str = "HTML"
+    id_: str = "html"
     extensions: List[str] = ["html", "htm"]
     escape_symbols: Dict[str, str] = {"<": "&lt;", ">": "&gt;"}
     block_tags = BLOCK_TAGS
@@ -251,6 +252,7 @@ class DefaultText(Default):
     """
 
     name = "Text"
+    id_: str = "text"
     extension = "txt"
     escape_symbols = {}
 
@@ -341,6 +343,7 @@ class DefaultMarkdown(Default):
     """Markdown."""
 
     name = "Markdown"
+    id_: str = "markdown"
     extensions = ["md", "markdown"]
     block_tags = BLOCK_TAGS
 
@@ -441,6 +444,7 @@ class DefaultWiki(Default):
     """Wiki syntax of Wikipedia."""
 
     name = "Wiki"
+    id_: str = "wiki"
     extensions = ["wiki"]
     block_tags = BLOCK_TAGS
 
@@ -526,6 +530,7 @@ class DefaultTeX(Default):
     """TeX syntax."""
 
     name = "Tex"
+    id_: str = "tex"
     extension = "tex"
 
     escape_symbols = {
