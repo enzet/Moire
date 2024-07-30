@@ -67,7 +67,7 @@ Rendering\:
 
 \2 {Installation} {installation}
 
-Requirements: Python 3.9.
+Requirements: Python 3.8.
 
 \code {bash} {pip install .}
 

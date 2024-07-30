@@ -1,6 +1,6 @@
 import sys
 from argparse import ArgumentParser, Namespace
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Set, Tuple
 from textwrap import dedent
 
 from moire.moire import Moire
@@ -71,7 +71,7 @@ class Default(Moire):
     def formal(self, arg: Arguments) -> str:
         raise TagNotImplementedError("formal")
 
-    def _parse_code_arguments(self, arg: Arguments) -> tuple[str, str]:
+    def _parse_code_arguments(self, arg: Arguments) -> Tuple[str, str]:
         """Parse trimmed code and possible language identifier."""
         if len(arg) == 1:
             return self.trim(self.parse(arg[0], spec={"trim": False})), ""

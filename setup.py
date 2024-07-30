@@ -9,6 +9,7 @@ setup(
     author="Sergey Vartanov",
     author_email="me@enzet.ru",
     description="Simple extendable markup",
+    python_requires=">=3.8",
     entry_points={
         "console_scripts": ["moire=moire.main:main"],
     },

@@ -5,9 +5,9 @@ formats, such as HTML, TeX, etc.
 
 import logging
 import sys
-from argparse import ArgumentParser, BooleanOptionalAction, Namespace
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from moire.default import Default
 from moire.moire import Moire
@@ -16,8 +16,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-def main(arguments: list[str] = None, top_class=None):
-
+def main(arguments: List[str] = None, top_class=None):
     if not arguments:
         arguments = sys.argv[1:]
     if not top_class:
@@ -30,7 +29,7 @@ def main(arguments: list[str] = None, top_class=None):
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
     parser.add_argument("-o", "--output", help="output file")
     parser.add_argument("-f", "--format", help="output format", required=True)
-    parser.add_argument("--wrap", action=BooleanOptionalAction, default=True)
+    parser.add_argument("--wrap", action="store_true", default=True)
 
     options: Namespace = parser.parse_args(arguments)
 

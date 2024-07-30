@@ -69,7 +69,7 @@ Rendering:
 Installation
 ------------
 
-Requirements: Python 3.9.
+Requirements: Python 3.8.
 
 ```bash
 pip install .

@@ -9,7 +9,7 @@ import sys
 from dataclasses import dataclass
 from io import StringIO
 
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -103,8 +103,8 @@ class Tree:
 
 @dataclass
 class Argument:
-    array: list
-    spec: dict[str, Any]
+    array: List
+    spec: Dict[str, Any]
 
     def __getitem__(self, key: int):
         return self.array[key]
@@ -152,13 +152,13 @@ def is_letter_or_digit(char: str) -> bool:
     return "a" <= char <= "z" or "A" <= char <= "Z" or "0" <= char <= "9"
 
 
-def lexer(text) -> (list[Lexeme], list[int]):
+def lexer(text) -> (List[Lexeme], List[int]):
     """Parse formatted preprocessed text to a list of lexemes."""
     in_tag: bool = False  # Lexer position in tag name
     # Lexer position in space between tag name and first "{"
     in_space: bool = True
-    lexemes: list[Lexeme] = []
-    positions: list[int] = []
+    lexemes: List[Lexeme] = []
+    positions: List[int] = []
     tag_name: str = ""
     word: str = ""
 
@@ -270,12 +270,12 @@ def get_intermediate(lexemes, positions, level, index=0):
 
 class Moire:
     name: str = "Empty format"
-    block_tags: list[str] = []
-    escape_symbols: dict[str, str] = {}
+    block_tags: List[str] = []
+    escape_symbols: Dict[str, str] = {}
 
     def __init__(self, file_name: Optional[str] = None):
         self.index: int = 0
-        self.status: dict[str, Any] = {"missing_tags": set()}
+        self.status: Dict[str, Any] = {"missing_tags": set()}
         self.file_name: Optional[str] = file_name
 
     def init(self):
@@ -298,13 +298,13 @@ class Moire:
             text = text[:-1]
         return text
 
-    def get_ids(self, content: str) -> list[tuple[str, int]]:
+    def get_ids(self, content: str) -> List[Tuple[str, int]]:
         """Get all header identifiers.
 
         :param content: input content in the Moire format
         :return: list of tuples (id, level), level is 0 for labels
         """
-        ids: list[tuple[str, int]] = []
+        ids: List[Tuple[str, int]] = []
         intermediate_representation = self.get_ir(content)
         for element in intermediate_representation:
             if isinstance(element, Tag):
@@ -315,7 +315,7 @@ class Moire:
         return ids
 
     def convert(
-        self, input_data: str, wrap: bool = True, in_block: bool = True
+        self, input_data: str, wrap: bool = True, in_block: bool = False
     ) -> str:
         """Convert Moire text without includes but with comments artifacts to
         selected format.
@@ -361,7 +361,7 @@ class Moire:
         in_block: bool = False,
         depth: int = 0,
         mode: str = "",
-        spec: Optional[dict[str, Any]] = None,
+        spec: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Element parsing into formatted text.
 
