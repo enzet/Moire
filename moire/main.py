@@ -5,16 +5,24 @@ formats, such as HTML, TeX, etc.
 
 import logging
 import sys
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, BooleanOptionalAction, Namespace
+from pathlib import Path
+from typing import Optional
 
+from moire.default import Default
 from moire.moire import Moire
-import moire.default  # noqa: F401
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-def main():
+def main(arguments: list[str] = None, top_class=None):
+
+    if not arguments:
+        arguments = sys.argv[1:]
+    if not top_class:
+        top_class = Default
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     parser: ArgumentParser = ArgumentParser()
@@ -22,18 +30,27 @@ def main():
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
     parser.add_argument("-o", "--output", help="output file")
     parser.add_argument("-f", "--format", help="output format", required=True)
+    parser.add_argument("--wrap", action=BooleanOptionalAction, default=True)
 
-    options: Namespace = parser.parse_args(sys.argv[1:])
+    options: Namespace = parser.parse_args(arguments)
 
-    with open(options.input, "r") as input_file:
-        converter: Moire = getattr(
-            sys.modules["moire.default"], options.format
-        )()
+    converter: Optional[Moire] = None
+    for class_ in top_class.__subclasses__():
+        if class_.id_ == options.format:
+            converter = class_()
+
+    if not converter:
+        logging.fatal(
+            f"No converter class found for format `{options.format}`."
+        )
+        exit(1)
+
+    with Path(options.input).open() as input_file:
         converter.file_name = options.input
-        output: str = converter.convert(input_file.read())
+        output: str = converter.convert(input_file.read(), wrap=options.wrap)
 
     if not output:
-        logging.fatal("Fatal: output was no produced.")
+        logging.fatal("No output was produced.")
         sys.exit(1)
 
     if options.output:
@@ -45,4 +62,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:], Default)
