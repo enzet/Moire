@@ -53,7 +53,7 @@ def main(arguments: List[str] = None, top_class=None):
         sys.exit(1)
 
     if options.output:
-        with open(options.output, "w+") as output_file:
+        with open(options.output, "w") as output_file:
             output_file.write(output)
             logging.info(f"Converted to {options.output}.")
     else:
