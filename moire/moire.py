@@ -398,8 +398,10 @@ class Moire:
             else:
                 if mode == "":
                     self.status["missing_tags"].add(key)
-                    assert False, f"Unknown tag {mode}{key}" + (
-                        f" in {self.file_name}" if self.file_name else ""
+                    assert False, (
+                        f"Unknown tag `{mode}{key}`"
+                        + (f" in `{self.file_name}`" if self.file_name else "")
+                        + "."
                     )
                 else:
                     return ""
