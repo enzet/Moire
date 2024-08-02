@@ -362,13 +362,7 @@ class DefaultMarkdown(Default):
         )
 
     def header(self, arg: Arguments, number: int) -> str:
-        if number == 1:
-            parsed: str = self.parse(arg[0])
-            return parsed + "\n" + "=" * len(parsed)
-        if number == 2:
-            parsed: str = self.parse(arg[0])
-            return parsed + "\n" + "-" * len(parsed)
-        return f"{number * '#'} {self.parse(arg[0])} {number * '#'}"
+        return f"{number * '#'} {self.parse(arg[0])}"
 
     def list__(self, arg: Arguments) -> str:
         self.list_level += 1
