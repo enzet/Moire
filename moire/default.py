@@ -587,7 +587,7 @@ class DefaultTeX(Default):
                 if tds > max_tds:
                     max_tds = tds
         for k in range(max_tds):
-            s += "p{2cm}|"
+            s += "l|"
         s += "}\n\\hline\n"
         for tr in arg:
             if isinstance(tr, list):
