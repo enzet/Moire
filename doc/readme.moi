@@ -9,29 +9,37 @@ language.
 
 \4 {Headers} {headers}
 
-There are 6 possible header levels\: \m {\\1}, \m {\\2}, ..., \m {\\6} with syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.\: \m {\\2 \{Section 3\} \{section-3\}}.
+There are 6 possible header levels: \m {\\1}, \m {\\2}, ..., \m {\\6} with
+syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.:
+\m {\\2 \{Section 3\} \{section-3\}}.
 
 \4 {Formatting} {formatting}
 
 \table
-    {{} {Example Moire code} {Rendering}}
-    {{Italic} {\m {\\i \{text\}}} {\i {text}}}
-    {{Bold} {\m {\\b \{text\}}} {\b {text}}}
-    {{Monospaced} {\m {\\m \{text\}}} {\m {text}}}
+    {{}              {Example Moire code}     {Rendering}}
+    {{Italic}        {\m {\\i \{text\}}}      {\i {text}}}
+    {{Bold}          {\m {\\b \{text\}}}      {\b {text}}}
+    {{Monospaced}    {\m {\\m \{text\}}}      {\m {text}}}
     {{Strikethrough} {\m {\\strike \{text\}}} {\strike {text}}}
-    {{Subscript} {\m {\\sub \{text\}}} {\sub {text}}}
-    {{Superscript} {\m {\\super \{text\}}} {\super {text}}}
+    {{Subscript}     {\m {\\sub \{text\}}}    {\sub {text}}}
+    {{Superscript}   {\m {\\super \{text\}}}  {\super {text}}}
 
 \4 {Links} {links}
 
 \table
     {{Example Moire code} {Rendering}}
-    {{\m {\\ref \{http://example.com\} \{external link\}}} {\ref {http://example.com} {external link}}}
-    {{\m {\\ref \{#example-section\} \{internal link\}}} {\ref {#example-section} {internal link}}}
+    {
+        {\m {\\ref \{http://example.com\} \{external link\}}}
+        {\ref {http://example.com} {external link}}
+    }
+    {
+        {\m {\\ref \{#example-section\} \{internal link\}}}
+        {\ref {#example-section} {internal link}}
+    }
 
 \4 {Lists} {lists}
 
-Example Moire code\:
+Example Moire code:
 
 \i {italic \b {bold italic}}
 \b {italic \i {bold italic}}
@@ -42,7 +50,7 @@ Example Moire code\:
     \{item 2.\}
 }
 
-Rendering\:
+Rendering:
 
 \list
     {Item 1,}
@@ -50,7 +58,7 @@ Rendering\:
 
 \4 {Tables} {tables}
 
-Example Moire code\:
+Example Moire code:
 
 \code {moire} {
 \\table
@@ -59,7 +67,7 @@ Example Moire code\:
     \{\{Cell 2, 1\} \{Cell 2, 2\}\}
 }
 
-Rendering\:
+Rendering:
 
 \table
     {{Header 1} {Header 2}}
@@ -74,11 +82,13 @@ Requirements: Python 3.8.
 
 \2 {Conversion Moire code into other formats} {conversion-moire-code-into-other-formats}
 
-Convert Moire file to other formats\:
+Convert Moire file to other formats:
 
-\code {bash} {moire -i <Moire input file> -f <format> -o <output file> <other options>}
+\code {bash} {
+moire -i <Moire input file> -f <format> -o <output file> <other options>
+}
 
-E.g., this file is generated from Moire code using this command\:
+E.g., this file is generated from Moire code using this command:
 
 \code {bash} {moire -i doc/readme.moi -o README.md -f DefaultMarkdown}
 

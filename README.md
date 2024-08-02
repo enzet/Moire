@@ -1,40 +1,38 @@
-Moire
-=====
+# Moire
 
 Moire (pronounced as /mwɑɹ/) is a simple extendable multipurpose markup language.
 
-Writing on Moire
-----------------
+## Writing on Moire
 
-### Default formatter ###
+### Default formatter
 
-#### Headers ####
+#### Headers
 
 There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header level> {<header name>} {<header label>}`. E.g.: `\2 {Section 3} {section-3}`.
 
-#### Formatting ####
+#### Formatting
 
-Italic (`\i`), bold (`\b`), underlined (`\u`), monospaced (`\m`), strikethrough (`\strike`), subscript (`\sub`), superscript (`\super`).
+|  | Example Moire code | Rendering |
+|---|---|---|
+| Italic | `\i {text}` | *text* |
+| Bold | `\b {text}` | **text** |
+| Monospaced | `\m {text}` | `text` |
+| Strikethrough | `\strike {text}` | ~~text~~ |
+| Subscript | `\sub {text}` | <sub>text</sub> |
+| Superscript | `\super {text}` | <sup>text</sup> |
 
-| Example Moire code | Rendering |
-|---|---|
-| `\i {text}` | *text* |
-| `\b {text}` | **text** |
-| `\m {text}` | `text` |
-| `\strike {text}` | ~~text~~ |
-| `\sub {text}` | <sub>text</sub> |
-| `\super {text}` | <sup>text</sup> |
-
-#### Links ####
+#### Links
 
 | Example Moire code | Rendering |
 |---|---|
 | `\ref {http://example.com} {external link}` | [external link](http://example.com) |
 | `\ref {#example-section} {internal link}` | [internal link](#example-section) |
 
-#### Lists ####
+#### Lists
 
 Example Moire code:
+
+*italic **bold italic*** **italic *bold italic***
 
 ```moire
 \list
@@ -48,7 +46,7 @@ Rendering:
   * Item 1,
   * item 2.
 
-#### Tables ####
+#### Tables
 
 Example Moire code:
 
@@ -66,8 +64,7 @@ Rendering:
 | Cell 1, 1 | Cell 1, 2 |
 | Cell 2, 1 | Cell 2, 2 |
 
-Installation
-------------
+## Installation
 
 Requirements: Python 3.8.
 
@@ -75,13 +72,12 @@ Requirements: Python 3.8.
 pip install .
 ```
 
-Conversion Moire code into other formats
-----------------------------------------
+## Conversion Moire code into other formats
 
 Convert Moire file to other formats:
 
 ```bash
-moire -i <Moire input file> -f <format> -o <output file> <other options>
+    moire -i <Moire input file> -f <format> -o <output file> <other options>
 ```
 
 E.g., this file is generated from Moire code using this command:
@@ -90,6 +86,5 @@ E.g., this file is generated from Moire code using this command:
 moire -i doc/readme.moi -o README.md -f DefaultMarkdown
 ```
 
-Example section
----------------
+## Example section
 
