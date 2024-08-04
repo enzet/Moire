@@ -27,9 +27,7 @@ class TagNotImplementedError(NotImplementedError):
 
 
 class Default(Moire):
-    """
-    Default tag declaration.
-    """
+    """Default tag declaration."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -39,12 +37,9 @@ class Default(Moire):
         return ""
 
     def header(self, arg: Arguments, level: int) -> str:
-        """
-        Header.
+        """Header.
 
-        Arguments:
-            (required) header text
-            (optional) header identifier
+        Arguments: <header text> <header identifier>?
         """
         raise TagNotImplementedError("header")
 
@@ -82,12 +77,12 @@ class Default(Moire):
         )
 
     def code(self, arg: Arguments) -> str:
-        """
-        Code block.
+        """Code block.
 
-        Arguments:
-            (required) code
-            (optional) language specification (i.e. `java`)
+        Arguments: <language identifier>? <code>
+
+        Examples of language identifiers: `cpp` for C++, `python` for Python,
+        `js` or `javascript` for JavaScript.
         """
         raise TagNotImplementedError("code")
 
@@ -96,18 +91,19 @@ class Default(Moire):
         raise TagNotImplementedError("list")
 
     def ref(self, arg: Arguments) -> str:
-        """
-        Hypertext reference.
+        """Hypertext reference.
 
-        Arguments:
-            (required) reference
-            (optional) text
+        Arguments: <reference> <text>?
+
+        If reference starts with `#`, Moire will try to create a reference to
+        the declared header or label with this identifier. E.g. if we have a
+        header `\\3 {Header} {test}` or label `\\label {test}`, valid references
+        for both of them will be `\\ref {#test} {reference text}`.
         """
         raise TagNotImplementedError("ref")
 
     def nospell(self, arg: Arguments) -> str:
-        """
-        Text that shouldn't be checked for spelling.
+        """Text that shouldn't be checked for spelling.
 
         This method will do nothing and just resume the process of parsing its
         content, it is an indication to the Moire code viewer or editor not to
@@ -116,6 +112,7 @@ class Default(Moire):
         return self.parse(arg[0])
 
     def ignore(self, arg: Arguments) -> str:
+        """Return only the first argument of a tag."""
         return arg[0][0]
 
     @staticmethod
@@ -124,9 +121,7 @@ class Default(Moire):
 
 
 class DefaultHTML(Default):
-    """
-    Default HTML format.
-    """
+    """Default HTML format."""
 
     name: str = "HTML"
     id_: str = "html"
