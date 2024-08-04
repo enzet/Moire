@@ -407,7 +407,10 @@ class DefaultMarkdown(Default):
         return "*" + self.parse(arg[0]) + "*"
 
     def image(self, arg: Arguments) -> str:
-        return f"![{self.parse(arg[1])}]({self.parse(arg[0])})"
+        if len(arg) > 1:
+            return f"![{self.parse(arg[1])}]({self.parse(arg[0])})"
+        else:
+            return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
 
     def formal(self, arg: Arguments) -> str:
         return f"<{self.parse(arg[0])}>"
