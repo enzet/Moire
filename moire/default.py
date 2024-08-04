@@ -559,12 +559,8 @@ class DefaultTeX(Default):
         return s
 
     def title(self, arg: Arguments) -> str:
-        s = f"\\title{{{self.parse(arg[0])}}}"
-        s += (
-            "\\vspace{12em}\\begin{center}{\\huge "
-            + self.parse(arg[0])
-            + "}\\end{center}\\vspace{2em}"
-        )
+        s = f"\\title{{{self.parse(arg[0])}}}\n"
+        s += "\\maketitle"
         return s
 
     def author(self, arg: Arguments) -> str:
