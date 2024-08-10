@@ -7,8 +7,8 @@
 grammar Moire;
 
 document : markup ;
-markup : ( DELIMITER | tag | TEXT | WHITESPACE | escapedCharacter )+ ;
-tag : TAG_NAME ( WHITESPACE argument )* ;
+markup : | ( DELIMITER | tag | TEXT | WHITESPACE | escapedCharacter )+ ;
+tag : TAG_NAME ( TEXT argument )* ;
 argument : CURLY_OPEN argumentElement ( SEMICOLON argumentElement )* CURLY_CLOSE ;
 argumentElement : markup | KEY markup ;
 escapedCharacter : BACKSLASH (BACKSLASH | CURLY_OPEN | CURLY_CLOSE | COLON | SEMICOLON ) ;
@@ -23,4 +23,4 @@ fragment IDENTIFIER : [A-Za-z0-9_]+ ;
 TAG_NAME : BACKSLASH IDENTIFIER ;
 KEY : IDENTIFIER COLON ;
 WHITESPACE : [ \t\n\r]+ ;
-TEXT : [A-Za-z. \t\r0-9]+ ;
+TEXT : ~[\n\r{}\\:;]+ ;
