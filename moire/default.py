@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import sys
 from argparse import ArgumentParser, Namespace
 from textwrap import dedent
-from typing import Any
+from typing import Any, override
 
 from moire.moire import Moire
 
@@ -70,14 +70,15 @@ class Default(Moire, ABC):
         """Monospaced text."""
         raise TagNotImplementedError("m")
 
-    @abstractmethod
     def formal(self, arg: Arguments) -> str:
         """Formal argument inside code.
 
         E.g. in text "Run command `ssh <username>@<host>`", the `<username>`
         and `<host>` are formal arguments.
+
+        By default, the formal argument is wrapped in with `<` and `>`.
         """
-        raise TagNotImplementedError("formal")
+        return f"<{self.parse(arg[0])}>"
 
     def _parse_code_arguments(self, arg: Arguments) -> tuple[str, str]:
         """Parse trimmed code and possible language identifier."""
@@ -132,6 +133,7 @@ class Default(Moire, ABC):
 
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
+        """Get reference to a link."""
         raise NotImplementedError
 
 
@@ -175,17 +177,21 @@ class DefaultHTML(Default):
         )
         return s
 
+    @override
     def code(self, arg: Arguments) -> str:
         code_, _ = self._parse_code_arguments(arg)
         return f"<pre><tt>{code_}</tt></pre>"
 
+    @override
     def title(self, arg: Arguments) -> str:
         return f"<title>{self.parse(arg[0])}</title>"
 
+    @override
     def header(self, arg: Arguments, number: int) -> str:
         id_: str = "" if len(arg) <= 1 else f' id="{self.clear(arg[1])}"'
         return f"<h{number}{id_}>{self.parse(arg[0])}</h{number}>"
 
+    @override
     def list__(self, arg: Arguments) -> str:
         items: str = "".join(f"<li>{self.parse(x)}</li>" for x in arg)
         return f"<ul>{items}</ul>"
@@ -212,6 +218,7 @@ class DefaultHTML(Default):
 
     # Inner tags.
 
+    @override
     def b(self, arg: Arguments) -> str:
         return f"<b>{self.parse(arg[0])}</b>"
 
@@ -223,18 +230,21 @@ class DefaultHTML(Default):
     def _get_ref(link: str, text: str) -> str:
         return f'<a href="{link}">{text}</a>'
 
+    @override
     def ref(self, arg: Arguments) -> str:
         link: str = self.parse(arg[0])
         return self._get_ref(
             link, link if len(arg) == 1 else self.parse(arg[1])
         )
 
+    @override
     def i(self, arg: Arguments) -> str:
         return f"<i>{self.parse(arg[0])}</i>"
 
     def size(self, arg: Arguments) -> str:
         return f'<span style="font-size: {arg[0]}">{self.parse(arg[1])}</span>'
 
+    @override
     def strike(self, arg: Arguments) -> str:
         return f"<s>{self.parse(arg[0])}</s>"
 
@@ -264,14 +274,12 @@ class DefaultHTML(Default):
 
 
 class DefaultText(Default):
-    """
-    Plain text.
-    """
+    """Plain text."""
 
-    name = "Text"
+    name: str = "Text"
     id_: str = "text"
-    extension = "txt"
-    escape_symbols = {}
+    extension: str = "txt"
+    escape_symbols: dict[str, str] = {}
 
     def body(self, arg: Arguments) -> str:
         return self.parse(arg[0], in_block=True, depth=1) + "\n"
@@ -322,7 +330,8 @@ class DefaultText(Default):
     def b(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
-    def _get_ref(self, link: str, text: str) -> str:
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
         return f"{text} + ({link})"
 
     def ref(self, arg: Arguments) -> str:
@@ -429,9 +438,6 @@ class DefaultMarkdown(Default):
         else:
             return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
 
-    def formal(self, arg: Arguments) -> str:
-        return f"<{self.parse(arg[0])}>"
-
     def m(self, arg: Arguments) -> str:
         return f"`{self.parse(arg[0])}`"
 
@@ -523,9 +529,6 @@ class DefaultWiki(Default):
             + self.parse(arg[1])
             + "]]"
         )
-
-    def formal(self, arg: Arguments) -> str:
-        return f"<{self.parse(arg[0])}>"
 
     def m(self, arg: Arguments) -> str:
         return "<code>" + str(self.parse(arg[0])) + "</code>"
@@ -666,7 +669,7 @@ class DefaultTeX(Default):
         return f"\\begin{{verbatim}}{code_}\\end{{verbatim}}"
 
     def date(self, arg: Arguments) -> str:
-        pass
+        return ""
 
     def ref(self, arg: Arguments) -> str:
         s = ""
