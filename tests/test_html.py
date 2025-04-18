@@ -22,18 +22,22 @@ def test_html_text():
 
 
 def test_html_text_with_2_spaces():
+    """Test double space in plain text."""
     check("plain  text", "plain text", "Double space in plain text")
 
 
 def test_html_spaces_around_text():
+    """Test spaces around plain text."""
     check("  plain  text  ", " plain text ", "Spaces around plain text")
 
 
 def test_html_tag() -> None:
+    """Test simple tag."""
     check("\\b{bold}", "<b>bold</b>", "Simple tag")
 
 
 def test_html_tag_with_space() -> None:
+    """Test simple tag with space."""
     check("\\b {bold}", "<b>bold</b>", "Simple tag with space")
 
 

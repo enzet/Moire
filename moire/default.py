@@ -182,6 +182,8 @@ class DefaultHTML(Default):
     def table(self, arg: Arguments) -> str:
         content: str = ""
         for tr in arg:
+        """Simple table."""
+
             cell: str = "".join(
                 ["<td>" + self.parse(td, in_block=True) + "</td>" for td in tr]
             )

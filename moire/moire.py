@@ -1,5 +1,5 @@
 """
-Moire library.
+Moire, a simple extensible markup language.
 
 See http://github.com/enzet/Moire
 """
@@ -154,7 +154,9 @@ def is_letter_or_digit(char: str) -> bool:
 
 def lexer(text) -> (List[Lexeme], List[int]):
     """Parse formatted preprocessed text to a list of lexemes."""
+
     in_tag: bool = False  # Lexer position in tag name
+
     # Lexer position in space between tag name and first "{"
     in_space: bool = True
     lexemes: List[Lexeme] = []
@@ -222,6 +224,7 @@ def lexer(text) -> (List[Lexeme], List[int]):
 
 def get_intermediate(lexemes, positions, level, index=0):
     """Get intermediate representation."""
+
     tag: Optional[Tag] = None
     result = []
     while index < len(lexemes):
@@ -448,8 +451,14 @@ class Moire:
 
     def get_ir(self, text: str, offset: int = 0, prefix: str = ""):
         """Get intermediate representation."""
+
+        # Remove comments.
         text = preprocess_comments(text)
+
+        # Parse text into lexemes.
         lexemes, positions = lexer(text)
+
+        # Get intermediate representation.
         index, raw_ir = get_intermediate(lexemes, positions, 0)
 
         resulted_ir = []
