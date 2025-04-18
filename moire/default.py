@@ -1,19 +1,20 @@
+from abc import ABC, abstractmethod
 import sys
 from argparse import ArgumentParser, Namespace
 from textwrap import dedent
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any
 
 from moire.moire import Moire
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
-depth = 0
-status = {}
-BLOCK_TAGS: Set[str] = {
+depth: int = 0
+status: dict[str, Any] = {}
+BLOCK_TAGS: set[str] = {
     "block", "body", "code", "title", "number", "list", "image", "table"
 }  # fmt: skip
-Arguments = List[Any]
+Arguments = list[Any]
 
 
 class TagNotImplementedError(NotImplementedError):
@@ -26,7 +27,7 @@ class TagNotImplementedError(NotImplementedError):
         return f"Tag \\{self.tag} is not implemented in the parser"
 
 
-class Default(Moire):
+class Default(Moire, ABC):
     """Default tag declaration."""
 
     def __init__(self) -> None:
@@ -36,6 +37,7 @@ class Default(Moire):
         """Document title."""
         return ""
 
+    @abstractmethod
     def header(self, arg: Arguments, level: int) -> str:
         """Header.
 
@@ -43,30 +45,41 @@ class Default(Moire):
         """
         raise TagNotImplementedError("header")
 
+    @abstractmethod
     def i(self, arg: Arguments) -> str:
         """Italic text."""
         raise TagNotImplementedError("i")
 
+    @abstractmethod
     def b(self, arg: Arguments) -> str:
         """Bold text."""
         raise TagNotImplementedError("b")
 
+    @abstractmethod
     def u(self, arg: Arguments) -> str:
         """Underlined text."""
         raise TagNotImplementedError("u")
 
+    @abstractmethod
     def strike(self, arg: Arguments) -> str:
         """Strikethrough text."""
         raise TagNotImplementedError("strike")
 
+    @abstractmethod
     def m(self, arg: Arguments) -> str:
         """Monospaced text."""
         raise TagNotImplementedError("m")
 
+    @abstractmethod
     def formal(self, arg: Arguments) -> str:
+        """Formal argument inside code.
+
+        E.g. in text "Run command `ssh <username>@<host>`", the `<username>`
+        and `<host>` are formal arguments.
+        """
         raise TagNotImplementedError("formal")
 
-    def _parse_code_arguments(self, arg: Arguments) -> Tuple[str, str]:
+    def _parse_code_arguments(self, arg: Arguments) -> tuple[str, str]:
         """Parse trimmed code and possible language identifier."""
         if len(arg) == 1:
             return self.trim(self.parse(arg[0], spec={"trim": False})), ""
@@ -76,6 +89,7 @@ class Default(Moire):
             self.clear(arg[0]),
         )
 
+    @abstractmethod
     def code(self, arg: Arguments) -> str:
         """Code block.
 
@@ -90,6 +104,7 @@ class Default(Moire):
         """List of items."""
         raise TagNotImplementedError("list")
 
+    @abstractmethod
     def ref(self, arg: Arguments) -> str:
         """Hypertext reference.
 
@@ -125,8 +140,8 @@ class DefaultHTML(Default):
 
     name: str = "HTML"
     id_: str = "html"
-    extensions: List[str] = ["html", "htm"]
-    escape_symbols: Dict[str, str] = {"<": "&lt;", ">": "&gt;"}
+    extensions: list[str] = ["html", "htm"]
+    escape_symbols: dict[str, str] = {"<": "&lt;", ">": "&gt;"}
     block_tags = BLOCK_TAGS
 
     def __init__(self) -> None:
@@ -282,7 +297,7 @@ class DefaultText(Default):
         return s
 
     def table(self, arg: Arguments) -> str:
-        widths: List[int] = []
+        widths: list[int] = []
         for tr in arg:
             parsed = [self.parse(td) for td in tr]
             for index, cell in enumerate(parsed):
@@ -536,7 +551,7 @@ class DefaultTeX(Default):
         "_": "\\_",
     }
     block_tags = BLOCK_TAGS
-    headers: List[str] = [
+    headers: list[str] = [
         "section", "subsection", "subsubsection", "paragraph", "subparagraph"
     ]  # fmt: skip
 
