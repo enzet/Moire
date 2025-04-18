@@ -561,9 +561,6 @@ class DefaultTeX(Default):
     def author(self, arg: Arguments) -> str:
         return f"\\author{{{self.parse(arg[0])}}}"
 
-    def abstract(self, arg: Arguments) -> str:
-        return f"\\abstract{{\n{self.parse(arg[0])}\n}}\n\n"
-
     def header(self, arg: Arguments, number: int) -> str:
         if number < 6:
             return f"\\{self.headers[number - 1]}{{{self.parse(arg[0])}}}"
@@ -611,11 +608,11 @@ class DefaultTeX(Default):
         s += "\\end{ordered}\n"
         return s
 
-    def annotation(self, arg: Arguments) -> str:
+    def abstract(self, arg: Arguments) -> str:
         return (
-            "\\begin {abstract}\n\n"
+            "\\begin{abstract}\n\n"
             + self.parse(arg[0], in_block=True)
-            + "\\end {abstract}\n\n"
+            + "\\end{abstract}\n\n"
         )
 
     def books(self, arg: Arguments) -> str:
