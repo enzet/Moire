@@ -180,15 +180,20 @@ class DefaultHTML(Default):
         return f'<img src="{self.clear(arg[0])}"{title} />'
 
     def table(self, arg: Arguments) -> str:
-        content: str = ""
-        for tr in arg:
         """Simple table."""
 
+        result: str = ""
+
+        for table_row in arg:
             cell: str = "".join(
-                ["<td>" + self.parse(td, in_block=True) + "</td>" for td in tr]
+                [
+                    f"<td>{self.parse(table_cell, in_block=True)}</td>"
+                    for table_cell in table_row
+                ]
             )
-            content += f"<tr>{cell}</tr>"
-        return f"<table>{content}</table>"
+            result += f"<tr>{cell}</tr>"
+
+        return f"<table>{result}</table>"
 
     # Inner tags.
 
