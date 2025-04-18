@@ -1,6 +1,6 @@
-from moire.moire import Moire, Tag, serialize
 from typing import Any
 
+from moire.moire import Moire, Tag, serialize
 
 converter: Moire = Moire()
 

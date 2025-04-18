@@ -1,7 +1,7 @@
 import sys
 from argparse import ArgumentParser, Namespace
-from typing import Any, Dict, List, Set, Tuple
 from textwrap import dedent
+from typing import Any, Dict, List, Set, Tuple
 
 from moire.moire import Moire
 

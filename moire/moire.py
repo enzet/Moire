@@ -4,9 +4,9 @@ Moire, a simple extensible markup language.
 See http://github.com/enzet/Moire
 """
 
-from collections.abc import Callable
 import logging
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from io import StringIO
 from typing import Any, Optional
@@ -410,7 +410,7 @@ class Moire:
                     return ""
         elif isinstance(text, list):
             builder = StringIO()
-            inner_block = []
+            inner_block: list[Any] = []
             for item in text:
                 if in_block:
                     if isinstance(item, Tag) and item.id in self.block_tags:
@@ -475,7 +475,7 @@ class Moire:
 
         return resulted_ir
 
-    def process_inner_block(self, inner_block):
+    def process_inner_block(self, inner_block: list[Any]) -> str:
         """Wrap parts of inner block element with text tag."""
         if len(inner_block) == 1 and inner_block[0] == "":
             return ""
@@ -507,10 +507,12 @@ class Moire:
         return s
 
 
-def serialize(object_) -> str:
+def serialize(object_: Any) -> str:
     """Serialize Moire elements into a text form."""
+
     if isinstance(object_, str):
         return object_
+
     if isinstance(object_, list):
         if object_:
             if isinstance(object_[0], list):
@@ -519,5 +521,8 @@ def serialize(object_) -> str:
                 return "".join(serialize(x) for x in object_)
         else:
             return ""
+
     if isinstance(object_, Tag):
         return object_.serialize()
+
+    raise ValueError(f"Unknown object type: {type(object_)}.")
