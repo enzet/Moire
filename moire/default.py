@@ -1,7 +1,7 @@
 """Default tag definitions."""
 
-from abc import ABC, abstractmethod
 import sys
+from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
 from textwrap import dedent
 from typing import Any, override
@@ -584,9 +584,7 @@ class DefaultTeX(Default):
     id_: str = "tex"
     extension = "tex"
 
-    escape_symbols = {
-        "_": "\\_",
-    }
+    escape_symbols = {"_": "\\_"}
     block_tags = BLOCK_TAGS
     headers: list[str] = [
         "section", "subsection", "subsubsection", "paragraph", "subparagraph"

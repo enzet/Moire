@@ -1,6 +1,7 @@
 """Tests for Moire markup parsing."""
 
 import pytest
+
 from moire.default import DefaultHTML
 
 __author__ = "Sergey Vartanov"
@@ -163,9 +164,7 @@ def test_html_2_tags_and_space() -> None:
 def test_html_nested_tags() -> None:
     """Test tag inside tag."""
     check(
-        "\\b{\\i{bold italic}}",
-        "<b><i>bold italic</i></b>",
-        "Tag inside tag",
+        "\\b{\\i{bold italic}}", "<b><i>bold italic</i></b>", "Tag inside tag"
     )
 
 
