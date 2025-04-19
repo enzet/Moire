@@ -1,3 +1,5 @@
+"""Default tag definitions."""
+
 from abc import ABC, abstractmethod
 import sys
 from argparse import ArgumentParser, Namespace
@@ -36,6 +38,11 @@ class Default(Moire, ABC):
     def title(self, arg: Arguments) -> str:
         """Document title."""
         return ""
+
+    @abstractmethod
+    def body(self, arg: Arguments) -> str:
+        """Body of the document."""
+        raise TagNotImplementedError("body")
 
     @abstractmethod
     def header(self, arg: Arguments, level: int) -> str:
@@ -153,9 +160,12 @@ class DefaultHTML(Default):
         return super().escape(text.replace("&", "&amp;"))
 
     def block(self, arg: Arguments) -> str:
+        """Block element."""
         return self.parse(arg[0], in_block=True)
 
     def body(self, arg: Arguments) -> str:
+        """Body of the document."""
+
         status["content"] = []
         s: str = dedent(
             """
@@ -187,9 +197,9 @@ class DefaultHTML(Default):
         return f"<title>{self.parse(arg[0])}</title>"
 
     @override
-    def header(self, arg: Arguments, number: int) -> str:
+    def header(self, arg: Arguments, level: int) -> str:
         id_: str = "" if len(arg) <= 1 else f' id="{self.clear(arg[1])}"'
-        return f"<h{number}{id_}>{self.parse(arg[0])}</h{number}>"
+        return f"<h{level}{id_}>{self.parse(arg[0])}</h{level}>"
 
     @override
     def list__(self, arg: Arguments) -> str:
@@ -224,6 +234,7 @@ class DefaultHTML(Default):
 
     @staticmethod
     def br(_: Arguments) -> str:
+        """Line break."""
         return "<br />"
 
     @staticmethod
@@ -242,6 +253,7 @@ class DefaultHTML(Default):
         return f"<i>{self.parse(arg[0])}</i>"
 
     def size(self, arg: Arguments) -> str:
+        """Font size."""
         return f'<span style="font-size: {arg[0]}">{self.parse(arg[1])}</span>'
 
     @override
@@ -249,27 +261,34 @@ class DefaultHTML(Default):
         return f"<s>{self.parse(arg[0])}</s>"
 
     def sc(self, arg: Arguments) -> str:
+        """Small capital letters."""
         return (
             f'<span style="font-variant: small-caps;">{self.parse(arg[0])}'
             f"</span>"
         )
 
     def sub(self, arg: Arguments) -> str:
+        """Subscript."""
         return f"<sub>{self.parse(arg[0])}</sub>"
 
     def super(self, arg: Arguments) -> str:
+        """Superscript."""
         return f"<sup>{self.parse(arg[0])}</sup>"
 
     def text(self, arg: Arguments) -> str:
+        """Paragraph."""
         return f"<p>{self.parse(arg[0])}</p>"
 
+    @override
     def m(self, arg: Arguments) -> str:
         return f"<code>{self.parse(arg[0])}</code>"
 
+    @override
     def u(self, arg: Arguments) -> str:
         return f"<u>{self.parse(arg[0])}</u>"
 
     def quote(self, arg: Arguments) -> str:
+        """Block quote."""
         return f"<blockquote>{self.parse(arg[0])}</blockquote>"
 
 
@@ -281,19 +300,24 @@ class DefaultText(Default):
     extension: str = "txt"
     escape_symbols: dict[str, str] = {}
 
+    @override
     def body(self, arg: Arguments) -> str:
         return self.parse(arg[0], in_block=True, depth=1) + "\n"
 
+    @override
     def title(self, arg: Arguments) -> str:
         return self.parse(arg[0])
 
+    @override
     def code(self, arg: Arguments) -> str:
         code_, _ = self._parse_code_arguments(arg)
         return code_ + "\n"
 
-    def header(self, arg: Arguments, number: int) -> str:
-        return "  " * (number - 1) + self.parse(arg[0], depth=depth + 1)
+    @override
+    def header(self, arg: Arguments, level: int) -> str:
+        return "  " * (level - 1) + self.parse(arg[0], depth=depth + 1)
 
+    @override
     def image(self, arg: Arguments) -> str:
         return f"[{self.parse(arg[1]) if len(arg) > 1 else ''}]"
 
@@ -334,33 +358,43 @@ class DefaultText(Default):
     def _get_ref(link: str, text: str) -> str:
         return f"{text} + ({link})"
 
+    @override
     def ref(self, arg: Arguments) -> str:
         return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
+    @override
     def i(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def size(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def strike(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def sc(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def sub(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def super(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1) + "\n\n"
 
+    @override
     def m(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
+    @override
     def u(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
