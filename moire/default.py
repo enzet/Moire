@@ -77,6 +77,17 @@ class Default(Moire, ABC):
         """Monospaced text."""
         raise TagNotImplementedError("m")
 
+    @abstractmethod
+    def table(self, arg: Arguments) -> str:
+        """Simple table with rows and columns.
+
+        Format: \\table {{<cell>} {<cell>} ...} {{<cell>} {<cell>} ...} ...
+
+        This simple table does not support header, border style, text alignment,
+        or cell merging.
+        """
+        raise TagNotImplementedError("table")
+
     def formal(self, arg: Arguments) -> str:
         """Formal argument inside code.
 
@@ -210,19 +221,15 @@ class DefaultHTML(Default):
         title: str = f' alt="{self.parse(arg[1])}"' if len(arg) >= 2 else ""
         return f'<img src="{self.clear(arg[0])}"{title} />'
 
+    @override
     def table(self, arg: Arguments) -> str:
-        """Simple table."""
-
         result: str = ""
 
-        for table_row in arg:
-            cell: str = "".join(
-                [
-                    f"<td>{self.parse(table_cell, in_block=True)}</td>"
-                    for table_cell in table_row
-                ]
+        for row in arg:
+            cells: str = "".join(
+                [f"<td>{self.parse(cell, in_block=True)}</td>" for cell in row]
             )
-            result += f"<tr>{cell}</tr>"
+            result += f"<tr>{cells}</tr>"
 
         return f"<table>{result}</table>"
 
@@ -328,28 +335,31 @@ class DefaultText(Default):
                 s += "  * " + self.parse(item, in_block=True, depth=depth + 1)
         return s
 
+    @override
     def table(self, arg: Arguments) -> str:
         widths: list[int] = []
-        for tr in arg:
-            parsed = [self.parse(td) for td in tr]
+        for row in arg:
+            parsed: list[str] = [self.parse(cell) for cell in row]
             for index, cell in enumerate(parsed):
                 if len(widths) - 1 < index:
                     widths.append(len(cell))
                 else:
                     widths[index] = max(widths[index], len(cell))
 
-        ruler = "+" + "+".join(["-" * (x + 2) for x in widths]) + "+"
+        ruler: str = "+" + "+".join(["-" * (x + 2) for x in widths]) + "+"
 
-        s = ruler + "\n"
-        for tr in arg:
-            s += "|"
-            for index, td in enumerate(tr):
-                parsed = self.parse(td)
-                s += " " + parsed + " " * (widths[index] - len(parsed)) + " |"
-            s += "\n"
-        s += ruler + "\n"
+        result: str = ruler + "\n"
+        for row in arg:
+            result += "|"
+            for index, cell in enumerate(row):
+                parsed: str = self.parse(cell)
+                result += (
+                    " " + parsed + " " * (widths[index] - len(parsed)) + " |"
+                )
+            result += "\n"
+        result += ruler + "\n"
 
-        return s
+        return result
 
     def b(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
@@ -433,22 +443,23 @@ class DefaultMarkdown(Default):
         self.list_level -= 1
         return s
 
+    @override
     def table(self, arg: Arguments) -> str:
-        s = ""
-        for index, tr in enumerate(arg):
-            if isinstance(tr, list):
-                s += "|"
-                for td in tr:
-                    if isinstance(td, list):
-                        s += " " + self.parse(td) + " |"
-                s += "\n"
+        result: str = ""
+        for index, row in enumerate(arg):
+            if isinstance(row, list):
+                result += "|"
+                for cell in row:
+                    if isinstance(cell, list):
+                        result += " " + self.parse(cell) + " |"
+                result += "\n"
                 if index == 0:
-                    s += "|"
-                    for td in tr:
-                        if isinstance(td, list):
-                            s += "---|"
-                    s += "\n"
-        return s
+                    result += "|"
+                    for cell in row:
+                        if isinstance(cell, list):
+                            result += "---|"
+                    result += "\n"
+        return result
 
     def b(self, arg: Arguments) -> str:
         return "**" + self.parse(arg[0]) + "**"
@@ -522,16 +533,17 @@ class DefaultWiki(Default):
                 s += "* " + self.parse(item) + "\n"
         return s
 
+    @override
     def table(self, arg: Arguments) -> str:
-        s = (
+        result: str = (
             '{| class="wikitable" border="1" cellspacing="0" cellpadding="2"\n'
             "! Tag || Rendering\n"
         )
-        for index, tr in enumerate(arg):
-            s += "|-\n"
-            for td in tr:
-                s += "| " + self.parse(td) + "\n"
-        return s + "|}\n"
+        for row in arg:
+            result += "|-\n"
+            for cell in row:
+                result += "| " + self.parse(cell) + "\n"
+        return result + "|}\n"
 
     def b(self, arg: Arguments) -> str:
         return f"'''{self.parse(arg[0])}'''"
@@ -623,32 +635,35 @@ class DefaultTeX(Default):
             return f"\\{self.headers[number - 1]}{{{self.parse(arg[0])}}}"
         return self.parse(arg[0])
 
+    @override
     def table(self, arg: Arguments) -> str:
-        s = "\\begin{table}[h]\n\\begin{center}\n\\begin{tabular}{|"
-        max_tds = 0
+        result: str = "\\begin{table}[h]\n\\begin{center}\n\\begin{tabular}"
+
+        max_columns: int = 0
         for tr in arg:
             if isinstance(tr, list):
-                tds = 0
+                columns: int = 0
                 for td in tr:
                     if isinstance(td, list):
-                        tds += 1
-                if tds > max_tds:
-                    max_tds = tds
-        for k in range(max_tds):
-            s += "l|"
-        s += "}\n\\hline\n"
-        for tr in arg:
-            if isinstance(tr, list):
-                tds = []
-                for td in tr:
-                    if isinstance(td, list):
-                        tds.append(td)
-                for td in tds[:-1]:
-                    s += self.parse(td) + " & "
-                s += self.parse(tds[-1])
-                s += " \\\\\n\\hline\n"
-        s += "\\end{tabular}\n\\end{center}\n\\end{table}\n"
-        return s
+                        columns += 1
+                max_columns = max(max_columns, columns)
+
+        result += "{|" + ("l|" * max_columns) + "}\n\\hline\n"
+
+        for row in arg:
+            if isinstance(row, list):
+                columns: list[list[Any]] = []
+                for column in row:
+                    if isinstance(column, list):
+                        columns.append(column)
+                for column in columns[:-1]:
+                    result += self.parse(column) + " & "
+                result += self.parse(columns[-1])
+                result += " \\\\\n\\hline\n"
+
+        result += "\\end{tabular}\n\\end{center}\n\\end{table}\n"
+
+        return result
 
     def list__(self, arg: Arguments) -> str:
         s = "\\begin{itemize}\n"
