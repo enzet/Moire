@@ -1,6 +1,4 @@
-"""
-Tests for Markdown.
-"""
+"""Tests for Markdown."""
 
 from textwrap import dedent
 
@@ -13,15 +11,22 @@ __email__ = "me@enzet.ru"
 converter: DefaultMarkdown = DefaultMarkdown()
 
 
-def check(code: str, result: str):
+def check(code: str, result: str) -> None:
+    """Check the result of the conversion.
+
+    :param code: Moire code
+    :param result: expected result
+    """
     assert converter.convert(code, wrap=False) == result
 
 
-def test_markdown() -> None:
+def test_markdown_monospace() -> None:
+    """Test monospace text."""
     check("\\m {text}", "`text`")
 
 
 def test_markdown_list() -> None:
+    """Test list."""
     check(
         "List: \\list {item 1,} {item 2.}",
         dedent(
