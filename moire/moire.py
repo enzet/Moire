@@ -399,12 +399,13 @@ class Moire:
 
         if not text:
             return ""
-        elif isinstance(text, str):
+
+        if isinstance(text, str):
             if "trim" in spec and not spec["trim"]:
                 return self.escape(text)
-            else:
-                return self.escape(trim_inside(text))
-        elif isinstance(text, Tag):
+            return self.escape(trim_inside(text))
+
+        if isinstance(text, Tag):
             key: str = "header" if (text.id in "123456") else text.id
             method: Optional[Callable] = None
             try:
@@ -416,23 +417,23 @@ class Moire:
                     method = getattr(self, mode + key + "__")
                 except AttributeError:
                     pass
+
             if method is not None:
                 arg = Argument(text.parameters, spec)
                 if key == "header":
                     return method(arg, int(text.id))
-                else:
-                    return method(arg)
-            else:
-                if mode == "":
-                    self.status["missing_tags"].add(key)
-                    assert False, (
-                        f"Unknown tag `{mode}{key}`"
-                        + (f" in `{self.file_name}`" if self.file_name else "")
-                        + "."
-                    )
-                else:
-                    return ""
-        elif isinstance(text, list):
+                return method(arg)
+
+            if mode == "":
+                self.status["missing_tags"].add(key)
+                raise ValueError(
+                    f"Unknown tag `{mode}{key}`"
+                    + (f" in `{self.file_name}`" if self.file_name else "")
+                    + "."
+                )
+            return ""
+
+        if isinstance(text, list):
             builder = StringIO()
             inner_block: list[Any] = []
             for item in text:
@@ -465,10 +466,12 @@ class Moire:
             if inner_block:
                 builder.write(self.process_inner_block(inner_block))
             return builder.getvalue()
-        else:
-            assert False, f"Part is of type {type(text)}"
+
+        raise ValueError(f"Part is of type {type(text)}")
 
     def clear(self, text) -> str:
+        """Get flattened element content."""
+
         if isinstance(text, list):
             return self.escape("".join([x for x in text if isinstance(x, str)]))
         return self.escape(text)
@@ -483,9 +486,9 @@ class Moire:
         lexemes, positions = lexer(text)
 
         # Get intermediate representation.
-        index, raw_ir = get_intermediate(lexemes, positions, 0)
+        _, raw_ir = get_intermediate(lexemes, positions, 0)
 
-        resulted_ir = []
+        resulted_ir: list[Any] = []
 
         for item in raw_ir:
             if isinstance(item, Tag):
@@ -501,14 +504,17 @@ class Moire:
 
     def process_inner_block(self, inner_block: list[Any]) -> str:
         """Wrap parts of inner block element with text tag."""
+
         if len(inner_block) == 1 and inner_block[0] == "":
             return ""
-        paragraphs = []
-        paragraph = []
+
+        paragraphs: list[list[str]] = []
+        paragraph: list[str] = []
+
         for item in inner_block:
             if isinstance(item, str):
-                previous = 0
-                delimiter = item.find(Constant.PARAGRAPH_DELIMITER.value)
+                previous: int = 0
+                delimiter: int = item.find(Constant.PARAGRAPH_DELIMITER.value)
                 while delimiter != -1:
                     content = item[previous:delimiter]
                     if content != "" or previous == 0:
@@ -524,15 +530,17 @@ class Moire:
                 paragraph.append(item[previous:])
             else:
                 paragraph.append(item)
+
         paragraphs.append(paragraph)
-        s = ""
+
+        result: str = ""
         for paragraph in paragraphs:
             if isinstance(paragraph[0], str):
                 paragraph[0] = paragraph[0].lstrip()
             if isinstance(paragraph[-1], str):
                 paragraph[-1] = paragraph[-1].rstrip()
-            s += str(self.parse(Tag("text", [paragraph])))
-        return s
+            result += str(self.parse(Tag("text", [paragraph])))
+        return result
 
 
 def serialize(object_: Any) -> str:
@@ -545,10 +553,8 @@ def serialize(object_: Any) -> str:
         if object_:
             if isinstance(object_[0], list):
                 return " ".join("{" + serialize(x) + "}" for x in object_)
-            else:
-                return "".join(serialize(x) for x in object_)
-        else:
-            return ""
+            return "".join(serialize(x) for x in object_)
+        return ""
 
     if isinstance(object_, Tag):
         return object_.serialize()
