@@ -17,6 +17,8 @@ __email__ = "me@enzet.ru"
 
 
 def main(arguments: List[str] = None, top_class=None):
+    """Converter entry point."""
+
     if not arguments:
         arguments = sys.argv[1:]
     if not top_class:
@@ -40,11 +42,11 @@ def main(arguments: List[str] = None, top_class=None):
 
     if not converter:
         logging.fatal(
-            f"No converter class found for format `{options.format}`."
+            "No converter class found for format `%s`.", options.format
         )
-        exit(1)
+        sys.exit(1)
 
-    with Path(options.input).open() as input_file:
+    with Path(options.input).open(encoding="utf-8") as input_file:
         converter.file_name = options.input
         output: str = converter.convert(input_file.read(), wrap=options.wrap)
 
@@ -53,9 +55,9 @@ def main(arguments: List[str] = None, top_class=None):
         sys.exit(1)
 
     if options.output:
-        with open(options.output, "w") as output_file:
+        with open(options.output, "w", encoding="utf-8") as output_file:
             output_file.write(output)
-            logging.info(f"Converted to {options.output}.")
+            logging.info("Converted to %s.", options.output)
     else:
         sys.stdout.write(output)
 
