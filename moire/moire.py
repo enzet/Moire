@@ -1,5 +1,4 @@
-"""
-Moire, a simple extensible markup language.
+"""Moire, a simple extensible markup language.
 
 See http://github.com/enzet/Moire
 """
@@ -72,39 +71,41 @@ class Tag:
 
 @dataclass
 class Lexeme:
+    """Lexeme is a token of the input text."""
+
     type: str
+    """Lexeme type."""
+
     content: Optional[str] = None
+    """Content of the lexeme."""
 
 
+@dataclass
 class Tree:
-    def __init__(self, parent, children, element) -> None:
-        self.element = element
-        self.parent = parent
-        self.children = children
-        self.number = 0
+    """Double-linked tree of elements."""
 
-    def pr(self) -> None:
-        print(self.element)
-        for child in self.children:
-            child.pr()
+    parent: Optional["Tree"]
+    """Parent element."""
 
-    def find(self, text: str) -> Optional["Tree"]:
-        if (
-            len(self.element.parameters) > 1
-            and self.element.parameters[1][0] == text
-        ):
-            return self
-        for child in self.children:
-            a = child.find(text)
-            if a:
-                return a
-        return None
+    children: list["Tree"]
+    """Children elements."""
+
+    element: Any
+    """Element."""
+
+    number: int = 0
+    """Number of the element."""
 
 
 @dataclass
 class Argument:
+    """Argument is a list of elements and a dictionary of specifications."""
+
     array: list
+    """List of elements."""
+
     spec: dict[str, Any]
+    """Dictionary of specifications."""
 
     def __getitem__(self, key: int):
         return self.array[key]
@@ -115,6 +116,7 @@ class Argument:
 
 def trim_inside(text: str) -> str:
     """Replace all space symbol sequences with one space character."""
+
     result: str = ""
     index: int = 0
     while index < len(text):
@@ -131,6 +133,7 @@ def trim_inside(text: str) -> str:
 
 def preprocess_comments(text: str):
     """Text to text processing: comments removing."""
+
     preprocessed: str = ""
     adding: bool = True
     i: int = 0
@@ -149,7 +152,8 @@ def preprocess_comments(text: str):
 
 
 def is_letter_or_digit(char: str) -> bool:
-    return "a" <= char <= "z" or "A" <= char <= "Z" or "0" <= char <= "9"
+    """Check if the character is a letter or a digit."""
+    return char.isalpha() or char.isdigit()
 
 
 def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
@@ -249,7 +253,7 @@ def get_intermediate(lexemes, positions, level, index=0):
             level -= 1
             if level < 0:
                 position = positions[index]
-                logging.error(f"Lexer error at {position}.")
+                logging.error("Lexer error at %d.", position)
                 index += 1
                 sys.exit(1)
             if tag:
@@ -272,8 +276,14 @@ def get_intermediate(lexemes, positions, level, index=0):
 
 
 class Moire:
+    """Moire parser base class."""
+
     name: str = "Empty format"
+    """Name of the format."""
+
     block_tags: list[str] = []
+    """List of block tags."""
+
     escape_symbols: dict[str, str] = {}
 
     def __init__(self, file_name: Optional[str] = None):
@@ -283,18 +293,20 @@ class Moire:
 
     def init(self):
         """Some preliminary actions."""
-        pass
 
     def finish(self):
         """Some finish actions."""
-        pass
 
     def escape(self, text: str) -> str:
-        for key in self.escape_symbols:
-            text = text.replace(key, self.escape_symbols[key])
+        """Escape special characters."""
+
+        for key, value in self.escape_symbols.items():
+            text = text.replace(key, value)
         return text
 
     def trim(self, text: str) -> str:
+        """Trim text."""
+
         if text.startswith("\n"):
             text = text[1:]
         if text.endswith("\n"):
