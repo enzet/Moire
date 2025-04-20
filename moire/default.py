@@ -353,9 +353,7 @@ class DefaultText(Default):
             result += "|"
             for index, cell in enumerate(row):
                 parsed: str = self.parse(cell)
-                result += (
-                    " " + parsed + " " * (widths[index] - len(parsed)) + " |"
-                )
+                result += f" {parsed} " * (widths[index] - len(parsed)) + " |"
             result += "\n"
         result += ruler + "\n"
 
@@ -366,7 +364,7 @@ class DefaultText(Default):
 
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
-        return f"{text} + ({link})"
+        return f"{text} ({link})"
 
     @override
     def ref(self, arg: Arguments) -> str:
@@ -451,7 +449,7 @@ class DefaultMarkdown(Default):
                 result += "|"
                 for cell in row:
                     if isinstance(cell, list):
-                        result += " " + self.parse(cell) + " |"
+                        result += f" {self.parse(cell)} |"
                 result += "\n"
                 if index == 0:
                     result += "|"
@@ -462,7 +460,7 @@ class DefaultMarkdown(Default):
         return result
 
     def b(self, arg: Arguments) -> str:
-        return "**" + self.parse(arg[0]) + "**"
+        return f"**{self.parse(arg[0])}**"
 
     def code(self, arg: Arguments) -> str:
         code_, language = self._parse_code_arguments(arg)
@@ -475,7 +473,7 @@ class DefaultMarkdown(Default):
         return self._get_ref(self.parse(arg[0]), self.parse(arg[1]))
 
     def i(self, arg: Arguments) -> str:
-        return "*" + self.parse(arg[0]) + "*"
+        return f"*{self.parse(arg[0])}*"
 
     def image(self, arg: Arguments) -> str:
         if len(arg) > 1:
@@ -502,7 +500,7 @@ class DefaultMarkdown(Default):
         return self.parse(arg[0]) + "\n\n"
 
     def quote(self, arg: Arguments) -> str:
-        return "> " + self.parse(arg[0])
+        return f"> {self.parse(arg[0])}"
 
 
 class DefaultWiki(Default):
@@ -524,13 +522,13 @@ class DefaultWiki(Default):
         )
 
     def header(self, arg: Arguments, number: int) -> str:
-        return (number * "=") + " " + self.parse(arg[0]) + " " + (number * "=")
+        return f"{number * '='} {self.parse(arg[0])} {number * '='}"
 
     def list__(self, arg: Arguments) -> str:
         s = ""
         for item in arg:
             if isinstance(item, list):
-                s += "* " + self.parse(item) + "\n"
+                s += f"* {self.parse(item)}\n"
         return s
 
     @override
@@ -542,7 +540,7 @@ class DefaultWiki(Default):
         for row in arg:
             result += "|-\n"
             for cell in row:
-                result += "| " + self.parse(cell) + "\n"
+                result += f"| {self.parse(cell)}\n"
         return result + "|}\n"
 
     def b(self, arg: Arguments) -> str:
@@ -568,16 +566,10 @@ class DefaultWiki(Default):
         return f"''{self.parse(arg[0])}''"
 
     def image(self, arg: Arguments) -> str:
-        return (
-            "[[File:"
-            + self.parse(arg[0])
-            + "|thumb|"
-            + self.parse(arg[1])
-            + "]]"
-        )
+        return f"[[File:{self.parse(arg[0])}|thumb|{self.parse(arg[1])}]]"
 
     def m(self, arg: Arguments) -> str:
-        return "<code>" + str(self.parse(arg[0])) + "</code>"
+        return f"<code>{self.parse(arg[0])}</code>"
 
     def u(self, arg: Arguments) -> str:
         return f"<u>{self.parse(arg[0])}</u>"
@@ -586,7 +578,7 @@ class DefaultWiki(Default):
         return self.parse(arg[0]) + "\n\n"
 
     def quote(self, arg: Arguments) -> str:
-        return ">" + self.parse(arg[0]) + ""
+        return f">{self.parse(arg[0])}"
 
 
 class DefaultTeX(Default):
@@ -648,7 +640,7 @@ class DefaultTeX(Default):
                         columns += 1
                 max_columns = max(max_columns, columns)
 
-        result += "{|" + ("l|" * max_columns) + "}\n\\hline\n"
+        result += f"{{|{('l|' * max_columns)}}}\n\\hline\n"
 
         for row in arg:
             if isinstance(row, list):
@@ -709,7 +701,7 @@ class DefaultTeX(Default):
         return "\\\\"
 
     def cite(self, arg: Arguments) -> str:
-        return "\\cite {" + self.clear(arg[0]) + "}"
+        return f"\\cite{{{self.clear(arg[0])}}}"
 
     def code(self, arg: Arguments) -> str:
         code_, language = self._parse_code_arguments(arg)
@@ -738,7 +730,7 @@ class DefaultTeX(Default):
 
     @staticmethod
     def mathblock(arg: Arguments) -> str:
-        return "\\[{0}\\]".format("".join(arg[0]))
+        return f"\\[{''.join(arg[0])}\\]"
 
     def ignore(self, arg: Arguments) -> str:
         return self.clear(arg[0])
@@ -750,39 +742,39 @@ class DefaultTeX(Default):
             + "}\\end{center}"
         )
         if len(arg) > 1:
-            s += "\\caption {" + self.parse(arg[1]) + "}"
+            s += f"\\caption{{ {self.parse(arg[1])}}}"
         s += "\\end{figure}"
         return s
 
     def item(self, arg: Arguments) -> str:
-        return "\\item " + self.parse(arg[0]) + ""
+        return f"\\item{{{self.parse(arg[0])}}}"
 
     def sc(self, arg: Arguments) -> str:
-        return "{\\sc " + self.parse(arg[0]) + "}"
+        return f"{{\\sc {self.parse(arg[0])}}}"
 
     def size(self, arg: Arguments) -> str:
-        return "" + self.parse(arg[0]) + ""
+        raise TagNotImplementedError("size")
 
     def strike(self, arg: Arguments) -> str:
-        return "" + self.parse(arg[0]) + ""
+        raise TagNotImplementedError("strike")
 
     def sub(self, arg: Arguments) -> str:
-        return "$_{" + self.parse(arg[0]) + "}$"
+        return f"${{{self.parse(arg[0])}}}$"
 
     def super(self, arg: Arguments) -> str:
-        return "\\textsuperscript{" + self.parse(arg[0]) + "}"
+        return f"\\textsuperscript{{{self.parse(arg[0])}}}"
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
 
     def m(self, arg: Arguments) -> str:
-        return "{\\tt " + self.parse(arg[0]) + "}"
+        return f"{{\\tt {self.parse(arg[0])}}}"
 
     def u(self, arg: Arguments) -> str:
-        return "" + self.parse(arg[0]) + ""
+        raise TagNotImplementedError("u")
 
     def quote(self, arg: Arguments) -> str:
-        return "" + self.parse(arg[0]) + ""
+        raise TagNotImplementedError("quote")
 
 
 if __name__ == "__main__":
