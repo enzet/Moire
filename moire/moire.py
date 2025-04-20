@@ -1,12 +1,13 @@
 """Moire, a simple extensible markup language.
 
-See http://github.com/enzet/Moire
+See https://github.com/enzet/Moire
 """
 
 import logging
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import Enum
 from io import StringIO
 from typing import Any, Optional
 
@@ -15,12 +16,17 @@ __email__: str = "me@enzet.ru"
 
 # Constants
 
-COMMENT_BEGIN: str = "/*"
-COMMENT_END: str = "*/"
-TAG_MARKER: str = "\\"
-ARGUMENT_START: str = "{"
-ARGUMENT_END: str = "}"
-PARAGRAPH_DELIMITER: str = "\n\n"
+
+class Constant(Enum):
+    """Constants."""
+
+    COMMENT_BEGIN = "/*"
+    COMMENT_END = "*/"
+    TAG_MARKER = "\\"
+    ARGUMENT_START = "{"
+    ARGUMENT_END = "}"
+    PARAGRAPH_DELIMITER = "\n\n"
+
 
 SPACES: str = " \n\t\r"
 
@@ -138,10 +144,16 @@ def preprocess_comments(text: str):
     adding: bool = True
     i: int = 0
     while i < len(text):
-        if text[i : i + len(COMMENT_BEGIN)] == COMMENT_BEGIN:
+        if (
+            text[i : i + len(Constant.COMMENT_BEGIN.value)]
+            == Constant.COMMENT_BEGIN.value
+        ):
             adding = False
             i += 1
-        elif text[i : i + len(COMMENT_END)] == COMMENT_END:
+        elif (
+            text[i : i + len(Constant.COMMENT_END.value)]
+            == Constant.COMMENT_END.value
+        ):
             adding = True
             i += 1
         else:
@@ -172,7 +184,7 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
 
     while index < len(text):
         char = text[index]
-        if char == TAG_MARKER:
+        if char == Constant.TAG_MARKER.value:
             if index == len(text) - 1:
                 logging.error("Backslash at the end of string.")
             elif not is_letter_or_digit(text[index + 1]):
@@ -190,7 +202,7 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
                 word = ""
                 in_tag = True
                 tag_name = ""
-        elif char == ARGUMENT_START:
+        elif char == Constant.ARGUMENT_START.value:
             if in_tag or in_space:
                 in_tag = False
                 if tag_name != "":
@@ -200,7 +212,7 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
             positions.append(index)
             tag_name = ""
             word = ""
-        elif char == ARGUMENT_END:
+        elif char == Constant.ARGUMENT_END.value:
             if word != "":
                 lexemes.append(Lexeme("text", word))
                 positions.append(index)
@@ -496,15 +508,19 @@ class Moire:
         for item in inner_block:
             if isinstance(item, str):
                 previous = 0
-                delimiter = item.find(PARAGRAPH_DELIMITER)
+                delimiter = item.find(Constant.PARAGRAPH_DELIMITER.value)
                 while delimiter != -1:
                     content = item[previous:delimiter]
                     if content != "" or previous == 0:
                         paragraph.append(content)
                         paragraphs.append(paragraph)
                         paragraph = []
-                    previous = delimiter + len(PARAGRAPH_DELIMITER)
-                    delimiter = item.find(PARAGRAPH_DELIMITER, delimiter + 1)
+                    previous = delimiter + len(
+                        Constant.PARAGRAPH_DELIMITER.value
+                    )
+                    delimiter = item.find(
+                        Constant.PARAGRAPH_DELIMITER.value, delimiter + 1
+                    )
                 paragraph.append(item[previous:])
             else:
                 paragraph.append(item)
