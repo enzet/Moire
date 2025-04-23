@@ -78,6 +78,21 @@ class Default(Moire, ABC):
         raise TagNotImplementedError("m")
 
     @abstractmethod
+    def sc(self, arg: Arguments) -> str:
+        """Small capital letters."""
+        raise TagNotImplementedError("sc")
+
+    @abstractmethod
+    def sub(self, arg: Arguments) -> str:
+        """Subscript."""
+        raise TagNotImplementedError("sub")
+
+    @abstractmethod
+    def super(self, arg: Arguments) -> str:
+        """Superscript."""
+        raise TagNotImplementedError("super")
+
+    @abstractmethod
     def table(self, arg: Arguments) -> str:
         """Simple table with rows and columns.
 
@@ -329,11 +344,13 @@ class DefaultText(Default):
         return f"[{self.parse(arg[1]) if len(arg) > 1 else ''}]"
 
     def list__(self, arg: Arguments) -> str:
-        s = ""
+        result: str = ""
         for item in arg:
             if isinstance(item, list):
-                s += "  * " + self.parse(item, in_block=True, depth=depth + 1)
-        return s
+                result += "  * " + self.parse(
+                    item, in_block=True, depth=depth + 1
+                )
+        return result
 
     @override
     def table(self, arg: Arguments) -> str:
@@ -359,6 +376,7 @@ class DefaultText(Default):
 
         return result
 
+    @override
     def b(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
@@ -485,6 +503,11 @@ class DefaultMarkdown(Default):
         return f"`{self.parse(arg[0])}`"
 
     def u(self, arg: Arguments) -> str:
+        """Tag is ignored."""
+        return self.parse(arg[0])
+
+    def sc(self, arg: Arguments) -> str:
+        """Tag is ignored."""
         return self.parse(arg[0])
 
     def strike(self, arg: Arguments) -> str:
@@ -525,11 +548,11 @@ class DefaultWiki(Default):
         return f"{number * '='} {self.parse(arg[0])} {number * '='}"
 
     def list__(self, arg: Arguments) -> str:
-        s = ""
+        result: str = ""
         for item in arg:
             if isinstance(item, list):
-                s += f"* {self.parse(item)}\n"
-        return s
+                result += f"* {self.parse(item)}\n"
+        return result
 
     @override
     def table(self, arg: Arguments) -> str:
@@ -595,7 +618,7 @@ class DefaultTeX(Default):
     ]  # fmt: skip
 
     def body(self, arg: Arguments) -> str:
-        s = dedent(
+        result: str = dedent(
             """\
             \\documentclass[twoside,psfig]{article}
             \\usepackage[utf8]{inputenc}
@@ -610,14 +633,14 @@ class DefaultTeX(Default):
             \\begin{document}
             """
         )
-        s += self.parse(arg[0], in_block=True)
-        s += "\\end {document}"
-        return s
+        result += self.parse(arg[0], in_block=True)
+        result += "\\end {document}"
+        return result
 
     def title(self, arg: Arguments) -> str:
-        s = f"\\title{{{self.parse(arg[0])}}}\n"
-        s += "\\maketitle"
-        return s
+        result: str = f"\\title{{{self.parse(arg[0])}}}\n"
+        result += "\\maketitle"
+        return result
 
     def author(self, arg: Arguments) -> str:
         return f"\\author{{{self.parse(arg[0])}}}"
@@ -658,19 +681,19 @@ class DefaultTeX(Default):
         return result
 
     def list__(self, arg: Arguments) -> str:
-        s = "\\begin{itemize}\n"
+        result: str = "\\begin{itemize}\n"
         for item in arg:
-            s += f"\\item {self.parse(item)}\n\n"
-        s += "\\end{itemize}\n"
-        return s
+            result += f"\\item {self.parse(item)}\n\n"
+        result += "\\end{itemize}\n"
+        return result
 
     def ordered(self, arg: Arguments) -> str:
-        s = "\\begin{ordered}\n"
+        result: str = "\\begin{ordered}\n"
         for item in arg[0]:
             if isinstance(item, list):
-                s += f"\\item {self.parse(item[0])}\n\n"
-        s += "\\end{ordered}\n"
-        return s
+                result += f"\\item {self.parse(item[0])}\n\n"
+        result += "\\end{ordered}\n"
+        return result
 
     def abstract(self, arg: Arguments) -> str:
         return (
@@ -680,18 +703,18 @@ class DefaultTeX(Default):
         )
 
     def books(self, arg: Arguments) -> str:
-        s = "\\begin{thebibliography}{0}\n\n"
+        result: str = "\\begin{thebibliography}{0}\n\n"
         for item in arg[0]:
             if isinstance(item, list):
-                s += (
+                result += (
                     "\\bibitem{"
                     + self.clear(item[0])
                     + "} "
                     + self.parse(item[1])
                     + "\n\n"
                 )
-        s += "\\end{thebibliography}\n\n"
-        return s
+        result += "\\end{thebibliography}\n\n"
+        return result
 
     def b(self, arg: Arguments) -> str:
         return f"{{\\bf {self.parse(arg[0])}}}"
@@ -711,15 +734,15 @@ class DefaultTeX(Default):
         return ""
 
     def ref(self, arg: Arguments) -> str:
-        s = ""
+        result: str = ""
         link = self.clear(arg[0])
         if link[0] == "#":
             link = link[1:]
         if len(arg) == 1:
-            s += f"\\href {{{link}}} {{{link}}}"
+            result += f"\\href {{{link}}} {{{link}}}"
         else:
-            s += f"\\href {{{link}}} {{{self.parse(arg[1])}}}"
-        return s
+            result += f"\\href {{{link}}} {{{self.parse(arg[1])}}}"
+        return result
 
     def i(self, arg: Arguments) -> str:
         return f"{{\\em {self.parse(arg[0])}}}"
@@ -736,15 +759,15 @@ class DefaultTeX(Default):
         return self.clear(arg[0])
 
     def image(self, arg: Arguments) -> str:
-        s = (
+        result: str = (
             "\\begin{figure}[h]\\begin{center}\\includegraphics{"
             + self.parse(arg[0])
             + "}\\end{center}"
         )
         if len(arg) > 1:
-            s += f"\\caption{{ {self.parse(arg[1])}}}"
-        s += "\\end{figure}"
-        return s
+            result += f"\\caption{{ {self.parse(arg[1])}}}"
+        result += "\\end{figure}"
+        return result
 
     def item(self, arg: Arguments) -> str:
         return f"\\item{{{self.parse(arg[0])}}}"
