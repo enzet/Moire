@@ -452,12 +452,12 @@ class DefaultMarkdown(Default):
 
     def list__(self, arg: Arguments) -> str:
         self.list_level += 1
-        s: str = "".join(
+        result: str = "".join(
             ("\n" + "  " * self.list_level + f"* {self.parse(item)}")
             for item in arg
         )
         self.list_level -= 1
-        return s
+        return result
 
     @override
     def table(self, arg: Arguments) -> str:
@@ -496,8 +496,7 @@ class DefaultMarkdown(Default):
     def image(self, arg: Arguments) -> str:
         if len(arg) > 1:
             return f"![{self.parse(arg[1])}]({self.parse(arg[0])})"
-        else:
-            return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
+        return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
 
     def m(self, arg: Arguments) -> str:
         return f"`{self.parse(arg[0])}`"

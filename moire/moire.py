@@ -299,6 +299,9 @@ class Moire:
     id_: str = "moire"
     """Format identifier."""
 
+    extensions: list[str] = []
+    """List of typical file extensions."""
+
     escape_symbols: dict[str, str] = {}
 
     def __init__(self, file_name: Optional[str] = None):
