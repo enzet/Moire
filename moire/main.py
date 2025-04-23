@@ -7,7 +7,7 @@ import logging
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from moire.default import Default
 from moire.moire import Moire
@@ -16,7 +16,10 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-def main(arguments: List[str] = None, top_class=None):
+def main(
+    arguments: Optional[list[str]] = None,
+    top_class: Optional[type[Moire]] = None,
+) -> None:
     """Converter entry point."""
 
     if not arguments:

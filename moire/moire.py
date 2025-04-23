@@ -296,6 +296,9 @@ class Moire:
     block_tags: list[str] = []
     """List of block tags."""
 
+    id_: str = "moire"
+    """Format identifier."""
+
     escape_symbols: dict[str, str] = {}
 
     def __init__(self, file_name: Optional[str] = None):
