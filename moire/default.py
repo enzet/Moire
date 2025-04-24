@@ -35,14 +35,32 @@ class Default(Moire, ABC):
     def __init__(self) -> None:
         super().__init__()
 
+    # Main methods.
+
     @abstractmethod
     def body(self, arg: Arguments) -> str:
         """Body of the document."""
         raise TagNotImplementedError("body")
 
+    # Metadata tags.
+
+    @abstractmethod
     def title(self, arg: Arguments) -> str:
-        """Document title."""
-        return ""
+        """Title of the document.
+
+        This is metadata tag and is not displayed in the document.
+        """
+        raise TagNotImplementedError("title")
+
+    @abstractmethod
+    def author(self, arg: Arguments) -> str:
+        """Author of the document.
+
+        This is metadata tag and is not displayed in the document.
+        """
+        raise TagNotImplementedError("author")
+
+    # Main formatting tags.
 
     @abstractmethod
     def header(self, arg: Arguments, level: int) -> str:
@@ -215,14 +233,22 @@ class DefaultHTML(Default):
         )
         return s
 
-    @override
-    def code(self, arg: Arguments) -> str:
-        code_, _ = self._parse_code_arguments(arg)
-        return f"<pre><tt>{code_}</tt></pre>"
+    # Metadata tags.
 
     @override
     def title(self, arg: Arguments) -> str:
         return f"<title>{self.parse(arg[0])}</title>"
+
+    @override
+    def author(self, arg: Arguments) -> str:
+        return f'<meta name="author" content="{self.parse(arg[0])}">'
+
+    # Main formatting tags.
+
+    @override
+    def code(self, arg: Arguments) -> str:
+        code_, _ = self._parse_code_arguments(arg)
+        return f"<pre><tt>{code_}</tt></pre>"
 
     @override
     def header(self, arg: Arguments, level: int) -> str:
@@ -324,13 +350,25 @@ class DefaultText(Default):
     extension: str = "txt"
     escape_symbols: dict[str, str] = {}
 
+    # Main methods.
+
     @override
     def body(self, arg: Arguments) -> str:
         return self.parse(arg[0], in_block=True, depth=1) + "\n"
 
+    # Metadata tags.
+
     @override
     def title(self, arg: Arguments) -> str:
-        return self.parse(arg[0])
+        # Tag is ignored.
+        return ""
+
+    @override
+    def author(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
+    # Main formatting tags.
 
     @override
     def code(self, arg: Arguments) -> str:
@@ -439,12 +477,29 @@ class DefaultMarkdown(Default):
         super().__init__()
         self.list_level = 0
 
+    # Main methods.
+
+    @override
     def body(self, arg: Arguments) -> str:
         return (
             self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
             .replace("\n\n\n", "\n\n")
         )
+
+    # Metadata tags.
+
+    @override
+    def title(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
+    @override
+    def author(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
+    # Main formatting tags.
 
     def header(self, arg: Arguments, number: int) -> str:
         return f"{number * '#'} {self.parse(arg[0])}"
@@ -532,12 +587,29 @@ class DefaultWiki(Default):
     extensions = ["wiki"]
     block_tags = BLOCK_TAGS
 
+    # Main methods.
+
+    @override
     def body(self, arg: Arguments) -> str:
         return (
             self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
             .replace("\n\n\n", "\n\n")
         )
+
+    # Metadata tags.
+
+    @override
+    def title(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
+    @override
+    def author(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
+    # Main formatting tags.
 
     def header(self, arg: Arguments, number: int) -> str:
         return f"{number * '='} {self.parse(arg[0])} {number * '='}"
@@ -612,6 +684,9 @@ class DefaultTeX(Default):
         "section", "subsection", "subsubsection", "paragraph", "subparagraph"
     ]  # fmt: skip
 
+    # Main methods.
+
+    @override
     def body(self, arg: Arguments) -> str:
         result: str = dedent(
             """\
@@ -632,13 +707,19 @@ class DefaultTeX(Default):
         result += "\\end {document}"
         return result
 
+    # Metadata tags.
+
+    @override
     def title(self, arg: Arguments) -> str:
         result: str = f"\\title{{{self.parse(arg[0])}}}\n"
         result += "\\maketitle"
         return result
 
+    @override
     def author(self, arg: Arguments) -> str:
         return f"\\author{{{self.parse(arg[0])}}}"
+
+    # Main formatting tags.
 
     def header(self, arg: Arguments, number: int) -> str:
         if number < 6:
