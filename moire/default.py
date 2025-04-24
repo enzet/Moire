@@ -35,14 +35,14 @@ class Default(Moire, ABC):
     def __init__(self) -> None:
         super().__init__()
 
-    def title(self, arg: Arguments) -> str:
-        """Document title."""
-        return ""
-
     @abstractmethod
     def body(self, arg: Arguments) -> str:
         """Body of the document."""
         raise TagNotImplementedError("body")
+
+    def title(self, arg: Arguments) -> str:
+        """Document title."""
+        return ""
 
     @abstractmethod
     def header(self, arg: Arguments, level: int) -> str:
@@ -182,13 +182,15 @@ class DefaultHTML(Default):
     def __init__(self) -> None:
         super().__init__()
 
+    # Parser methods.
+
+    @override
     def escape(self, text: str) -> str:
         return super().escape(text.replace("&", "&amp;"))
 
-    def block(self, arg: Arguments) -> str:
-        """Block element."""
-        return self.parse(arg[0], in_block=True)
+    # Main methods.
 
+    @override
     def body(self, arg: Arguments) -> str:
         """Body of the document."""
 
@@ -437,9 +439,6 @@ class DefaultMarkdown(Default):
         super().__init__()
         self.list_level = 0
 
-    def block(self, arg: Arguments) -> str:
-        return self.parse(arg[0], in_block=True)
-
     def body(self, arg: Arguments) -> str:
         return (
             self.parse(arg[0], in_block=True)
@@ -532,9 +531,6 @@ class DefaultWiki(Default):
     id_: str = "wiki"
     extensions = ["wiki"]
     block_tags = BLOCK_TAGS
-
-    def block(self, arg: Arguments) -> str:
-        return self.parse(arg[0], in_block=True)
 
     def body(self, arg: Arguments) -> str:
         return (

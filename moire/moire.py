@@ -316,11 +316,18 @@ class Moire:
         """Some finish actions."""
 
     def escape(self, text: str) -> str:
-        """Escape special characters."""
+        """Escape special characters.
+
+        This method may be overridden if escaping is more complex.
+        """
 
         for key, value in self.escape_symbols.items():
             text = text.replace(key, value)
         return text
+
+    def block(self, arg: list[Any]) -> str:
+        """Block element."""
+        return self.parse(arg[0], in_block=True)
 
     def trim(self, text: str) -> str:
         """Trim text."""
