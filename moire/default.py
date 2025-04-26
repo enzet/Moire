@@ -497,9 +497,12 @@ class DefaultMarkdown(Default):
     extensions: list[str] = ["md", "markdown"]
     block_tags: list[str] = BLOCK_TAGS
 
-    def __init__(self) -> None:
+    def __init__(self, is_github_flavored: bool = False) -> None:
         super().__init__()
         self.list_level: int = 0
+
+        self.is_github_flavored: bool = is_github_flavored
+        """If true, use GitHub Flavored Markdown extensions."""
 
     # Main methods.
 
@@ -554,7 +557,9 @@ class DefaultMarkdown(Default):
 
     @override
     def strike(self, arg: Arguments) -> str:
-        return f"~~{self.parse(arg[0])}~~"
+        if self.is_github_flavored:
+            return f"~~{self.parse(arg[0])}~~"
+        return self.parse(arg[0])
 
     @override
     def m(self, arg: Arguments) -> str:

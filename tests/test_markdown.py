@@ -20,6 +20,22 @@ def check(code: str, result: str) -> None:
     assert converter.convert(code, wrap=False) == result
 
 
+def test_markdown_header() -> None:
+    """Test headers."""
+    check("\\1 {Header}", "# Header")
+    check("\\6 {Header}", "###### Header")
+
+
+def test_markdown_bold() -> None:
+    """Test bold text."""
+    check("\\b {text}", "**text**")
+
+
+def test_markdown_italic() -> None:
+    """Test italic text."""
+    check("\\i {text}", "*text*")
+
+
 def test_markdown_monospace() -> None:
     """Test monospace text."""
     check("\\m {text}", "`text`")
