@@ -113,6 +113,11 @@ class Default(Moire, ABC):
     # Main block tags.
 
     @abstractmethod
+    def list__(self, arg: Arguments) -> str:
+        """List of items."""
+        raise TagNotImplementedError("list")
+
+    @abstractmethod
     def table(self, arg: Arguments) -> str:
         """Simple table with rows and columns.
 
@@ -122,6 +127,25 @@ class Default(Moire, ABC):
         or cell merging.
         """
         raise TagNotImplementedError("table")
+
+    @abstractmethod
+    def image(self, arg: Arguments) -> str:
+        """Image.
+
+        Format: \\image {<image source>} {<image title>}?
+        """
+        raise TagNotImplementedError("image")
+
+    @abstractmethod
+    def code(self, arg: Arguments) -> str:
+        """Code block.
+
+        Arguments: <language identifier>? <code>
+
+        Examples of language identifiers: `cpp` for C++, `python` for Python,
+        `js` or `javascript` for JavaScript.
+        """
+        raise TagNotImplementedError("code")
 
     def formal(self, arg: Arguments) -> str:
         """Formal argument inside code.
@@ -142,21 +166,6 @@ class Default(Moire, ABC):
             self.trim(self.parse(arg[1], spec={"trim": False})),
             self.clear(arg[0]),
         )
-
-    @abstractmethod
-    def code(self, arg: Arguments) -> str:
-        """Code block.
-
-        Arguments: <language identifier>? <code>
-
-        Examples of language identifiers: `cpp` for C++, `python` for Python,
-        `js` or `javascript` for JavaScript.
-        """
-        raise TagNotImplementedError("code")
-
-    def list__(self, arg: Arguments) -> str:
-        """List of items."""
-        raise TagNotImplementedError("list")
 
     @abstractmethod
     def ref(self, arg: Arguments) -> str:
@@ -291,18 +300,9 @@ class DefaultHTML(Default):
     # Main block tags.
 
     @override
-    def code(self, arg: Arguments) -> str:
-        code_, _ = self._parse_code_arguments(arg)
-        return f"<pre><tt>{code_}</tt></pre>"
-
-    @override
     def list__(self, arg: Arguments) -> str:
         items: str = "".join(f"<li>{self.parse(x)}</li>" for x in arg)
         return f"<ul>{items}</ul>"
-
-    def image(self, arg: Arguments) -> str:
-        title: str = f' alt="{self.parse(arg[1])}"' if len(arg) >= 2 else ""
-        return f'<img src="{self.clear(arg[0])}"{title} />'
 
     @override
     def table(self, arg: Arguments) -> str:
@@ -315,6 +315,16 @@ class DefaultHTML(Default):
             result += f"<tr>{cells}</tr>"
 
         return f"<table>{result}</table>"
+
+    @override
+    def image(self, arg: Arguments) -> str:
+        title: str = f' alt="{self.parse(arg[1])}"' if len(arg) >= 2 else ""
+        return f'<img src="{self.clear(arg[0])}"{title} />'
+
+    @override
+    def code(self, arg: Arguments) -> str:
+        code_, _ = self._parse_code_arguments(arg)
+        return f"<pre><tt>{code_}</tt></pre>"
 
     @staticmethod
     def br(_: Arguments) -> str:
@@ -412,14 +422,6 @@ class DefaultText(Default):
     # Main block tags.
 
     @override
-    def code(self, arg: Arguments) -> str:
-        code_, _ = self._parse_code_arguments(arg)
-        return code_ + "\n"
-
-    @override
-    def image(self, arg: Arguments) -> str:
-        return f"[{self.parse(arg[1]) if len(arg) > 1 else ''}]"
-
     def list__(self, arg: Arguments) -> str:
         result: str = ""
         for item in arg:
@@ -452,6 +454,15 @@ class DefaultText(Default):
         result += ruler + "\n"
 
         return result
+
+    @override
+    def image(self, arg: Arguments) -> str:
+        return f"[{self.parse(arg[1]) if len(arg) > 1 else ''}]"
+
+    @override
+    def code(self, arg: Arguments) -> str:
+        code_, _ = self._parse_code_arguments(arg)
+        return code_ + "\n"
 
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
@@ -571,6 +582,13 @@ class DefaultMarkdown(Default):
                     result += "\n"
         return result
 
+    @override
+    def image(self, arg: Arguments) -> str:
+        if len(arg) > 1:
+            return f"![{self.parse(arg[1])}]({self.parse(arg[0])})"
+        return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
+
+    @override
     def code(self, arg: Arguments) -> str:
         code_, language = self._parse_code_arguments(arg)
         return f"```{language}\n{code_}\n```"
@@ -580,11 +598,6 @@ class DefaultMarkdown(Default):
 
     def ref(self, arg: Arguments) -> str:
         return self._get_ref(self.parse(arg[0]), self.parse(arg[1]))
-
-    def image(self, arg: Arguments) -> str:
-        if len(arg) > 1:
-            return f"![{self.parse(arg[1])}]({self.parse(arg[0])})"
-        return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
@@ -663,6 +676,7 @@ class DefaultWiki(Default):
 
     # Main block tags.
 
+    @override
     def list__(self, arg: Arguments) -> str:
         result: str = ""
         for item in arg:
@@ -682,6 +696,11 @@ class DefaultWiki(Default):
                 result += f"| {self.parse(cell)}\n"
         return result + "|}\n"
 
+    @override
+    def image(self, arg: Arguments) -> str:
+        return f"[[File:{self.parse(arg[0])}|thumb|{self.parse(arg[1])}]]"
+
+    @override
     def code(self, arg: Arguments) -> str:
         code_, language = self._parse_code_arguments(arg)
         if language:
@@ -697,9 +716,6 @@ class DefaultWiki(Default):
 
     def ref(self, arg: Arguments) -> str:
         return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
-
-    def image(self, arg: Arguments) -> str:
-        return f"[[File:{self.parse(arg[0])}|thumb|{self.parse(arg[1])}]]"
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
@@ -799,6 +815,14 @@ class DefaultTeX(Default):
     # Main block tags.
 
     @override
+    def list__(self, arg: Arguments) -> str:
+        result: str = "\\begin{itemize}\n"
+        for item in arg:
+            result += f"\\item {self.parse(item)}\n\n"
+        result += "\\end{itemize}\n"
+        return result
+
+    @override
     def table(self, arg: Arguments) -> str:
         result: str = "\\begin{table}[h]\n\\begin{center}\n\\begin{tabular}"
 
@@ -828,12 +852,22 @@ class DefaultTeX(Default):
 
         return result
 
-    def list__(self, arg: Arguments) -> str:
-        result: str = "\\begin{itemize}\n"
-        for item in arg:
-            result += f"\\item {self.parse(item)}\n\n"
-        result += "\\end{itemize}\n"
+    @override
+    def image(self, arg: Arguments) -> str:
+        result: str = (
+            "\\begin{figure}[h]\\begin{center}\\includegraphics{"
+            + self.parse(arg[0])
+            + "}\\end{center}"
+        )
+        if len(arg) > 1:
+            result += f"\\caption{{ {self.parse(arg[1])}}}"
+        result += "\\end{figure}"
         return result
+
+    @override
+    def code(self, arg: Arguments) -> str:
+        code_, _ = self._parse_code_arguments(arg)
+        return f"\\begin{{verbatim}}{code_}\\end{{verbatim}}"
 
     def ordered(self, arg: Arguments) -> str:
         result: str = "\\begin{ordered}\n"
@@ -871,10 +905,6 @@ class DefaultTeX(Default):
     def cite(self, arg: Arguments) -> str:
         return f"\\cite{{{self.clear(arg[0])}}}"
 
-    def code(self, arg: Arguments) -> str:
-        code_, language = self._parse_code_arguments(arg)
-        return f"\\begin{{verbatim}}{code_}\\end{{verbatim}}"
-
     def date(self, arg: Arguments) -> str:
         return ""
 
@@ -899,17 +929,6 @@ class DefaultTeX(Default):
 
     def ignore(self, arg: Arguments) -> str:
         return self.clear(arg[0])
-
-    def image(self, arg: Arguments) -> str:
-        result: str = (
-            "\\begin{figure}[h]\\begin{center}\\includegraphics{"
-            + self.parse(arg[0])
-            + "}\\end{center}"
-        )
-        if len(arg) > 1:
-            result += f"\\caption{{ {self.parse(arg[1])}}}"
-        result += "\\end{figure}"
-        return result
 
     def item(self, arg: Arguments) -> str:
         return f"\\item{{{self.parse(arg[0])}}}"
