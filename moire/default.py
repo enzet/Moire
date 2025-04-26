@@ -536,13 +536,18 @@ class DefaultMarkdown(Default):
 
     @override
     def b(self, arg: Arguments) -> str:
+        # TODO: add weak warning, bold is actually "strong emphasis" in
+        # CommonMark.
         return f"**{self.parse(arg[0])}**"
 
+    @override
     def i(self, arg: Arguments) -> str:
+        # TODO: add weak warning, italic is actually "emphasis" in CommonMark.
         return f"*{self.parse(arg[0])}*"
 
+    @override
     def u(self, arg: Arguments) -> str:
-        """Tag is ignored."""
+        # TODO: add warning, tag is ignored.
         return self.parse(arg[0])
 
     @override
@@ -555,7 +560,7 @@ class DefaultMarkdown(Default):
 
     @override
     def sc(self, arg: Arguments) -> str:
-        """Tag is ignored."""
+        # TODO: add warning, tag is ignored.
         return self.parse(arg[0])
 
     @override
@@ -568,6 +573,7 @@ class DefaultMarkdown(Default):
 
     # Main block tags.
 
+    @override
     def list__(self, arg: Arguments) -> str:
         self.list_level += 1
         result: str = "".join(
@@ -711,7 +717,9 @@ class DefaultWiki(Default):
 
     @override
     def image(self, arg: Arguments) -> str:
-        return f"[[File:{self.parse(arg[0])}|thumb|{self.parse(arg[1])}]]"
+        if len(arg) > 1:
+            return f"[[File:{self.parse(arg[0])}|thumb|{self.parse(arg[1])}]]"
+        return f"[[File:{self.parse(arg[0])}|thumb]]"
 
     @override
     def code(self, arg: Arguments) -> str:
