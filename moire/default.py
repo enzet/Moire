@@ -482,21 +482,28 @@ class DefaultText(Default):
 
 
 class DefaultMarkdown(Default):
-    """Markdown."""
+    """Markdown.
 
-    name = "Markdown"
+    Markdown formatter based on CommonMark specification 0.31.2 (28 January
+    2024).
+
+    See https://spec.commonmark.org/0.31.2/
+    """
+
+    name: str = "Markdown"
     id_: str = "markdown"
-    extensions = ["md", "markdown"]
-    block_tags = BLOCK_TAGS
+    extensions: list[str] = ["md", "markdown"]
+    block_tags: list[str] = BLOCK_TAGS
 
     def __init__(self) -> None:
         super().__init__()
-        self.list_level = 0
+        self.list_level: int = 0
 
     # Main methods.
 
     @override
     def body(self, arg: Arguments) -> str:
+        # FIXME: rewrite.
         return (
             self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
@@ -519,6 +526,12 @@ class DefaultMarkdown(Default):
 
     @override
     def header(self, arg: Arguments, level: int) -> str:
+        """We use simplest possible ATX header style."""
+
+        # CommonMark specification allows headers from level 1 to 6.
+        # TODO: add warning if level is greater than 6.
+        level = min(level, 6)
+
         return f"{level * '#'} {self.parse(arg[0])}"
 
     @override
