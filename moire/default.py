@@ -1,5 +1,6 @@
 """Default tag definitions."""
 
+from pathlib import Path
 import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
@@ -972,8 +973,9 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--format", help="output format", required=True)
 
     options: Namespace = parser.parse_args(sys.argv[1:])
+    path: Path = Path(options.input)
 
-    with open(options.input, "r") as input_file:
+    with path.open(encoding="utf-8") as input_file:
         converter: Moire = getattr(sys.modules[__name__], options.format)()
         output: str = converter.convert(input_file.read())
 
@@ -981,6 +983,8 @@ if __name__ == "__main__":
         print("Fatal: output was no produced.")
         sys.exit(1)
 
-    with open(options.output, "w+") as output_file:
+    with path.with_suffix(options.output).open(
+        "w+", encoding="utf-8"
+    ) as output_file:
         output_file.write(output)
         print(f"Converted to {options.output}.")
