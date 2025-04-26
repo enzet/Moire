@@ -497,9 +497,17 @@ class DefaultMarkdown(Default):
     extensions: list[str] = ["md", "markdown"]
     block_tags: list[str] = BLOCK_TAGS
 
-    def __init__(self, is_github_flavored: bool = False) -> None:
+    def __init__(
+        self, is_html: bool = True, is_github_flavored: bool = False
+    ) -> None:
         super().__init__()
         self.list_level: int = 0
+
+        self.is_html: bool = is_html
+        """If true, use HTML for tags that are not supported by CommonMark.
+
+        If false, these tags will be ignored.
+        """
 
         self.is_github_flavored: bool = is_github_flavored
         """If true, use GitHub Flavored Markdown extensions."""
@@ -552,6 +560,8 @@ class DefaultMarkdown(Default):
 
     @override
     def u(self, arg: Arguments) -> str:
+        if self.is_html:
+            return f"<u>{self.parse(arg[0])}</u>"
         # TODO: add warning, tag is ignored.
         return self.parse(arg[0])
 
@@ -559,6 +569,9 @@ class DefaultMarkdown(Default):
     def strike(self, arg: Arguments) -> str:
         if self.is_github_flavored:
             return f"~~{self.parse(arg[0])}~~"
+        if self.is_html:
+            return f"<del>{self.parse(arg[0])}</del>"
+        # TODO: add warning, tag is ignored.
         return self.parse(arg[0])
 
     @override
@@ -572,11 +585,17 @@ class DefaultMarkdown(Default):
 
     @override
     def sub(self, arg: Arguments) -> str:
-        return DefaultHTML.sub(self, arg[0])
+        if self.is_html:
+            return f"<sub>{self.parse(arg[0])}</sub>"
+        # TODO: add warning, tag is ignored.
+        return self.parse(arg[0])
 
     @override
     def super(self, arg: Arguments) -> str:
-        return DefaultHTML.super(self, arg[0])
+        if self.is_html:
+            return f"<sup>{self.parse(arg[0])}</sup>"
+        # TODO: add warning, tag is ignored.
+        return self.parse(arg[0])
 
     # Main block tags.
 
