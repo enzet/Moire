@@ -62,6 +62,14 @@ class Default(Moire, ABC):
         """
         raise TagNotImplementedError("author")
 
+    @abstractmethod
+    def date(self, arg: Arguments) -> str:
+        """Date of the document.
+
+        This is metadata tag and is not displayed in the document.
+        """
+        raise TagNotImplementedError("date")
+
     # Main formatting tags.
 
     @abstractmethod
@@ -256,6 +264,10 @@ class DefaultHTML(Default):
     def author(self, arg: Arguments) -> str:
         return f'<meta name="author" content="{self.parse(arg[0])}">'
 
+    @override
+    def date(self, arg: Arguments) -> str:
+        return f'<meta name="date" content="{self.parse(arg[0])}">'
+
     # Main formatting tags.
 
     @override
@@ -380,6 +392,11 @@ class DefaultText(Default):
 
     @override
     def author(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
+    @override
+    def date(self, arg: Arguments) -> str:
         # Tag is ignored.
         return ""
 
@@ -535,6 +552,11 @@ class DefaultMarkdown(Default):
         # Tag is ignored.
         return ""
 
+    @override
+    def date(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
     # Main formatting tags.
 
     @override
@@ -681,6 +703,11 @@ class DefaultWiki(Default):
         # Tag is ignored.
         return ""
 
+    @override
+    def date(self, arg: Arguments) -> str:
+        # Tag is ignored.
+        return ""
+
     # Main formatting tags.
 
     @override
@@ -819,6 +846,10 @@ class DefaultTeX(Default):
     def author(self, arg: Arguments) -> str:
         return f"\\author{{{self.parse(arg[0])}}}"
 
+    @override
+    def date(self, arg: Arguments) -> str:
+        return f"\\date{{{self.parse(arg[0])}}}"
+
     # Main formatting tags.
 
     @override
@@ -951,9 +982,6 @@ class DefaultTeX(Default):
 
     def cite(self, arg: Arguments) -> str:
         return f"\\cite{{{self.clear(arg[0])}}}"
-
-    def date(self, arg: Arguments) -> str:
-        return ""
 
     def ref(self, arg: Arguments) -> str:
         result: str = ""
