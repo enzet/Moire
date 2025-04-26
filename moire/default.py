@@ -1,9 +1,10 @@
 """Default tag definitions."""
 
-from pathlib import Path
+import logging
 import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 from textwrap import dedent
 from typing import Any, override
 
@@ -966,6 +967,8 @@ class DefaultTeX(Default):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     parser: ArgumentParser = ArgumentParser()
 
     parser.add_argument("-i", "--input", help="Moire input file", required=True)
@@ -980,11 +983,11 @@ if __name__ == "__main__":
         output: str = converter.convert(input_file.read())
 
     if not output:
-        print("Fatal: output was no produced.")
+        logging.fatal("No output produced.")
         sys.exit(1)
 
     with path.with_suffix(options.output).open(
         "w+", encoding="utf-8"
     ) as output_file:
         output_file.write(output)
-        print(f"Converted to {options.output}.")
+        logging.info("Converted to %s.", path.with_suffix(options.output))
