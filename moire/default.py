@@ -81,14 +81,28 @@ class Default(Moire, ABC):
         raise TagNotImplementedError("header")
 
     @abstractmethod
-    def b(self, arg: Arguments) -> str:
-        """Bold text."""
-        raise TagNotImplementedError("b")
+    def e(self, arg: Arguments) -> str:
+        """Emphasized text."""
+        raise TagNotImplementedError("e")
 
     @abstractmethod
+    def s(self, arg: Arguments) -> str:
+        """Strong emphasized text."""
+        raise TagNotImplementedError("s")
+
+    def b(self, arg: Arguments) -> str:
+        """Bold text.
+
+        This tag is deprecated. Now it is an alias for `\\s`.
+        """
+        return self.s(arg)
+
     def i(self, arg: Arguments) -> str:
-        """Italic text."""
-        raise TagNotImplementedError("i")
+        """Italic text.
+
+        This tag is deprecated. Now it is an alias for `\\e`.
+        """
+        return self.e(arg)
 
     @abstractmethod
     def u(self, arg: Arguments) -> str:
@@ -276,11 +290,11 @@ class DefaultHTML(Default):
         return f"<h{level}{id_}>{self.parse(arg[0])}</h{level}>"
 
     @override
-    def b(self, arg: Arguments) -> str:
+    def s(self, arg: Arguments) -> str:
         return f"<b>{self.parse(arg[0])}</b>"
 
     @override
-    def i(self, arg: Arguments) -> str:
+    def e(self, arg: Arguments) -> str:
         return f"<i>{self.parse(arg[0])}</i>"
 
     @override
@@ -407,11 +421,11 @@ class DefaultText(Default):
         return "  " * (level - 1) + self.parse(arg[0], depth=depth + 1)
 
     @override
-    def b(self, arg: Arguments) -> str:
+    def s(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
-    def i(self, arg: Arguments) -> str:
+    def e(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
@@ -570,13 +584,13 @@ class DefaultMarkdown(Default):
         return f"{level * '#'} {self.parse(arg[0])}"
 
     @override
-    def b(self, arg: Arguments) -> str:
+    def s(self, arg: Arguments) -> str:
         # TODO: add weak warning, bold is actually "strong emphasis" in
         # CommonMark.
         return f"**{self.parse(arg[0])}**"
 
     @override
-    def i(self, arg: Arguments) -> str:
+    def e(self, arg: Arguments) -> str:
         # TODO: add weak warning, italic is actually "emphasis" in CommonMark.
         return f"*{self.parse(arg[0])}*"
 
@@ -720,11 +734,11 @@ class DefaultWiki(Default):
         return f"{level * '='} {self.parse(arg[0])} {level * '='}"
 
     @override
-    def b(self, arg: Arguments) -> str:
+    def s(self, arg: Arguments) -> str:
         return f"'''{self.parse(arg[0])}'''"
 
     @override
-    def i(self, arg: Arguments) -> str:
+    def e(self, arg: Arguments) -> str:
         return f"''{self.parse(arg[0])}''"
 
     @override
@@ -864,11 +878,11 @@ class DefaultTeX(Default):
         return self.parse(arg[0])
 
     @override
-    def b(self, arg: Arguments) -> str:
+    def s(self, arg: Arguments) -> str:
         return f"{{\\bf {self.parse(arg[0])}}}"
 
     @override
-    def i(self, arg: Arguments) -> str:
+    def e(self, arg: Arguments) -> str:
         return f"{{\\em {self.parse(arg[0])}}}"
 
     @override

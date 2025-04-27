@@ -14,8 +14,8 @@ There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header 
 
 |  | Example Moire code | Rendering |
 |---|---|---|
-| Italic | `\i {text}` | *text* |
-| Bold | `\b {text}` | **text** |
+| Emphasized | `\e {text}` | *text* |
+| Strong emphasized | `\s {text}` | **text** |
 | Monospaced | `\m {text}` | `text` |
 | Strikethrough | `\strike {text}` | ~~text~~ |
 | Subscript | `\sub {text}` | <sub>text</sub> |
