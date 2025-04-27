@@ -68,6 +68,26 @@ def test_markdown_small_caps_no_html() -> None:
     check("\\sc {text}", "text", is_html=False)
 
 
+def test_markdown_subscript() -> None:
+    """Test subscript text."""
+    check("\\sub {text}", "<sub>text</sub>")
+
+
+def test_markdown_subscript_no_html() -> None:
+    """Test subscript text without HTML."""
+    check("\\sub {text}", "text", is_html=False)
+
+
+def test_markdown_superscript() -> None:
+    """Test superscript text."""
+    check("\\super {text}", "<sup>text</sup>")
+
+
+def test_markdown_superscript_no_html() -> None:
+    """Test superscript text without HTML."""
+    check("\\super {text}", "text", is_html=False)
+
+
 def test_markdown_list() -> None:
     """Test list."""
     check(
