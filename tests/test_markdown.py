@@ -8,16 +8,13 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-converter: DefaultMarkdown = DefaultMarkdown()
-
-
-def check(code: str, result: str) -> None:
+def check(code: str, result: str, is_html: bool = True) -> None:
     """Check the result of the conversion.
 
     :param code: Moire code
     :param result: expected result
     """
-    assert converter.convert(code, wrap=False) == result
+    assert DefaultMarkdown(is_html=is_html).convert(code, wrap=False) == result
 
 
 def test_markdown_header() -> None:
@@ -34,6 +31,26 @@ def test_markdown_bold() -> None:
 def test_markdown_italic() -> None:
     """Test italic text."""
     check("\\i {text}", "*text*")
+
+
+def test_markdown_underline() -> None:
+    """Test underline text."""
+    check("\\u {text}", "<u>text</u>")
+
+
+def test_markdown_underline_no_html() -> None:
+    """Test underline text without HTML."""
+    check("\\u {text}", "text", is_html=False)
+
+
+def test_markdown_strikethrough() -> None:
+    """Test strikethrough text."""
+    check("\\strike {text}", "<del>text</del>")
+
+
+def test_markdown_strikethrough_no_html() -> None:
+    """Test strikethrough text without HTML."""
+    check("\\strike {text}", "text", is_html=False)
 
 
 def test_markdown_monospace() -> None:
