@@ -32,8 +32,6 @@ There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header 
 
 Example Moire code:
 
-*italic **bold italic*** **italic *bold italic***
-
 ```moire
 \list
     {Item 1,}

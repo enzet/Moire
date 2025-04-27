@@ -33,16 +33,6 @@ def test_markdown_italic() -> None:
     check("\\i {text}", "*text*")
 
 
-def test_markdown_underline() -> None:
-    """Test underline text."""
-    check("\\u {text}", "<u>text</u>")
-
-
-def test_markdown_underline_no_html() -> None:
-    """Test underline text without HTML."""
-    check("\\u {text}", "text", is_html=False)
-
-
 def test_markdown_deleted() -> None:
     """Test deleted text."""
     check("\\del {text}", "<del>text</del>")

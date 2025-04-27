@@ -256,11 +256,6 @@ def test_html_italic() -> None:
     check("\\i {text}", "<i>text</i>", "Italic")
 
 
-def test_html_underline() -> None:
-    """Test underline text."""
-    check("\\u {text}", "<u>text</u>", "Underline")
-
-
 def test_html_deleted() -> None:
     """Test deleted text."""
     check("\\del {text}", "<del>text</del>", "Deleted")

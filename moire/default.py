@@ -105,11 +105,6 @@ class Default(Moire, ABC):
         return self.e(arg)
 
     @abstractmethod
-    def u(self, arg: Arguments) -> str:
-        """Underlined text."""
-        raise TagNotImplementedError("u")
-
-    @abstractmethod
     def del__(self, arg: Arguments) -> str:
         """Deleted text."""
         raise TagNotImplementedError("del")
@@ -305,10 +300,6 @@ class DefaultHTML(Default):
         return f"<i>{self.parse(arg[0])}</i>"
 
     @override
-    def u(self, arg: Arguments) -> str:
-        return f"<u>{self.parse(arg[0])}</u>"
-
-    @override
     def del__(self, arg: Arguments) -> str:
         return f"<del>{self.parse(arg[0])}</del>"
 
@@ -433,10 +424,6 @@ class DefaultText(Default):
 
     @override
     def e(self, arg: Arguments) -> str:
-        return self.parse(arg[0], depth=depth + 1)
-
-    @override
-    def u(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
@@ -602,13 +589,6 @@ class DefaultMarkdown(Default):
         return f"*{self.parse(arg[0])}*"
 
     @override
-    def u(self, arg: Arguments) -> str:
-        if self.is_html:
-            return f"<u>{self.parse(arg[0])}</u>"
-        # TODO: add warning, tag is ignored.
-        return self.parse(arg[0])
-
-    @override
     def del__(self, arg: Arguments) -> str:
         if self.is_github_flavored:
             return f"~~{self.parse(arg[0])}~~"
@@ -749,10 +729,6 @@ class DefaultWiki(Default):
         return f"''{self.parse(arg[0])}''"
 
     @override
-    def u(self, arg: Arguments) -> str:
-        return f"<u>{self.parse(arg[0])}</u>"
-
-    @override
     def del__(self, arg: Arguments) -> str:
         return f"~~{self.parse(arg[0])}~~"
 
@@ -891,10 +867,6 @@ class DefaultTeX(Default):
     @override
     def e(self, arg: Arguments) -> str:
         return f"{{\\em {self.parse(arg[0])}}}"
-
-    @override
-    def u(self, arg: Arguments) -> str:
-        raise TagNotImplementedError("u")
 
     @override
     def del__(self, arg: Arguments) -> str:

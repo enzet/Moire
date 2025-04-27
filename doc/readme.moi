@@ -41,9 +41,6 @@ syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.:
 
 Example Moire code:
 
-\i {italic \b {bold italic}}
-\b {italic \i {bold italic}}
-
 \code {moire} {
 \\list
     \{Item 1,\}
