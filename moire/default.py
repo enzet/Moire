@@ -115,9 +115,16 @@ class Default(Moire, ABC):
         raise TagNotImplementedError("del")
 
     @abstractmethod
+    def c(self, arg: Arguments) -> str:
+        """Inline code."""
+        raise TagNotImplementedError("c")
+
     def m(self, arg: Arguments) -> str:
-        """Monospaced text."""
-        raise TagNotImplementedError("m")
+        """Monospaced text.
+
+        This tag is deprecated. Now it is an alias for `\\c`.
+        """
+        return self.c(arg)
 
     @abstractmethod
     def sc(self, arg: Arguments) -> str:
@@ -306,7 +313,7 @@ class DefaultHTML(Default):
         return f"<del>{self.parse(arg[0])}</del>"
 
     @override
-    def m(self, arg: Arguments) -> str:
+    def c(self, arg: Arguments) -> str:
         return f"<code>{self.parse(arg[0])}</code>"
 
     @override
@@ -437,7 +444,7 @@ class DefaultText(Default):
         return self.parse(arg[0], depth=depth + 1)
 
     @override
-    def m(self, arg: Arguments) -> str:
+    def c(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
@@ -611,7 +618,7 @@ class DefaultMarkdown(Default):
         return self.parse(arg[0])
 
     @override
-    def m(self, arg: Arguments) -> str:
+    def c(self, arg: Arguments) -> str:
         return f"`{self.parse(arg[0])}`"
 
     @override
@@ -750,7 +757,7 @@ class DefaultWiki(Default):
         return f"~~{self.parse(arg[0])}~~"
 
     @override
-    def m(self, arg: Arguments) -> str:
+    def c(self, arg: Arguments) -> str:
         return f"`{self.parse(arg[0])}`"
 
     @override
@@ -894,7 +901,7 @@ class DefaultTeX(Default):
         raise TagNotImplementedError("del")
 
     @override
-    def m(self, arg: Arguments) -> str:
+    def c(self, arg: Arguments) -> str:
         return f"{{\\tt {self.parse(arg[0])}}}"
 
     @override
