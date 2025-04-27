@@ -95,6 +95,22 @@ Rendering:
     {{Cell 1, 1} {Cell 1, 2}}
     {{Cell 2, 1} {Cell 2, 2}}
 
+\3 {Tag system} {tag-system}
+
+Moire has a TeX-like syntax. Each tag has a name, positional arguments, and
+named arguments. Tag name starts with \c {\\}, positional arguments are
+written between curly braces \c {\{} and \c {\}}, and named arguments are
+written in square brackets \c {\[} and \c {\]}. E.g.:
+
+\code {moire} {
+\\list \[ordered; start: 2\]
+    \{Item 1,\}
+    \{item 2.\}
+}
+
+Special characters are: \c {\\}, \c {\{}, \c {\}}, \c {\[}, \c {\]}, \c {:},
+and \c {;}. They can be escaped with a backslash \c {\\}. E.g.: \c {\\\{}.
+
 \2 {Installation} {installation}
 
 Requirements: Python 3.12.

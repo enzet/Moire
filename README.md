@@ -71,6 +71,18 @@ Rendering:
 | Cell 1, 1 | Cell 1, 2 |
 | Cell 2, 1 | Cell 2, 2 |
 
+### Tag system
+
+Moire has a TeX-like syntax. Each tag has a name, positional arguments, and named arguments. Tag name starts with `\`, positional arguments are written between curly braces `{` and `}`, and named arguments are written in square brackets `[` and `]`. E.g.:
+
+```moire
+\list [ordered; start: 2]
+    {Item 1,}
+    {item 2.}
+```
+
+Special characters are: `\`, `{`, `}`, `[`, `]`, `:`, and `;`. They can be escaped with a backslash `\`. E.g.: `\{`.
+
 ## Installation
 
 Requirements: Python 3.12.
