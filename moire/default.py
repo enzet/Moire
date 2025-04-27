@@ -289,7 +289,7 @@ class DefaultHTML(Default):
 
     @override
     def strike(self, arg: Arguments) -> str:
-        return f"<s>{self.parse(arg[0])}</s>"
+        return f"<del>{self.parse(arg[0])}</del>"
 
     @override
     def m(self, arg: Arguments) -> str:

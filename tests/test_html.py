@@ -239,3 +239,52 @@ def test_html_table_with_wrong_data() -> None:
         "<table><tr><td><p>td</p></td><td><p>td</p></td></tr></table>",
         "Tag with incorrectly placed data",
     )
+
+
+def test_html_header() -> None:
+    """Test header."""
+    check("\\1 {header}", "<h1>header</h1>", "Header")
+
+
+def test_html_bold() -> None:
+    """Test bold text."""
+    check("\\b {text}", "<b>text</b>", "Bold")
+
+
+def test_html_italic() -> None:
+    """Test italic text."""
+    check("\\i {text}", "<i>text</i>", "Italic")
+
+
+def test_html_underline() -> None:
+    """Test underline text."""
+    check("\\u {text}", "<u>text</u>", "Underline")
+
+
+def test_html_strikethrough() -> None:
+    """Test strikethrough text."""
+    check("\\strike {text}", "<del>text</del>", "Strikethrough")
+
+
+def test_html_monospace() -> None:
+    """Test monospace text."""
+    check("\\m {text}", "<code>text</code>", "Monospace")
+
+
+def test_html_small_caps() -> None:
+    """Test small caps text."""
+    check(
+        "\\sc {text}",
+        '<span style="font-variant: small-caps;">text</span>',
+        "Small caps",
+    )
+
+
+def test_html_subscript() -> None:
+    """Test subscript text."""
+    check("\\sub {text}", "<sub>text</sub>", "Subscript")
+
+
+def test_html_superscript() -> None:
+    """Test superscript text."""
+    check("\\super {text}", "<sup>text</sup>", "Superscript")
