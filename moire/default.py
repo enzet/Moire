@@ -300,7 +300,7 @@ class DefaultHTML(Default):
         """Small capital letters."""
         return (
             f'<span style="font-variant: small-caps;">{self.parse(arg[0])}'
-            f"</span>"
+            "</span>"
         )
 
     def sub(self, arg: Arguments) -> str:
@@ -602,6 +602,11 @@ class DefaultMarkdown(Default):
 
     @override
     def sc(self, arg: Arguments) -> str:
+        if self.is_html:
+            return (
+                f'<span style="font-variant: small-caps;">{self.parse(arg[0])}'
+                "</span>"
+            )
         # TODO: add warning, tag is ignored.
         return self.parse(arg[0])
 

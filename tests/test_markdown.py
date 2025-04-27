@@ -58,6 +58,16 @@ def test_markdown_monospace() -> None:
     check("\\m {text}", "`text`")
 
 
+def test_markdown_small_caps() -> None:
+    """Test small caps text."""
+    check("\\sc {text}", '<span style="font-variant: small-caps;">text</span>')
+
+
+def test_markdown_small_caps_no_html() -> None:
+    """Test small caps text without HTML."""
+    check("\\sc {text}", "text", is_html=False)
+
+
 def test_markdown_list() -> None:
     """Test list."""
     check(
