@@ -17,7 +17,7 @@ There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header 
 | Emphasized | `\e {text}` | *text* |
 | Strong emphasized | `\s {text}` | **text** |
 | Inline code | `\c {text}` | `text` |
-| Deleted | `\del {text}` | ~~text~~ |
+| Deleted | `\del {text}` | <del>text</del> |
 | Subscript | `\sub {text}` | <sub>text</sub> |
 | Superscript | `\super {text}` | <sup>text</sup> |
 
@@ -66,7 +66,7 @@ Rendering:
 
 ## Installation
 
-Requirements: Python 3.8.
+Requirements: Python 3.12.
 
 ```bash
 pip install .
@@ -77,7 +77,7 @@ pip install .
 Convert Moire file to other formats:
 
 ```bash
-    moire -i <Moire input file> -f <format> -o <output file> <other options>
+moire -i <Moire input file> -f <format> -o <output file> <other options>
 ```
 
 E.g., this file is generated from Moire code using this command:

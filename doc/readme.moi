@@ -16,13 +16,13 @@ syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.:
 \4 {Formatting} {formatting}
 
 \table
-    {{}              {Example Moire code}     {Rendering}}
-    {{Italic}        {\m {\\i \{text\}}}      {\i {text}}}
-    {{Bold}          {\m {\\b \{text\}}}      {\b {text}}}
-    {{Monospaced}    {\m {\\m \{text\}}}      {\m {text}}}
-    {{Strikethrough} {\m {\\strike \{text\}}} {\strike {text}}}
-    {{Subscript}     {\m {\\sub \{text\}}}    {\sub {text}}}
-    {{Superscript}   {\m {\\super \{text\}}}  {\super {text}}}
+    {{}                  {Example Moire code}    {Rendering}}
+    {{Emphasized}        {\m {\\e \{text\}}}     {\e {text}}}
+    {{Strong emphasized} {\m {\\s \{text\}}}     {\s {text}}}
+    {{Inline code}       {\m {\\c \{text\}}}     {\c {text}}}
+    {{Deleted}           {\m {\\del \{text\}}}   {\del {text}}}
+    {{Subscript}         {\m {\\sub \{text\}}}   {\sub {text}}}
+    {{Superscript}       {\m {\\super \{text\}}} {\super {text}}}
 
 \4 {Links} {links}
 
