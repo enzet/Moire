@@ -43,14 +43,14 @@ def test_markdown_underline_no_html() -> None:
     check("\\u {text}", "text", is_html=False)
 
 
-def test_markdown_strikethrough() -> None:
-    """Test strikethrough text."""
-    check("\\strike {text}", "<del>text</del>")
+def test_markdown_deleted() -> None:
+    """Test deleted text."""
+    check("\\del {text}", "<del>text</del>")
 
 
-def test_markdown_strikethrough_no_html() -> None:
-    """Test strikethrough text without HTML."""
-    check("\\strike {text}", "text", is_html=False)
+def test_markdown_deleted_no_html() -> None:
+    """Test deleted text without HTML."""
+    check("\\del {text}", "text", is_html=False)
 
 
 def test_markdown_monospace() -> None:

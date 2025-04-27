@@ -110,9 +110,9 @@ class Default(Moire, ABC):
         raise TagNotImplementedError("u")
 
     @abstractmethod
-    def strike(self, arg: Arguments) -> str:
-        """Strikethrough text."""
-        raise TagNotImplementedError("strike")
+    def del__(self, arg: Arguments) -> str:
+        """Deleted text."""
+        raise TagNotImplementedError("del")
 
     @abstractmethod
     def m(self, arg: Arguments) -> str:
@@ -302,7 +302,7 @@ class DefaultHTML(Default):
         return f"<u>{self.parse(arg[0])}</u>"
 
     @override
-    def strike(self, arg: Arguments) -> str:
+    def del__(self, arg: Arguments) -> str:
         return f"<del>{self.parse(arg[0])}</del>"
 
     @override
@@ -433,7 +433,7 @@ class DefaultText(Default):
         return self.parse(arg[0], depth=depth + 1)
 
     @override
-    def strike(self, arg: Arguments) -> str:
+    def del__(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
@@ -602,7 +602,7 @@ class DefaultMarkdown(Default):
         return self.parse(arg[0])
 
     @override
-    def strike(self, arg: Arguments) -> str:
+    def del__(self, arg: Arguments) -> str:
         if self.is_github_flavored:
             return f"~~{self.parse(arg[0])}~~"
         if self.is_html:
@@ -746,7 +746,7 @@ class DefaultWiki(Default):
         return f"<u>{self.parse(arg[0])}</u>"
 
     @override
-    def strike(self, arg: Arguments) -> str:
+    def del__(self, arg: Arguments) -> str:
         return f"~~{self.parse(arg[0])}~~"
 
     @override
@@ -890,8 +890,8 @@ class DefaultTeX(Default):
         raise TagNotImplementedError("u")
 
     @override
-    def strike(self, arg: Arguments) -> str:
-        raise TagNotImplementedError("strike")
+    def del__(self, arg: Arguments) -> str:
+        raise TagNotImplementedError("del")
 
     @override
     def m(self, arg: Arguments) -> str:

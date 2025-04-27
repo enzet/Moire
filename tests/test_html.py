@@ -261,9 +261,9 @@ def test_html_underline() -> None:
     check("\\u {text}", "<u>text</u>", "Underline")
 
 
-def test_html_strikethrough() -> None:
-    """Test strikethrough text."""
-    check("\\strike {text}", "<del>text</del>", "Strikethrough")
+def test_html_deleted() -> None:
+    """Test deleted text."""
+    check("\\del {text}", "<del>text</del>", "Deleted")
 
 
 def test_html_monospace() -> None:

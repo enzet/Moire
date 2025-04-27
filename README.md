@@ -17,7 +17,7 @@ There are 6 possible header levels: `\1`, `\2`, ..., `\6` with syntax `\<header 
 | Emphasized | `\e {text}` | *text* |
 | Strong emphasized | `\s {text}` | **text** |
 | Monospaced | `\m {text}` | `text` |
-| Strikethrough | `\strike {text}` | ~~text~~ |
+| Deleted | `\del {text}` | ~~text~~ |
 | Subscript | `\sub {text}` | <sub>text</sub> |
 | Superscript | `\super {text}` | <sup>text</sup> |
 
