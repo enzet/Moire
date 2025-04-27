@@ -1,7 +1,31 @@
 \1 {Moire} {moire}
 
-Moire (pronounced as /mwɑɹ/) is a simple extendable multipurpose markup
-language.
+Moire (pronounced as /mwɑɹ/) is a lightweight markup language designed for
+clear, structured, and portable text formatting. It aims to combine the
+simplicity of Markdown, the rigor of TeX, and the broad applicability of HTML —
+while avoiding their common pitfalls.
+
+Moire is built to be general-purpose: write once, convert anywhere — web, print,
+documentation, ebooks, slides, or other formats — without getting trapped in one
+domain or ecosystem.
+
+Why not other markup languages?
+
+\list
+{
+    Unlike many markup languages, Moire is designed for \s {general-purpose}
+    text formatting, not tied to a specific output like web pages, PDFs, or
+    technical documentation.
+}
+{
+    Unlike HTML or Wiki markup, Moire uses a \s {concise, consistent, and
+    disambiguated tag system} — avoiding both the verbosity of HTML and the
+    ambiguity of Markdown.
+}
+{
+    Unlike TeX, Moire is \s {simple} and \s {beginner-friendly}. For example,
+    you can define a table without worrying about its styling or placement.
+}
 
 \2 {Writing on Moire} {writing-on-moire}
 
