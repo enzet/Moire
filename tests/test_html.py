@@ -266,15 +266,6 @@ def test_html_monospace() -> None:
     check("\\m {text}", "<code>text</code>", "Monospace")
 
 
-def test_html_small_caps() -> None:
-    """Test small caps text."""
-    check(
-        "\\sc {text}",
-        '<span style="font-variant: small-caps;">text</span>',
-        "Small caps",
-    )
-
-
 def test_html_subscript() -> None:
     """Test subscript text."""
     check("\\sub {text}", "<sub>text</sub>", "Subscript")

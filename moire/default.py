@@ -105,11 +105,6 @@ class Default(Moire, ABC):
         return self.e(arg)
 
     @abstractmethod
-    def del__(self, arg: Arguments) -> str:
-        """Deleted text."""
-        raise TagNotImplementedError("del")
-
-    @abstractmethod
     def c(self, arg: Arguments) -> str:
         """Inline code."""
         raise TagNotImplementedError("c")
@@ -122,9 +117,9 @@ class Default(Moire, ABC):
         return self.c(arg)
 
     @abstractmethod
-    def sc(self, arg: Arguments) -> str:
-        """Small capital letters."""
-        raise TagNotImplementedError("sc")
+    def del__(self, arg: Arguments) -> str:
+        """Deleted text."""
+        raise TagNotImplementedError("del")
 
     @abstractmethod
     def sub(self, arg: Arguments) -> str:
@@ -300,27 +295,19 @@ class DefaultHTML(Default):
         return f"<i>{self.parse(arg[0])}</i>"
 
     @override
-    def del__(self, arg: Arguments) -> str:
-        return f"<del>{self.parse(arg[0])}</del>"
-
-    @override
     def c(self, arg: Arguments) -> str:
         return f"<code>{self.parse(arg[0])}</code>"
 
     @override
-    def sc(self, arg: Arguments) -> str:
-        """Small capital letters."""
-        return (
-            f'<span style="font-variant: small-caps;">{self.parse(arg[0])}'
-            "</span>"
-        )
+    def del__(self, arg: Arguments) -> str:
+        return f"<del>{self.parse(arg[0])}</del>"
 
+    @override
     def sub(self, arg: Arguments) -> str:
-        """Subscript."""
         return f"<sub>{self.parse(arg[0])}</sub>"
 
+    @override
     def super(self, arg: Arguments) -> str:
-        """Superscript."""
         return f"<sup>{self.parse(arg[0])}</sup>"
 
     # Main block tags.
@@ -427,15 +414,11 @@ class DefaultText(Default):
         return self.parse(arg[0], depth=depth + 1)
 
     @override
-    def del__(self, arg: Arguments) -> str:
-        return self.parse(arg[0], depth=depth + 1)
-
-    @override
     def c(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
-    def sc(self, arg: Arguments) -> str:
+    def del__(self, arg: Arguments) -> str:
         return self.parse(arg[0], depth=depth + 1)
 
     @override
@@ -589,25 +572,15 @@ class DefaultMarkdown(Default):
         return f"*{self.parse(arg[0])}*"
 
     @override
+    def c(self, arg: Arguments) -> str:
+        return f"`{self.parse(arg[0])}`"
+
+    @override
     def del__(self, arg: Arguments) -> str:
         if self.is_github_flavored:
             return f"~~{self.parse(arg[0])}~~"
         if self.is_html:
             return f"<del>{self.parse(arg[0])}</del>"
-        # TODO: add warning, tag is ignored.
-        return self.parse(arg[0])
-
-    @override
-    def c(self, arg: Arguments) -> str:
-        return f"`{self.parse(arg[0])}`"
-
-    @override
-    def sc(self, arg: Arguments) -> str:
-        if self.is_html:
-            return (
-                f'<span style="font-variant: small-caps;">{self.parse(arg[0])}'
-                "</span>"
-            )
         # TODO: add warning, tag is ignored.
         return self.parse(arg[0])
 
@@ -729,16 +702,12 @@ class DefaultWiki(Default):
         return f"''{self.parse(arg[0])}''"
 
     @override
-    def del__(self, arg: Arguments) -> str:
-        return f"~~{self.parse(arg[0])}~~"
-
-    @override
     def c(self, arg: Arguments) -> str:
         return f"`{self.parse(arg[0])}`"
 
     @override
-    def sc(self, arg: Arguments) -> str:
-        return self.parse(arg[0])
+    def del__(self, arg: Arguments) -> str:
+        return f"~~{self.parse(arg[0])}~~"
 
     @override
     def sub(self, arg: Arguments) -> str:
@@ -869,16 +838,12 @@ class DefaultTeX(Default):
         return f"{{\\em {self.parse(arg[0])}}}"
 
     @override
-    def del__(self, arg: Arguments) -> str:
-        raise TagNotImplementedError("del")
-
-    @override
     def c(self, arg: Arguments) -> str:
         return f"{{\\tt {self.parse(arg[0])}}}"
 
     @override
-    def sc(self, arg: Arguments) -> str:
-        return f"{{\\sc {self.parse(arg[0])}}}"
+    def del__(self, arg: Arguments) -> str:
+        raise TagNotImplementedError("del")
 
     @override
     def sub(self, arg: Arguments) -> str:
