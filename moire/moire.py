@@ -7,7 +7,7 @@ import logging
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 from io import StringIO
 from typing import Any, Optional
 
@@ -26,6 +26,17 @@ class Constant(Enum):
     ARGUMENT_START = "{"
     ARGUMENT_END = "}"
     PARAGRAPH_DELIMITER = "\n\n"
+
+
+class TokenType(Enum):
+    """Token types."""
+
+    TAG = auto()
+    NAMED_ARGUMENT = auto()
+    POSITIONAL_ARGUMENT = auto()
+    ESCAPED = auto()
+    COMMENT = auto()
+    EOF = auto()
 
 
 SPACES: str = " \n\t\r"
