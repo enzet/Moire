@@ -43,13 +43,17 @@ SPACES: str = " \n\t\r"
 
 
 class Root:
+    """Root tree element."""
+
     def __init__(self):
         self.elements: list = []
 
     def add(self, element) -> None:
+        """Add an element to the root."""
         self.elements.append(element)
 
     def serialize(self) -> str:
+        """Serialize the root into a text form."""
         return "\n".join(serialize(x) for x in self.elements)
 
 
@@ -71,12 +75,13 @@ class Tag:
             return False
         if len(self.parameters) != len(other.parameters):
             return False
-        for i in range(len(self.parameters)):
-            if self.parameters[i] != other.parameters[i]:
+        for index, parameter in enumerate(self.parameters):
+            if parameter != other.parameters[index]:
                 return False
         return True
 
     def is_header(self) -> bool:
+        """Check if the tag is a header."""
         return self.id in "123456"
 
     def serialize(self) -> str:
