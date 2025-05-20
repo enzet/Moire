@@ -11,6 +11,10 @@ __email__ = "me@enzet.ru"
 converter = DefaultHTML()
 
 
+def check_in_block(code: str, result: str, message: str):
+    assert converter.convert(code, wrap=False, in_block=True) == result, message
+
+
 def check(code: str, result: str, message: str) -> None:
     """Check the result of the conversion.
 
@@ -26,6 +30,11 @@ def check(code: str, result: str, message: str) -> None:
 def test_html_text() -> None:
     """Test plain text."""
     check("plain text", "plain text", "Plain text")
+
+
+def test_html_text_in_block():
+    """Test plain text in block."""
+    check_in_block("plain text", "<p>plain text</p>", "Plain text in block")
 
 
 def test_html_text_with_2_spaces() -> None:
@@ -201,6 +210,14 @@ def test_html_tag_2_parameters_with_spaces() -> None:
         "\\ref {  link  } {  text  }",
         '<a href=" link "> text </a>',
         "Tag with multiple parameters with spaces",
+    )
+
+
+def test_html_paragraph_in_table() -> None:
+    check(
+        "\\table{text\n\ntext}",
+        "<table><tr><td><p>text</p><p>text</p></td></tr></table>",
+        "Paragraph in table",
     )
 
 

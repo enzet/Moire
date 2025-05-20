@@ -193,6 +193,8 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
     in_space: bool = True
     lexemes: list[Lexeme] = []
     positions: list[int] = []
+    lexemes: list[Lexeme] = []
+    positions: list[int] = []
     tag_name: str = ""
     word: str = ""
 
@@ -320,10 +322,19 @@ class Moire:
 
     escape_symbols: dict[str, str] = {}
 
-    def __init__(self, file_name: Optional[str] = None):
+    def __init__(
+        self, file_name: Optional[str] = None, ignore_unknown_tags: bool = False
+    ) -> None:
         self.index: int = 0
         self.status: dict[str, Any] = {"missing_tags": set()}
+        self.status: dict[str, Any] = {"missing_tags": set()}
         self.file_name: Optional[str] = file_name
+        self.ignore_unknown_tags: bool = ignore_unknown_tags
+
+        self.definitions: dict[str, str] = {}
+        """Mapping from tag names to patterns."""
+
+        self.definition_arguments: list[str] = ""
 
     def init(self):
         """Some preliminary actions."""
@@ -436,6 +447,23 @@ class Moire:
 
         if isinstance(text, Tag):
             key: str = "header" if (text.id in "123456") else text.id
+
+            if key == "arg":
+                return self.definition_arguments[
+                    int(self.clear(text.parameters[0])) - 1
+                ]
+
+            if key in self.definitions:
+                pattern: str = self.definitions[key]
+
+                old_value = self.definition_arguments
+                self.definition_arguments = []
+                for arg in text.parameters:
+                    self.definition_arguments.append(self.parse(arg))
+                result: str = self.parse(pattern)
+                self.definition_arguments = old_value
+                return result
+
             method: Optional[Callable] = None
             try:
                 method = getattr(self, mode + key)
@@ -498,12 +526,20 @@ class Moire:
 
         raise ValueError(f"Part is of type {type(text)}")
 
-    def clear(self, text) -> str:
+    def clear(self, text: str, escape: bool = True) -> str:
         """Get flattened element content."""
 
         if isinstance(text, list):
-            return self.escape("".join([x for x in text if isinstance(x, str)]))
-        return self.escape(text)
+            if escape:
+                return self.escape(
+                    "".join([x for x in text if isinstance(x, str)])
+                )
+            else:
+                return "".join([x for x in text if isinstance(x, str)])
+        if escape:
+            return self.escape(text)
+        else:
+            return text
 
     def get_ir(self, text: str, offset: int = 0, prefix: str = ""):
         """Get intermediate representation."""
@@ -570,6 +606,47 @@ class Moire:
                 paragraph[-1] = paragraph[-1].rstrip()
             result += str(self.parse(Tag("text", [paragraph])))
         return result
+
+    def define(self, arg) -> str:
+        """Define pattern for a tag.
+
+        Arguments: tag name, pattern.
+
+        After the definition, the tag `\\<tag name>` will be accepted by the
+        Moire parser. Tag will be converted to the pattern string with
+        placeholders `%<number>` replaced with tag arguments: `%1` replaced with
+        the first argument, `%2` with the second and so on.
+        """
+        tag_name: str = self.clear(arg[0])
+        pattern: str = arg[1]
+        self.definitions[tag_name] = pattern
+
+        return ""
+
+    def exec(self, arg) -> str:
+        code: str = self.parse(arg[0])
+        try:
+            exec(code)
+        except NameError:
+            print("exec", "NameError")
+        except SyntaxError:
+            print("exec", "SyntaxError")
+        except AttributeError:
+            print("exec", "AttributeError")
+
+        return ""
+
+    def eval(self, arg) -> str:
+        code: str = self.parse(arg[0])
+        try:
+            evaluated = self.parse(str(eval(code)))
+            return evaluated
+        except NameError:
+            print("eval", "NameError")
+        except AttributeError:
+            print("eval", "AttributeError")
+
+        return ""
 
 
 def serialize(object_: Any) -> str:
