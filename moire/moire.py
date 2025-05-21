@@ -623,31 +623,6 @@ class Moire:
 
         return ""
 
-    def exec(self, arg) -> str:
-        code: str = self.parse(arg[0])
-        try:
-            exec(code)
-        except NameError:
-            print("exec", "NameError")
-        except SyntaxError:
-            print("exec", "SyntaxError")
-        except AttributeError:
-            print("exec", "AttributeError")
-
-        return ""
-
-    def eval(self, arg) -> str:
-        code: str = self.parse(arg[0])
-        try:
-            evaluated = self.parse(str(eval(code)))
-            return evaluated
-        except NameError:
-            print("eval", "NameError")
-        except AttributeError:
-            print("eval", "AttributeError")
-
-        return ""
-
 
 def serialize(object_: Any) -> str:
     """Serialize Moire elements into a text form."""
