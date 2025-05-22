@@ -27,7 +27,7 @@ dev = [
 Homepage = "https://github.com/enzet/Moire"
 
 [project.scripts]
-moire = "moire.main:main"
+moire = "moire.__main__:main"
 
 [tool.setuptools]
 packages = ["moire"]
