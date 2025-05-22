@@ -215,7 +215,7 @@ def test_html_tag_2_parameters_with_spaces() -> None:
 
 def test_html_paragraph_in_table() -> None:
     check(
-        "\\table{text\n\ntext}",
+        "\\table{{text\n\ntext}}",
         "<table><tr><td><p>text</p><p>text</p></td></tr></table>",
         "Paragraph in table",
     )
