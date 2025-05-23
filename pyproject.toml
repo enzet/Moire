@@ -17,10 +17,9 @@ dependencies = []
 [project.optional-dependencies]
 dev = [
     "black~=24.4.2",
-    "isort~=6.0.1",
     "mypy~=1.15.0",
-    "pylint~=3.3.5",
     "pytest~=8.3.4",
+    "ruff~=0.4.2",
 ]
 
 [project.urls]
@@ -36,9 +35,6 @@ packages = ["moire"]
 line-length = 80
 skip-magic-trailing-comma = true
 
-[tool.isort]
-profile = "black"
-
 [tool.mypy]
 python_version = "3.12"
 disable_error_code = ["import-untyped"]
@@ -46,20 +42,43 @@ disallow_untyped_defs = true  # Report functions without type annotations.
 disallow_untyped_decorators = true  # Ensure decorators have types.
 warn_return_any = true  # Warn if return type is inferred as `Any`.
 
-[tool.pylint]
-py-version = "3.12"
-disable = [
-    "E0401",  # Import error (Pylint usually fails to track imports correctly).
-    "W0511",  # `TODO`/`FIXME` comments warning.
-    "C0302",  # Too many lines in module.
-    "C0415",  # Import outside toplevel.
-    "R0902",  # Too many instance attributes.
-    "R0903",  # Too few public methods.
-    "R0904",  # Too many public methods.
-    "R0911",  # Too many return statements.
-    "R0912",  # Too many branches.
-    "R0913",  # Too many arguments in function.
-    "R0914",  # Too many local variables.
-    "R0915",  # Too many statements.
-    "R0917",  # Too many positional arguments.
+[tool.ruff]
+# Enable pycodestyle (`E`), Pyflakes (`F`), and import sorting (`I`) codes.
+select = [
+    "E",  # Pycodestyle.
+    "F",  # Pyflakes.
+    "I",  # Import sorting.
+    "B",  # Bugbear.
+    "C4",  # Complexity.
+    "UP",  # Unused parameters.
+    "N",  # Noqa.
+    "W",  # Warnings.
+    "RUF",  # Ruff.
 ]
+ignore = [
+    "ANN",  # Type annotations (handled by mypy).
+]
+
+# Allow autofix for all enabled rules (when `--fix` is used).
+fixable = ["ALL"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+]
+
+# Same line length as Black.
+line-length = 80
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.12
+target-version = "py312"
+
+[tool.ruff.isort]
+known-first-party = ["moire"]

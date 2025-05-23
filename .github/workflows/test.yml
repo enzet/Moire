@@ -40,6 +40,10 @@ jobs:
     - name: Check Code Style with Black
       run: |
         black --check moire/ tests/
-    - name: Lint with Flake8
+    - name: Check Types with MyPy
       run: |
-        flake8 --max-line-length=80 --ignore=ANN002,ANN003,ANN101,ANN102,E203,F403,F405,W503 moire/ tests/
+        mypy moire/ tests/
+    - name: Lint with Ruff
+      run: |
+        ruff check moire/ tests/
+        ruff check --fix moire/ tests/
