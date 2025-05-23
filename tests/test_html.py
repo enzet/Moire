@@ -11,7 +11,8 @@ __email__ = "me@enzet.ru"
 converter = DefaultHTML()
 
 
-def check_in_block(code: str, result: str, message: str):
+def check_in_block(code: str, result: str, message: str) -> None:
+    """Check the result of the conversion in block."""
     assert converter.convert(code, wrap=False, in_block=True) == result, message
 
 
@@ -214,6 +215,7 @@ def test_html_tag_2_parameters_with_spaces() -> None:
 
 
 def test_html_paragraph_in_table() -> None:
+    """Test paragraph in table."""
     check(
         "\\table{{text\n\ntext}}",
         "<table><tr><td><p>text</p><p>text</p></td></tr></table>",
