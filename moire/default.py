@@ -749,8 +749,7 @@ class DefaultWiki(Default):
                 f'<syntaxhighlight lang="{language}">'
                 f"\n{code_}\n</syntaxhighlight>"
             )
-        else:
-            return f"<pre><tt>{code_}\n</tt></pre>"
+        return f"<pre><tt>{code_}\n</tt></pre>"
 
     @override
     @staticmethod

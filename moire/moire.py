@@ -147,8 +147,7 @@ def trim_inside(text: str) -> str:
             while index < len(text) and text[index] in SPACES:
                 index += 1
             continue
-        else:
-            result += text[index]
+        result += text[index]
         index += 1
     return result
 
@@ -542,12 +541,10 @@ class Moire:
                 return self.escape(
                     "".join([x for x in text if isinstance(x, str)])
                 )
-            else:
-                return "".join([x for x in text if isinstance(x, str)])
+            return "".join([x for x in text if isinstance(x, str)])
         if escape:
             return self.escape(text)
-        else:
-            return text
+        return text
 
     def get_ir(self, text: str, offset: int = 0, prefix: str = "") -> list[Any]:
         """Get intermediate representation."""
