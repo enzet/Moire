@@ -212,7 +212,7 @@ class Default(Moire, ABC):
 
     def ignore(self, arg: Arguments) -> str:
         """Return only the first argument of a tag."""
-        return arg[0][0]
+        return self.clear(arg[0])
 
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
@@ -446,8 +446,8 @@ class DefaultText(Default):
     def table(self, arg: Arguments) -> str:
         widths: list[int] = []
         for row in arg:
-            parsed: list[str] = [self.parse(cell) for cell in row]
-            for index, cell in enumerate(parsed):
+            cells: list[str] = [self.parse(cell) for cell in row]
+            for index, cell in enumerate(cells):
                 if len(widths) - 1 < index:
                     widths.append(len(cell))
                 else:
@@ -707,11 +707,11 @@ class DefaultWiki(Default):
 
     @override
     def sub(self, arg: Arguments) -> str:
-        return DefaultHTML.sub(self, arg[0])
+        return DefaultHTML.sub(self, arg[0])  # type: ignore
 
     @override
     def super(self, arg: Arguments) -> str:
-        return DefaultHTML.super(self, arg[0])
+        return DefaultHTML.super(self, arg[0])  # type: ignore
 
     # Main block tags.
 
@@ -868,11 +868,11 @@ class DefaultTeX(Default):
         max_columns: int = 0
         for tr in arg:
             if isinstance(tr, list):
-                columns: int = 0
+                column_count: int = 0
                 for td in tr:
                     if isinstance(td, list):
-                        columns += 1
-                max_columns = max(max_columns, columns)
+                        column_count += 1
+                max_columns = max(max_columns, column_count)
 
         result += f"{{|{('l|' * max_columns)}}}\n\\hline\n"
 

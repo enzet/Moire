@@ -193,8 +193,6 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
     in_space: bool = True
     lexemes: list[Lexeme] = []
     positions: list[int] = []
-    lexemes: list[Lexeme] = []
-    positions: list[int] = []
     tag_name: str = ""
     word: str = ""
 
@@ -268,6 +266,8 @@ def get_intermediate(
         if item.type == "tag":
             if tag:
                 result.append(tag)
+            if item.content is None:
+                raise ValueError("No content in tag lexeme.")
             tag = Tag(item.content, [])
         elif item.type == "parameter_begin":
             level += 1
@@ -335,7 +335,7 @@ class Moire:
         self.definitions: dict[str, str] = {}
         """Mapping from tag names to patterns."""
 
-        self.definition_arguments: list[str] = ""
+        self.definition_arguments: list[str] = []
 
     def init(self) -> None:
         """Some preliminary actions."""
@@ -404,6 +404,8 @@ class Moire:
                 tree = tree.children[-1]
             else:
                 while int(part.id) <= int(tree.element.id):
+                    if tree.parent is None:
+                        raise ValueError(f"No parent for {tree}.")
                     tree = tree.parent
                 tree.children.append(element)
                 element.number = len(tree.children) - 1
@@ -412,13 +414,13 @@ class Moire:
         self.status["tree"] = content_root
 
         # Wrap whole text with "body" tag
-
+        wrapped_ir: list[Any] | Tag = ir
         if wrap:
-            ir = Tag("body", [ir, content_root])
+            wrapped_ir = Tag("body", [ir, content_root])
 
         self.init()
-        self.parse(ir, mode="pre_")
-        result: str = self.parse(ir, in_block=in_block)
+        self.parse(wrapped_ir, mode="pre_")
+        result: str = self.parse(wrapped_ir, in_block=in_block)
         self.finish()
 
         return result
@@ -476,11 +478,15 @@ class Moire:
                 except AttributeError:
                     pass
 
+            parsed: str
+
             if method is not None:
                 arg = Argument(text.parameters, spec)
                 if key == "header":
-                    return method(arg, int(text.id))
-                return method(arg)
+                    parsed = method(arg, int(text.id))
+                    return parsed
+                parsed = method(arg)
+                return parsed
 
             if mode == "":
                 self.status["missing_tags"].add(key)
