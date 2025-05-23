@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, override
+from typing import Any, ClassVar, override
 
 from moire.moire import Moire
 
@@ -225,9 +225,9 @@ class DefaultHTML(Default):
 
     name: str = "HTML"
     id_: str = "html"
-    extensions: list[str] = ["html", "htm"]
-    escape_symbols: dict[str, str] = {"<": "&lt;", ">": "&gt;"}
-    block_tags = BLOCK_TAGS
+    extensions: ClassVar[list[str]] = ["html", "htm"]
+    escape_symbols: ClassVar[dict[str, str]] = {"<": "&lt;", ">": "&gt;"}
+    block_tags: ClassVar[set[str]] = BLOCK_TAGS
 
     def __init__(self) -> None:
         super().__init__()
@@ -374,7 +374,7 @@ class DefaultText(Default):
     name: str = "Text"
     id_: str = "text"
     extension: str = "txt"
-    escape_symbols: dict[str, str] = {}
+    escape_symbols: ClassVar[dict[str, str]] = {}
 
     # Main methods.
 
@@ -502,8 +502,8 @@ class DefaultMarkdown(Default):
 
     name: str = "Markdown"
     id_: str = "markdown"
-    extensions: list[str] = ["md", "markdown"]
-    block_tags: list[str] = BLOCK_TAGS
+    extensions: ClassVar[list[str]] = ["md", "markdown"]
+    block_tags: ClassVar[set[str]] = BLOCK_TAGS
 
     def __init__(
         self, is_html: bool = True, is_github_flavored: bool = False
@@ -657,8 +657,8 @@ class DefaultWiki(Default):
 
     name = "Wiki"
     id_: str = "wiki"
-    extensions = ["wiki"]
-    block_tags = BLOCK_TAGS
+    extensions: ClassVar[list[str]] = ["wiki"]
+    block_tags: ClassVar[set[str]] = BLOCK_TAGS
 
     # Main methods.
 
@@ -776,9 +776,9 @@ class DefaultTeX(Default):
     id_: str = "tex"
     extension = "tex"
 
-    escape_symbols = {"_": "\\_"}
-    block_tags = BLOCK_TAGS
-    headers: list[str] = [
+    escape_symbols: ClassVar[dict[str, str]] = {"_": "\\_"}
+    block_tags: ClassVar[set[str]] = BLOCK_TAGS
+    headers: ClassVar[list[str]] = [
         "section", "subsection", "subsubsection", "paragraph", "subparagraph"
     ]  # fmt: skip
 

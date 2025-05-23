@@ -7,7 +7,6 @@ import logging
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Optional
 
 from moire.default import Default
 from moire.moire import Moire
@@ -17,8 +16,7 @@ __email__ = "me@enzet.ru"
 
 
 def main(
-    arguments: Optional[list[str]] = None,
-    top_class: Optional[type[Moire]] = None,
+    arguments: list[str] | None = None, top_class: type[Moire] | None = None
 ) -> None:
     """Converter entry point."""
 
@@ -38,7 +36,7 @@ def main(
 
     options: Namespace = parser.parse_args(arguments)
 
-    converter: Optional[Moire] = None
+    converter: Moire | None = None
     for class_ in top_class.__subclasses__():
         if class_.id_ == options.format:
             converter = class_()

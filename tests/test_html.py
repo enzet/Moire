@@ -8,7 +8,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-converter = DefaultHTML()
+converter: DefaultHTML = DefaultHTML()
 
 
 def check_in_block(code: str, result: str, message: str) -> None:
@@ -33,7 +33,7 @@ def test_html_text() -> None:
     check("plain text", "plain text", "Plain text")
 
 
-def test_html_text_in_block():
+def test_html_text_in_block() -> None:
     """Test plain text in block."""
     check_in_block("plain text", "<p>plain text</p>", "Plain text in block")
 

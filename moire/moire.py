@@ -9,7 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
 from io import StringIO
-from typing import Any, Optional
+from typing import Any, ClassVar, Self
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -45,10 +45,10 @@ SPACES: str = " \n\t\r"
 class Root:
     """Root tree element."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.elements: list = []
 
-    def add(self, element) -> None:
+    def add(self, element: Any) -> None:
         """Add an element to the root."""
         self.elements.append(element)
 
@@ -68,7 +68,7 @@ class Tag:
     id: str
     parameters: list
 
-    def __eq__(self, other: "Tag") -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return False
         if self.id != other.id:
@@ -98,7 +98,7 @@ class Lexeme:
     type: str
     """Lexeme type."""
 
-    content: Optional[str] = None
+    content: str | None = None
     """Content of the lexeme."""
 
 
@@ -106,7 +106,7 @@ class Lexeme:
 class Tree:
     """Double-linked tree of elements."""
 
-    parent: Optional["Tree"]
+    parent: Self | None
     """Parent element."""
 
     children: list["Tree"]
@@ -129,10 +129,10 @@ class Argument:
     spec: dict[str, Any]
     """Dictionary of specifications."""
 
-    def __getitem__(self, key: int):
+    def __getitem__(self, key: int) -> Any:
         return self.array[key]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.array)
 
 
@@ -153,7 +153,7 @@ def trim_inside(text: str) -> str:
     return result
 
 
-def preprocess_comments(text: str):
+def preprocess_comments(text: str) -> str:
     """Text to text processing: comments removing."""
 
     preprocessed: str = ""
@@ -256,11 +256,13 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
     return lexemes, positions
 
 
-def get_intermediate(lexemes, positions, level, index=0):
+def get_intermediate(
+    lexemes: list[Lexeme], positions: list[int], level: int, index: int = 0
+) -> tuple[int, list[Any]]:
     """Get intermediate representation."""
 
-    tag: Optional[Tag] = None
-    result = []
+    tag: Tag | None = None
+    result: list[Any] = []
     while index < len(lexemes):
         item = lexemes[index]
         if item.type == "tag":
@@ -311,24 +313,23 @@ class Moire:
     name: str = "Empty format"
     """Name of the format."""
 
-    block_tags: list[str] = []
+    block_tags: ClassVar[set[str]] = set()
     """List of block tags."""
 
     id_: str = "moire"
     """Format identifier."""
 
-    extensions: list[str] = []
+    extensions: ClassVar[list[str]] = []
     """List of typical file extensions."""
 
-    escape_symbols: dict[str, str] = {}
+    escape_symbols: ClassVar[dict[str, str]] = {}
 
     def __init__(
-        self, file_name: Optional[str] = None, ignore_unknown_tags: bool = False
+        self, file_name: str | None = None, ignore_unknown_tags: bool = False
     ) -> None:
         self.index: int = 0
         self.status: dict[str, Any] = {"missing_tags": set()}
-        self.status: dict[str, Any] = {"missing_tags": set()}
-        self.file_name: Optional[str] = file_name
+        self.file_name: str | None = file_name
         self.ignore_unknown_tags: bool = ignore_unknown_tags
 
         self.definitions: dict[str, str] = {}
@@ -336,10 +337,10 @@ class Moire:
 
         self.definition_arguments: list[str] = ""
 
-    def init(self):
+    def init(self) -> None:
         """Some preliminary actions."""
 
-    def finish(self):
+    def finish(self) -> None:
         """Some finish actions."""
 
     def escape(self, text: str) -> str:
@@ -387,7 +388,7 @@ class Moire:
         """Convert Moire text without includes but with comments artifacts to
         selected format.
         """
-        ir = self.get_ir(input_data)
+        ir: list[Any] = self.get_ir(input_data)
 
         # Construct content table
 
@@ -424,11 +425,11 @@ class Moire:
 
     def parse(
         self,
-        text,
+        text: Any,
         in_block: bool = False,
         depth: int = 0,
         mode: str = "",
-        spec: Optional[dict[str, Any]] = None,
+        spec: dict[str, Any] | None = None,
     ) -> str:
         """Element parsing into formatted text.
 
@@ -464,7 +465,7 @@ class Moire:
                 self.definition_arguments = old_value
                 return result
 
-            method: Optional[Callable] = None
+            method: Callable | None = None
             try:
                 method = getattr(self, mode + key)
             except AttributeError:
@@ -541,7 +542,7 @@ class Moire:
         else:
             return text
 
-    def get_ir(self, text: str, offset: int = 0, prefix: str = ""):
+    def get_ir(self, text: str, offset: int = 0, prefix: str = "") -> list[Any]:
         """Get intermediate representation."""
 
         # Remove comments.
@@ -607,7 +608,7 @@ class Moire:
             result += str(self.parse(Tag("text", [paragraph])))
         return result
 
-    def define(self, arg) -> str:
+    def define(self, arg: list[str]) -> str:
         """Define pattern for a tag.
 
         Arguments: tag name, pattern.
