@@ -325,7 +325,7 @@ class Moire:
     escape_symbols: ClassVar[dict[str, str]] = {}
 
     def __init__(
-        self, file_name: str | None = None, ignore_unknown_tags: bool = False
+        self, file_name: str | None = None, *, ignore_unknown_tags: bool = False
     ) -> None:
         self.index: int = 0
         self.status: dict[str, Any] = {"missing_tags": set()}
@@ -383,7 +383,7 @@ class Moire:
         return ids
 
     def convert(
-        self, input_data: str, wrap: bool = True, in_block: bool = False
+        self, input_data: str, *, wrap: bool = True, in_block: bool = False
     ) -> str:
         """Convert Moire text without includes but with comments artifacts to
         selected format.
@@ -428,6 +428,7 @@ class Moire:
     def parse(
         self,
         text: Any,
+        *,
         in_block: bool = False,
         depth: int = 0,
         mode: str = "",
@@ -533,7 +534,7 @@ class Moire:
 
         raise ValueError(f"Part is of type {type(text)}")
 
-    def clear(self, text: str, escape: bool = True) -> str:
+    def clear(self, text: str, *, escape: bool = True) -> str:
         """Get flattened element content."""
 
         if isinstance(text, list):

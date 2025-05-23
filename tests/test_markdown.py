@@ -8,7 +8,7 @@ __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
 
-def check(code: str, result: str, is_html: bool = True) -> None:
+def check(code: str, result: str, *, is_html: bool = True) -> None:
     """Check the result of the conversion.
 
     :param code: Moire code

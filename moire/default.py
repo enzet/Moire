@@ -500,7 +500,7 @@ class DefaultMarkdown(Default):
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
 
     def __init__(
-        self, is_html: bool = True, is_github_flavored: bool = False
+        self, *, is_html: bool = True, is_github_flavored: bool = False
     ) -> None:
         super().__init__()
         self.list_level: int = 0
@@ -651,7 +651,7 @@ class DefaultMarkdown(Default):
 class DefaultWiki(Default):
     """Wiki syntax of Wikipedia."""
 
-    name = "Wiki"
+    name: str = "Wiki"
     id_: str = "wiki"
     extensions: ClassVar[list[str]] = ["wiki"]
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
