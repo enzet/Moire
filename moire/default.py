@@ -344,6 +344,7 @@ class DefaultHTML(Default):
         """Line break."""
         return "<br />"
 
+    @override
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
         return f'<a href="{link}">{text}</a>'
@@ -351,7 +352,7 @@ class DefaultHTML(Default):
     @override
     def ref(self, arg: Arguments) -> str:
         link: str = self.parse(arg[0])
-        return self._get_ref(
+        return DefaultHTML._get_ref(
             link, link if len(arg) == 1 else self.parse(arg[1])
         )
 
@@ -474,21 +475,14 @@ class DefaultText(Default):
         code_, _ = self._parse_code_arguments(arg)
         return code_ + "\n"
 
+    @override
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
         return f"{text} ({link})"
 
     @override
     def ref(self, arg: Arguments) -> str:
-        return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
-
-    @override
-    def size(self, arg: Arguments) -> str:
-        return self.parse(arg[0], depth=depth + 1)
-
-    @override
-    def text(self, arg: Arguments) -> str:
-        return self.parse(arg[0], depth=depth + 1) + "\n\n"
+        return DefaultText._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
 
 class DefaultMarkdown(Default):
@@ -639,11 +633,13 @@ class DefaultMarkdown(Default):
         code_, language = self._parse_code_arguments(arg)
         return f"```{language}\n{code_}\n```"
 
-    def _get_ref(self, link: str, text: str) -> str:
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
         return f"[{text}]({link})"
 
     def ref(self, arg: Arguments) -> str:
-        return self._get_ref(self.parse(arg[0]), self.parse(arg[1]))
+        return DefaultMarkdown._get_ref(self.parse(arg[0]), self.parse(arg[1]))
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
@@ -756,11 +752,13 @@ class DefaultWiki(Default):
         else:
             return f"<pre><tt>{code_}\n</tt></pre>"
 
-    def _get_ref(self, link: str, text: str) -> str:
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
 
     def ref(self, arg: Arguments) -> str:
-        return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
+        return DefaultWiki._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
