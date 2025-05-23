@@ -43,7 +43,6 @@ disallow_untyped_decorators = true  # Ensure decorators have types.
 warn_return_any = true  # Warn if return type is inferred as `Any`.
 
 [tool.ruff]
-# Enable pycodestyle (`E`), Pyflakes (`F`), and import sorting (`I`) codes.
 select = [
     "E",  # Pycodestyle.
     "F",  # Pyflakes.
@@ -63,22 +62,5 @@ ignore = [
 fixable = ["ALL"]
 unfixable = []
 
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".git",
-    ".mypy_cache",
-    ".ruff_cache",
-    ".venv",
-]
-
 # Same line length as Black.
 line-length = 80
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Assume Python 3.12
-target-version = "py312"
-
-[tool.ruff.isort]
-known-first-party = ["moire"]
