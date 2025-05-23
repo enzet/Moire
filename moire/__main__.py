@@ -56,7 +56,7 @@ def main(
         sys.exit(1)
 
     if options.output:
-        with open(options.output, "w", encoding="utf-8") as output_file:
+        with Path(options.output).open("w", encoding="utf-8") as output_file:
             output_file.write(output)
             logging.info("Converted to %s.", options.output)
     else:

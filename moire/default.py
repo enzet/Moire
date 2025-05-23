@@ -28,7 +28,7 @@ class TagNotImplementedError(NotImplementedError):
         self.tag: str = tag
 
     def __str__(self) -> str:
-        return f"Tag \\{self.tag} is not implemented in the parser"
+        return rf"Tag \{self.tag} is not implemented in the parser"
 
 
 class Default(Moire, ABC):
@@ -48,7 +48,7 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def title(self, arg: Arguments) -> str:
-        """Title of the document.
+        """Specify title of the document.
 
         This is metadata tag and is not displayed in the document.
         """
@@ -56,7 +56,7 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def author(self, arg: Arguments) -> str:
-        """Author of the document.
+        """Specify author of the document.
 
         This is metadata tag and is not displayed in the document.
         """
@@ -64,7 +64,7 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def date(self, arg: Arguments) -> str:
-        """Date of the document.
+        """Specify date of the document.
 
         This is metadata tag and is not displayed in the document.
         """
@@ -74,7 +74,7 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def header(self, arg: Arguments, level: int) -> str:
-        """Header.
+        """Add header with specified level.
 
         Arguments: <header text> <header identifier>?
         """
@@ -82,67 +82,67 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def e(self, arg: Arguments) -> str:
-        """Emphasized text."""
+        """Emphasize text."""
         raise TagNotImplementedError("e")
 
     @abstractmethod
     def s(self, arg: Arguments) -> str:
-        """Strong emphasized text."""
+        """Strongly emphasize text."""
         raise TagNotImplementedError("s")
 
     def b(self, arg: Arguments) -> str:
-        """Bold text.
+        r"""Make text bold.
 
-        This tag is deprecated. Now it is an alias for `\\s`.
+        This tag is deprecated. Now it is an alias for `\s`.
         """
         return self.s(arg)
 
     def i(self, arg: Arguments) -> str:
-        """Italic text.
+        r"""Make text italic.
 
-        This tag is deprecated. Now it is an alias for `\\e`.
+        This tag is deprecated. Now it is an alias for `\e`.
         """
         return self.e(arg)
 
     @abstractmethod
     def c(self, arg: Arguments) -> str:
-        """Inline code."""
+        """Mark text as code."""
         raise TagNotImplementedError("c")
 
     def m(self, arg: Arguments) -> str:
-        """Monospaced text.
+        r"""Make text monospaced.
 
-        This tag is deprecated. Now it is an alias for `\\c`.
+        This tag is deprecated. Now it is an alias for `\c`.
         """
         return self.c(arg)
 
     @abstractmethod
     def del__(self, arg: Arguments) -> str:
-        """Deleted text."""
+        """Mark text as deleted."""
         raise TagNotImplementedError("del")
 
     @abstractmethod
     def sub(self, arg: Arguments) -> str:
-        """Subscript."""
+        """Make text a subscript."""
         raise TagNotImplementedError("sub")
 
     @abstractmethod
     def super(self, arg: Arguments) -> str:
-        """Superscript."""
+        """Make text a superscript."""
         raise TagNotImplementedError("super")
 
     # Main block tags.
 
     @abstractmethod
     def list__(self, arg: Arguments) -> str:
-        """List of items."""
+        """Create a list of items."""
         raise TagNotImplementedError("list")
 
     @abstractmethod
     def table(self, arg: Arguments) -> str:
-        """Simple table with rows and columns.
+        r"""Create a simple table with rows and columns.
 
-        Format: \\table {{<cell>} {<cell>} ...} {{<cell>} {<cell>} ...} ...
+        Format: \table {{<cell>} {<cell>} ...} {{<cell>} {<cell>} ...} ...
 
         This simple table does not support header, border style, text alignment,
         or cell merging.
@@ -151,9 +151,9 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def image(self, arg: Arguments) -> str:
-        """Image.
+        r"""Image.
 
-        Format: \\image {<image source>} {<image title>}?
+        Format: \image {<image source>} {<image title>}?
         """
         raise TagNotImplementedError("image")
 
@@ -190,14 +190,14 @@ class Default(Moire, ABC):
 
     @abstractmethod
     def ref(self, arg: Arguments) -> str:
-        """Hypertext reference.
+        r"""Hypertext reference.
 
         Arguments: <reference> <text>?
 
         If reference starts with `#`, Moire will try to create a reference to
         the declared header or label with this identifier. E.g. if we have a
-        header `\\3 {Header} {test}` or label `\\label {test}`, valid references
-        for both of them will be `\\ref {#test} {reference text}`.
+        header `\3 {Header} {test}` or label `\label {test}`, valid references
+        for both of them will be `\ref {#test} {reference text}`.
         """
         raise TagNotImplementedError("ref")
 
@@ -228,9 +228,6 @@ class DefaultHTML(Default):
     extensions: ClassVar[list[str]] = ["html", "htm"]
     escape_symbols: ClassVar[dict[str, str]] = {"<": "&lt;", ">": "&gt;"}
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
-
-    def __init__(self) -> None:
-        super().__init__()
 
     # Parser methods.
 

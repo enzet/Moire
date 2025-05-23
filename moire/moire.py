@@ -337,17 +337,16 @@ class Moire:
         self.definition_arguments: list[str] = []
 
     def init(self) -> None:
-        """Some preliminary actions."""
+        """Do some preliminary actions."""
 
     def finish(self) -> None:
-        """Some finish actions."""
+        """Do some finish actions."""
 
     def escape(self, text: str) -> str:
         """Escape special characters.
 
         This method may be overridden if escaping is more complex.
         """
-
         for key, value in self.escape_symbols.items():
             text = text.replace(key, value)
         return text
@@ -384,9 +383,8 @@ class Moire:
     def convert(
         self, input_data: str, *, wrap: bool = True, in_block: bool = False
     ) -> str:
-        """Convert Moire text without includes but with comments artifacts to
-        selected format.
-        """
+        """Convert Moire code into selected format."""
+
         ir: list[Any] = self.get_ir(input_data)
 
         # Construct content table
@@ -613,11 +611,11 @@ class Moire:
         return result
 
     def define(self, arg: list[str]) -> str:
-        """Define pattern for a tag.
+        r"""Define pattern for a tag.
 
         Arguments: tag name, pattern.
 
-        After the definition, the tag `\\<tag name>` will be accepted by the
+        After the definition, the tag `\<tag name>` will be accepted by the
         Moire parser. Tag will be converted to the pattern string with
         placeholders `%<number>` replaced with tag arguments: `%1` replaced with
         the first argument, `%2` with the second and so on.
