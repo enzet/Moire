@@ -70,6 +70,27 @@ class Default(Moire, ABC):
         """
         raise TagNotImplementedError("date")
 
+    # Hyperlinks.
+
+    @staticmethod
+    @abstractmethod
+    def _get_ref(link: str, text: str) -> str:
+        """Get reference to a link."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def ref(self, arg: Arguments) -> str:
+        r"""Hypertext reference.
+
+        Arguments: <reference> <text>?
+
+        If reference starts with `#`, Moire will try to create a reference to
+        the declared header or label with this identifier. E.g. if we have a
+        header `\3 {Header} {test}` or label `\label {test}`, valid references
+        for both of them will be `\ref {#test} {reference text}`.
+        """
+        raise TagNotImplementedError("ref")
+
     # Main formatting tags.
 
     @abstractmethod
@@ -188,19 +209,6 @@ class Default(Moire, ABC):
             self.clear(arg[0]),
         )
 
-    @abstractmethod
-    def ref(self, arg: Arguments) -> str:
-        r"""Hypertext reference.
-
-        Arguments: <reference> <text>?
-
-        If reference starts with `#`, Moire will try to create a reference to
-        the declared header or label with this identifier. E.g. if we have a
-        header `\3 {Header} {test}` or label `\label {test}`, valid references
-        for both of them will be `\ref {#test} {reference text}`.
-        """
-        raise TagNotImplementedError("ref")
-
     def nospell(self, arg: Arguments) -> str:
         """Text that shouldn't be checked for spelling.
 
@@ -213,11 +221,6 @@ class Default(Moire, ABC):
     def ignore(self, arg: Arguments) -> str:
         """Return only the first argument of a tag."""
         return self.clear(arg[0])
-
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
-        """Get reference to a link."""
-        raise NotImplementedError
 
 
 class DefaultHTML(Default):
@@ -275,6 +278,20 @@ class DefaultHTML(Default):
     @override
     def date(self, arg: Arguments) -> str:
         return f'<meta name="date" content="{self.parse(arg[0])}">'
+
+    # Hyperlinks.
+
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
+        return f'<a href="{link}">{text}</a>'
+
+    @override
+    def ref(self, arg: Arguments) -> str:
+        link: str = self.parse(arg[0])
+        return DefaultHTML._get_ref(
+            link, link if len(arg) == 1 else self.parse(arg[1])
+        )
 
     # Main formatting tags.
 
@@ -341,18 +358,6 @@ class DefaultHTML(Default):
         """Line break."""
         return "<br />"
 
-    @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
-        return f'<a href="{link}">{text}</a>'
-
-    @override
-    def ref(self, arg: Arguments) -> str:
-        link: str = self.parse(arg[0])
-        return DefaultHTML._get_ref(
-            link, link if len(arg) == 1 else self.parse(arg[1])
-        )
-
     def size(self, arg: Arguments) -> str:
         """Font size."""
         return f'<span style="font-size: {arg[0]}">{self.parse(arg[1])}</span>'
@@ -396,6 +401,17 @@ class DefaultText(Default):
     def date(self, arg: Arguments) -> str:
         # Tag is ignored.
         return ""
+
+    # Hyperlinks.
+
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
+        return f"{text} ({link})"
+
+    @override
+    def ref(self, arg: Arguments) -> str:
+        return DefaultText._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     # Main formatting tags.
 
@@ -472,15 +488,6 @@ class DefaultText(Default):
         code_, _ = self._parse_code_arguments(arg)
         return code_ + "\n"
 
-    @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
-        return f"{text} ({link})"
-
-    @override
-    def ref(self, arg: Arguments) -> str:
-        return DefaultText._get_ref(self.clear(arg[0]), self.parse(arg[1]))
-
 
 class DefaultMarkdown(Default):
     """Markdown.
@@ -538,6 +545,17 @@ class DefaultMarkdown(Default):
     def date(self, arg: Arguments) -> str:
         # Tag is ignored.
         return ""
+
+    # Hyperlinks.
+
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
+        return f"[{text}]({link})"
+
+    @override
+    def ref(self, arg: Arguments) -> str:
+        return DefaultMarkdown._get_ref(self.parse(arg[0]), self.parse(arg[1]))
 
     # Main formatting tags.
 
@@ -630,14 +648,6 @@ class DefaultMarkdown(Default):
         code_, language = self._parse_code_arguments(arg)
         return f"```{language}\n{code_}\n```"
 
-    @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
-        return f"[{text}]({link})"
-
-    def ref(self, arg: Arguments) -> str:
-        return DefaultMarkdown._get_ref(self.parse(arg[0]), self.parse(arg[1]))
-
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
 
@@ -679,6 +689,17 @@ class DefaultWiki(Default):
     def date(self, arg: Arguments) -> str:
         # Tag is ignored.
         return ""
+
+    # Hyperlinks.
+
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
+        return f"[[{link}|{text}]]"
+
+    @override
+    def ref(self, arg: Arguments) -> str:
+        return DefaultWiki._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     # Main formatting tags.
 
@@ -748,14 +769,6 @@ class DefaultWiki(Default):
             )
         return f"<pre><tt>{code_}\n</tt></pre>"
 
-    @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
-        return f"[[{link}|{text}]]"
-
-    def ref(self, arg: Arguments) -> str:
-        return DefaultWiki._get_ref(self.clear(arg[0]), self.parse(arg[1]))
-
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
 
@@ -814,6 +827,25 @@ class DefaultTeX(Default):
     @override
     def date(self, arg: Arguments) -> str:
         return f"\\date{{{self.parse(arg[0])}}}"
+
+    # Hyperlinks.
+
+    @override
+    @staticmethod
+    def _get_ref(link: str, text: str) -> str:
+        return f"\\href{{{link}}}{{{text}}}"
+
+    @override
+    def ref(self, arg: Arguments) -> str:
+        result: str = ""
+        link = self.clear(arg[0])
+        if link[0] == "#":
+            link = link[1:]
+        if len(arg) == 1:
+            result += DefaultTeX._get_ref(link, link)
+        else:
+            result += DefaultTeX._get_ref(link, self.parse(arg[1]))
+        return result
 
     # Main formatting tags.
 
@@ -939,17 +971,6 @@ class DefaultTeX(Default):
 
     def cite(self, arg: Arguments) -> str:
         return f"\\cite{{{self.clear(arg[0])}}}"
-
-    def ref(self, arg: Arguments) -> str:
-        result: str = ""
-        link = self.clear(arg[0])
-        if link[0] == "#":
-            link = link[1:]
-        if len(arg) == 1:
-            result += f"\\href {{{link}}} {{{link}}}"
-        else:
-            result += f"\\href {{{link}}} {{{self.parse(arg[1])}}}"
-        return result
 
     @staticmethod
     def math(arg: Arguments) -> str:
