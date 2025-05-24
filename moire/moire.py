@@ -6,7 +6,7 @@ See https://github.com/enzet/Moire
 import contextlib
 import logging
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto
 from io import StringIO
 from typing import TYPE_CHECKING, Any, ClassVar, Self
@@ -305,16 +305,17 @@ def get_intermediate(
     return index, result
 
 
+@dataclass
 class Moire:
     """Moire parser base class."""
 
-    name: str = "Empty format"
+    name: ClassVar[str] = "Empty format"
     """Name of the format."""
 
     block_tags: ClassVar[set[str]] = set()
     """List of block tags."""
 
-    id_: str = "moire"
+    id_: ClassVar[str] = "moire"
     """Format identifier."""
 
     extensions: ClassVar[list[str]] = []
@@ -322,18 +323,18 @@ class Moire:
 
     escape_symbols: ClassVar[dict[str, str]] = {}
 
-    def __init__(
-        self, file_name: str | None = None, *, ignore_unknown_tags: bool = False
-    ) -> None:
-        self.index: int = 0
-        self.status: dict[str, Any] = {"missing_tags": set()}
-        self.file_name: str | None = file_name
-        self.ignore_unknown_tags: bool = ignore_unknown_tags
+    file_name: str | None = None
 
-        self.definitions: dict[str, str] = {}
-        """Mapping from tag names to patterns."""
+    ignore_unknown_tags: bool = False
 
-        self.definition_arguments: list[str] = []
+    index: int = 0
+
+    status: dict[str, Any] = field(default_factory=dict)
+
+    definitions: dict[str, str] = field(default_factory=dict)
+    """Mapping from tag names to patterns."""
+
+    definition_arguments: list[str] = field(default_factory=list)
 
     def init(self) -> None:
         """Do some preliminary actions."""

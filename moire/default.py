@@ -4,6 +4,7 @@ import logging
 import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
+from dataclasses import dataclass, field
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, ClassVar, override
@@ -33,11 +34,9 @@ class TagNotImplementedError(NotImplementedError):
         return rf"Tag \{self.tag} is not implemented in the parser"
 
 
+@dataclass
 class Default(Moire, ABC):
     """Default tag declaration."""
-
-    def __init__(self) -> None:
-        super().__init__()
 
     # Main methods.
 
@@ -210,16 +209,13 @@ class Default(Moire, ABC):
         """
         return self.parse(arg[0])
 
-    def ignore(self, arg: Arguments) -> str:
-        """Return only the first argument of a tag."""
-        return self.clear(arg[0])
 
-
+@dataclass
 class DefaultHTML(Default):
     """Default HTML format."""
 
-    name: str = "HTML"
-    id_: str = "html"
+    name: ClassVar[str] = "HTML"
+    id_: ClassVar[str] = "html"
     extensions: ClassVar[list[str]] = ["html", "htm"]
     escape_symbols: ClassVar[dict[str, str]] = {"<": "&lt;", ">": "&gt;"}
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
@@ -363,12 +359,13 @@ class DefaultHTML(Default):
         return f"<blockquote>{self.parse(arg[0])}</blockquote>"
 
 
+@dataclass
 class DefaultText(Default):
     """Plain text."""
 
-    name: str = "Text"
-    id_: str = "text"
-    extension: str = "txt"
+    name: ClassVar[str] = "Text"
+    id_: ClassVar[str] = "text"
+    extension: ClassVar[str] = "txt"
     escape_symbols: ClassVar[dict[str, str]] = {}
 
     # Main methods.
@@ -481,6 +478,7 @@ class DefaultText(Default):
         return code_ + "\n"
 
 
+@dataclass
 class DefaultMarkdown(Default):
     """Markdown.
 
@@ -490,8 +488,8 @@ class DefaultMarkdown(Default):
     See https://spec.commonmark.org/0.31.2/
     """
 
-    name: str = "Markdown"
-    id_: str = "markdown"
+    name: ClassVar[str] = "Markdown"
+    id_: ClassVar[str] = "markdown"
     extensions: ClassVar[list[str]] = ["md", "markdown"]
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
 
@@ -647,11 +645,12 @@ class DefaultMarkdown(Default):
         return f"> {self.parse(arg[0])}"
 
 
+@dataclass
 class DefaultWiki(Default):
     """Wiki syntax of Wikipedia."""
 
-    name: str = "Wiki"
-    id_: str = "wiki"
+    name: ClassVar[str] = "Wiki"
+    id_: ClassVar[str] = "wiki"
     extensions: ClassVar[list[str]] = ["wiki"]
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
 
@@ -768,12 +767,13 @@ class DefaultWiki(Default):
         return f">{self.parse(arg[0])}"
 
 
+@dataclass
 class DefaultTeX(Default):
     """TeX syntax."""
 
-    name = "Tex"
-    id_: str = "tex"
-    extension = "tex"
+    name: ClassVar[str] = "Tex"
+    id_: ClassVar[str] = "tex"
+    extension: ClassVar[str] = "tex"
 
     escape_symbols: ClassVar[dict[str, str]] = {"_": r"\_"}
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
@@ -784,6 +784,8 @@ class DefaultTeX(Default):
         "paragraph",
         "subparagraph",
     ]
+
+    packages: list[tuple[str, str]] = field(default_factory=list)
 
     # Main methods.
 
