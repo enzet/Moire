@@ -512,7 +512,7 @@ class DefaultMarkdown(Default):
 
     @override
     def body(self, arg: Arguments) -> str:
-        # TODO: rewrite.
+        # TODO(enzet): rewrite.
         return (
             self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
@@ -554,20 +554,21 @@ class DefaultMarkdown(Default):
         """We use simplest possible ATX header style."""
 
         # CommonMark specification allows headers from level 1 to 6.
-        # TODO: add warning if level is greater than 6.
+        # TODO(enzet): add warning if level is greater than 6.
         level = min(level, 6)
 
         return f"{level * '#'} {self.parse(arg[0])}"
 
     @override
     def s(self, arg: Arguments) -> str:
-        # TODO: add weak warning, bold is actually "strong emphasis" in
+        # TODO(enzet): add weak warning, bold is actually "strong emphasis" in
         # CommonMark.
         return f"**{self.parse(arg[0])}**"
 
     @override
     def e(self, arg: Arguments) -> str:
-        # TODO: add weak warning, italic is actually "emphasis" in CommonMark.
+        # TODO(enzet): add weak warning, italic is actually "emphasis" in
+        # CommonMark.
         return f"*{self.parse(arg[0])}*"
 
     @override
@@ -580,21 +581,21 @@ class DefaultMarkdown(Default):
             return f"~~{self.parse(arg[0])}~~"
         if self.is_html:
             return f"<del>{self.parse(arg[0])}</del>"
-        # TODO: add warning, tag is ignored.
+        # TODO(enzet): add warning, tag is ignored.
         return self.parse(arg[0])
 
     @override
     def sub(self, arg: Arguments) -> str:
         if self.is_html:
             return f"<sub>{self.parse(arg[0])}</sub>"
-        # TODO: add warning, tag is ignored.
+        # TODO(enzet): add warning, tag is ignored.
         return self.parse(arg[0])
 
     @override
     def super(self, arg: Arguments) -> str:
         if self.is_html:
             return f"<sup>{self.parse(arg[0])}</sup>"
-        # TODO: add warning, tag is ignored.
+        # TODO(enzet): add warning, tag is ignored.
         return self.parse(arg[0])
 
     # Main block tags.
@@ -716,11 +717,11 @@ class DefaultWiki(Default):
 
     @override
     def sub(self, arg: Arguments) -> str:
-        return DefaultHTML.sub(self, arg[0])  # type: ignore
+        return DefaultHTML.sub(self, arg[0])  # type: ignore[arg-type]
 
     @override
     def super(self, arg: Arguments) -> str:
-        return DefaultHTML.super(self, arg[0])  # type: ignore
+        return DefaultHTML.super(self, arg[0])  # type: ignore[arg-type]
 
     # Main block tags.
 
@@ -867,7 +868,7 @@ class DefaultTeX(Default):
 
     @override
     def del__(self, arg: Arguments) -> str:
-        # TODO: implement.
+        # TODO(enzet): implement.
         raise TagNotImplementedError(Default.del__.__name__)
 
     @override
@@ -905,10 +906,9 @@ class DefaultTeX(Default):
 
         for row in arg:
             if isinstance(row, list):
-                columns: list[list[Any]] = []
-                for column in row:
-                    if isinstance(column, list):
-                        columns.append(column)
+                columns: list[list[Any]] = [
+                    column for column in row if isinstance(column, list)
+                ]
                 for column in columns[:-1]:
                     result += self.parse(column) + " & "
                 result += self.parse(columns[-1])
@@ -982,13 +982,13 @@ class DefaultTeX(Default):
     def item(self, arg: Arguments) -> str:
         return rf"\item{{{self.parse(arg[0])}}}"
 
-    def size(self, arg: Arguments) -> str:
+    def size(self, _: Arguments) -> str:
         raise TagNotImplementedError(DefaultTeX.size.__name__)
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
 
-    def quote(self, arg: Arguments) -> str:
+    def quote(self, _: Arguments) -> str:
         raise TagNotImplementedError(DefaultTeX.quote.__name__)
 
 
