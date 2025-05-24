@@ -43,24 +43,32 @@ disallow_untyped_decorators = true  # Ensure decorators have types.
 warn_return_any = true  # Warn if return type is inferred as `Any`.
 
 [tool.ruff]
-select = [
-    "E",  # Pycodestyle.
-    "F",  # Pyflakes.
-    "I",  # Import sorting.
-    "B",  # Bugbear.
-    "C4",  # Complexity.
-    "UP",  # Unused parameters.
-    "N",  # Noqa.
-    "W",  # Warnings.
-    "RUF",  # Ruff.
-]
-ignore = [
-    "ANN",  # Type annotations (handled by mypy).
+lint.select = ["ALL"]
+lint.ignore = [
+    "ANN101",  # Rule is deleted.
+    "C901",  # We allow too complex functions.
+    "COM812",  # Trailing comma not in Black style.
+    "D105",  # Missing docstring in magic method is allowed.
+    "D107",  # Missing docstring in `__init__` method is allowed.
+    "D202",  # No blank line after function docstring is allowed.
+    "D203",  # 1 blank line required before class docstring.
+    "D213",  # We use no new line after """.
+    "FIX002",  # We allow todo markers.
+    "PLR0911",  # We allow too many return statements.
+    "PLR0912",  # We allow too many branches.
+    "PLR0913",  # We allow too many arguments.
+    "PLR0915",  # We allow too many statements.
+    "S101",  # Asserts are OK in tests.
+    "TD003",  # We don't require issues for todos.
+
+    # TODO(enzet): enable.
+    "ANN401",
+    "D102",
 ]
 
 # Allow autofix for all enabled rules (when `--fix` is used).
-fixable = ["ALL"]
-unfixable = []
+lint.fixable = ["ALL"]
+lint.unfixable = []
 
 # Same line length as Black.
 line-length = 80
