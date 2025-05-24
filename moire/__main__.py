@@ -16,6 +16,8 @@ from moire.moire import Moire
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
+logger: logging.Logger = logging.getLogger(__name__)
+
 
 def main(
     arguments: list[str] | None = None, top_class: type[Moire] | None = None
@@ -44,7 +46,7 @@ def main(
             converter = class_()
 
     if not converter:
-        logging.fatal(
+        logger.fatal(
             "No converter class found for format `%s`.", options.format
         )
         sys.exit(1)
@@ -54,13 +56,13 @@ def main(
         output: str = converter.convert(input_file.read(), wrap=options.wrap)
 
     if not output:
-        logging.fatal("No output was produced.")
+        logger.fatal("No output was produced.")
         sys.exit(1)
 
     if options.output:
         with Path(options.output).open("w", encoding="utf-8") as output_file:
             output_file.write(output)
-            logging.info("Converted to %s.", options.output)
+            logger.info("Converted to %s.", options.output)
     else:
         sys.stdout.write(output)
 

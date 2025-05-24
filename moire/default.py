@@ -13,6 +13,8 @@ from moire.moire import Moire
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
 
+logger: logging.Logger = logging.getLogger(__name__)
+
 depth: int = 0
 status: dict[str, Any] = {}
 BLOCK_TAGS: set[str] = {
@@ -1015,11 +1017,11 @@ if __name__ == "__main__":
         output: str = converter.convert(input_file.read())
 
     if not output:
-        logging.fatal("No output produced.")
+        logger.fatal("No output produced.")
         sys.exit(1)
 
     with path.with_suffix(options.output).open(
         "w+", encoding="utf-8"
     ) as output_file:
         output_file.write(output)
-        logging.info("Converted to %s.", path.with_suffix(options.output))
+        logger.info("Converted to %s.", path.with_suffix(options.output))

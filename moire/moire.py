@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
 
+logger: logging.Logger = logging.getLogger(__name__)
+
 # Constants
 
 
@@ -203,7 +205,7 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
         char = text[index]
         if char == Constant.TAG_MARKER.value:
             if index == len(text) - 1:
-                logging.error("Backslash at the end of string.")
+                logger.error("Backslash at the end of string.")
             elif not is_letter_or_digit(text[index + 1]):
                 if word != "":
                     lexemes.append(Lexeme("text", word))
@@ -286,7 +288,7 @@ def get_intermediate(
             level -= 1
             if level < 0:
                 position = positions[index]
-                logging.error("Lexer error at %d.", position)
+                logger.error("Lexer error at %d.", position)
                 index += 1
                 sys.exit(1)
             if tag:
