@@ -180,6 +180,16 @@ class Default(Moire, ABC):
         """
         raise TagNotImplementedError(Default.image.__name__)
 
+    def _parse_code_arguments(self, arg: Arguments) -> tuple[str, str]:
+        """Parse trimmed code and possible language identifier."""
+        if len(arg) == 1:
+            return self.trim(self.parse(arg[0], spec={"trim": False})), ""
+
+        return (
+            self.trim(self.parse(arg[1], spec={"trim": False})),
+            self.clear(arg[0]),
+        )
+
     @abstractmethod
     def code(self, arg: Arguments) -> str:
         """Code block.
@@ -190,26 +200,6 @@ class Default(Moire, ABC):
         `js` or `javascript` for JavaScript.
         """
         raise TagNotImplementedError(Default.code.__name__)
-
-    def formal(self, arg: Arguments) -> str:
-        """Formal argument inside code.
-
-        E.g. in text "Run command `ssh <username>@<host>`", the `<username>`
-        and `<host>` are formal arguments.
-
-        By default, the formal argument is wrapped in with `<` and `>`.
-        """
-        return f"<{self.parse(arg[0])}>"
-
-    def _parse_code_arguments(self, arg: Arguments) -> tuple[str, str]:
-        """Parse trimmed code and possible language identifier."""
-        if len(arg) == 1:
-            return self.trim(self.parse(arg[0], spec={"trim": False})), ""
-
-        return (
-            self.trim(self.parse(arg[1], spec={"trim": False})),
-            self.clear(arg[0]),
-        )
 
     def nospell(self, arg: Arguments) -> str:
         """Text that shouldn't be checked for spelling.
