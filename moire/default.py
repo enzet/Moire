@@ -345,7 +345,7 @@ class DefaultHTML(Default):
 
     @override
     def image(self, arg: Arguments) -> str:
-        title: str = f' alt="{self.parse(arg[1])}"' if len(arg) >= 2 else ""
+        title: str = f' alt="{self.parse(arg[1])}"' if len(arg) > 1 else ""
         return f'<img src="{self.clear(arg[0])}"{title} />'
 
     @override
@@ -783,33 +783,37 @@ class DefaultTeX(Default):
     id_: str = "tex"
     extension = "tex"
 
-    escape_symbols: ClassVar[dict[str, str]] = {"_": "\\_"}
+    escape_symbols: ClassVar[dict[str, str]] = {"_": r"\_"}
     block_tags: ClassVar[set[str]] = BLOCK_TAGS
     headers: ClassVar[list[str]] = [
-        "section", "subsection", "subsubsection", "paragraph", "subparagraph"
-    ]  # fmt: skip
+        "section",
+        "subsection",
+        "subsubsection",
+        "paragraph",
+        "subparagraph",
+    ]
 
     # Main methods.
 
     @override
     def body(self, arg: Arguments) -> str:
         result: str = dedent(
-            """\
-            \\documentclass[twoside,psfig]{article}
-            \\usepackage[utf8]{inputenc}
-            \\usepackage[russian]{babel}
-            \\usepackage{enumitem}
-            \\usepackage{float}
-            \\usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]
+            r"""\
+            \documentclass[twoside,psfig]{article}
+            \usepackage[utf8]{inputenc}
+            \usepackage[russian]{babel}
+            \usepackage{enumitem}
+            \usepackage{float}
+            \usepackage[margin=3cm,hmarginratio=1:1,top=32mm,columnsep=20pt]
                 {geometry}
-            \\usepackage{graphicx}
-            \\usepackage{hyperref}
-            \\usepackage{multicol}
-            \\begin{document}
+            \usepackage{graphicx}
+            \usepackage{hyperref}
+            \usepackage{multicol}
+            \begin{document}
             """
         )
         result += self.parse(arg[0], in_block=True)
-        result += "\\end {document}"
+        result += r"\end{document}"
         return result
 
     # Metadata tags.
@@ -817,23 +821,23 @@ class DefaultTeX(Default):
     @override
     def title(self, arg: Arguments) -> str:
         result: str = f"\\title{{{self.parse(arg[0])}}}\n"
-        result += "\\maketitle"
+        result += r"\maketitle"
         return result
 
     @override
     def author(self, arg: Arguments) -> str:
-        return f"\\author{{{self.parse(arg[0])}}}"
+        return rf"\author{{{self.parse(arg[0])}}}"
 
     @override
     def date(self, arg: Arguments) -> str:
-        return f"\\date{{{self.parse(arg[0])}}}"
+        return rf"\date{{{self.parse(arg[0])}}}"
 
     # Hyperlinks.
 
     @override
     @staticmethod
     def _get_ref(link: str, text: str) -> str:
-        return f"\\href{{{link}}}{{{text}}}"
+        return rf"\href{{{link}}}{{{text}}}"
 
     @override
     def ref(self, arg: Arguments) -> str:
@@ -851,24 +855,25 @@ class DefaultTeX(Default):
 
     @override
     def header(self, arg: Arguments, level: int) -> str:
-        if level < 6:
-            return f"\\{self.headers[level - 1]}{{{self.parse(arg[0])}}}"
+        if level <= len(self.headers):
+            return rf"\{self.headers[level - 1]}{{{self.parse(arg[0])}}}"
         return self.parse(arg[0])
 
     @override
     def s(self, arg: Arguments) -> str:
-        return f"{{\\bf {self.parse(arg[0])}}}"
+        return rf"{{\bf {self.parse(arg[0])}}}"
 
     @override
     def e(self, arg: Arguments) -> str:
-        return f"{{\\em {self.parse(arg[0])}}}"
+        return rf"{{\em {self.parse(arg[0])}}}"
 
     @override
     def c(self, arg: Arguments) -> str:
-        return f"{{\\tt {self.parse(arg[0])}}}"
+        return rf"{{\tt {self.parse(arg[0])}}}"
 
     @override
     def del__(self, arg: Arguments) -> str:
+        # TODO: implement.
         raise TagNotImplementedError(Default.del__.__name__)
 
     @override
@@ -877,7 +882,7 @@ class DefaultTeX(Default):
 
     @override
     def super(self, arg: Arguments) -> str:
-        return f"\\textsuperscript{{{self.parse(arg[0])}}}"
+        return rf"\textsuperscript{{{self.parse(arg[0])}}}"
 
     # Main block tags.
 
@@ -922,19 +927,19 @@ class DefaultTeX(Default):
     @override
     def image(self, arg: Arguments) -> str:
         result: str = (
-            "\\begin{figure}[h]\\begin{center}\\includegraphics{"
+            r"\begin{figure}[h]\begin{center}\includegraphics{"
             + self.parse(arg[0])
-            + "}\\end{center}"
+            + r"}\end{center}"
         )
         if len(arg) > 1:
-            result += f"\\caption{{ {self.parse(arg[1])}}}"
-        result += "\\end{figure}"
+            result += rf"\caption{{ {self.parse(arg[1])}}}"
+        result += r"\end{figure}"
         return result
 
     @override
     def code(self, arg: Arguments) -> str:
         code_, _ = self._parse_code_arguments(arg)
-        return f"\\begin{{verbatim}}{code_}\\end{{verbatim}}"
+        return rf"\begin{{verbatim}}{code_}\end{{verbatim}}"
 
     def ordered(self, arg: Arguments) -> str:
         result: str = "\\begin{ordered}\n"
@@ -954,23 +959,20 @@ class DefaultTeX(Default):
     def books(self, arg: Arguments) -> str:
         result: str = "\\begin{thebibliography}{0}\n\n"
         for item in arg[0]:
-            if isinstance(item, list):
-                result += (
-                    "\\bibitem{"
-                    + self.clear(item[0])
-                    + "} "
-                    + self.parse(item[1])
-                    + "\n\n"
-                )
+            if not isinstance(item, list):
+                continue
+            result += (
+                f"\\bibitem{{{self.clear(item[0])}}} {self.parse(item[1])}\n\n"
+            )
         result += "\\end{thebibliography}\n\n"
         return result
 
     @staticmethod
     def br(_: Arguments) -> str:
-        return "\\\\"
+        return r"\\"
 
     def cite(self, arg: Arguments) -> str:
-        return f"\\cite{{{self.clear(arg[0])}}}"
+        return rf"\cite{{{self.clear(arg[0])}}}"
 
     @staticmethod
     def math(arg: Arguments) -> str:
@@ -978,13 +980,13 @@ class DefaultTeX(Default):
 
     @staticmethod
     def mathblock(arg: Arguments) -> str:
-        return f"\\[{''.join(arg[0])}\\]"
+        return rf"\[{''.join(arg[0])}\]"
 
     def ignore(self, arg: Arguments) -> str:
         return self.clear(arg[0])
 
     def item(self, arg: Arguments) -> str:
-        return f"\\item{{{self.parse(arg[0])}}}"
+        return rf"\item{{{self.parse(arg[0])}}}"
 
     def size(self, arg: Arguments) -> str:
         raise TagNotImplementedError(DefaultTeX.size.__name__)

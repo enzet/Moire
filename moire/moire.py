@@ -354,7 +354,6 @@ class Moire:
 
     def trim(self, text: str) -> str:
         """Trim text."""
-
         return text.removeprefix("\n").removesuffix("\n")
 
     def get_ids(self, content: str) -> list[tuple[str, int]]:
@@ -367,7 +366,7 @@ class Moire:
         intermediate_representation = self.get_ir(content)
         for element in intermediate_representation:
             if isinstance(element, Tag):
-                if element.is_header() and len(element.parameters) >= 2:
+                if element.is_header() and len(element.parameters) > 1:
                     ids.append((element.parameters[1][0], int(element.id)))
                 if element.id == "label":
                     ids.append((element.parameters[0][0], 0))
