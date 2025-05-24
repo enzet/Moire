@@ -3,13 +3,16 @@
 See https://github.com/enzet/Moire
 """
 
+import contextlib
 import logging
 import sys
-from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
 from io import StringIO
-from typing import Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -171,9 +174,8 @@ def preprocess_comments(text: str) -> str:
         ):
             adding = True
             i += 1
-        else:
-            if adding:
-                preprocessed += text[i]
+        elif adding:
+            preprocessed += text[i]
         i += 1
     return preprocessed
 
@@ -240,11 +242,10 @@ def lexer(text: str) -> tuple[list[Lexeme], list[int]]:
                 in_space = True
             else:
                 word += char
+        elif in_tag:
+            tag_name += char
         else:
-            if in_tag:
-                tag_name += char
-            else:
-                word += char
+            word += char
         index += 1
     if word != "":
         lexemes.append(Lexeme("text", word))
@@ -291,12 +292,7 @@ def get_intermediate(
             if tag:
                 result.append(tag)
             return index, result
-        elif item.type == "text":
-            if tag:
-                result.append(tag)
-                tag = None
-            result.append(item.content)
-        elif item.type == "symbol":
+        elif item.type in ("text", "symbol"):
             if tag:
                 result.append(tag)
                 tag = None
@@ -359,11 +355,7 @@ class Moire:
     def trim(self, text: str) -> str:
         """Trim text."""
 
-        if text.startswith("\n"):
-            text = text[1:]
-        if text.endswith("\n"):
-            text = text[:-1]
-        return text
+        return text.removeprefix("\n").removesuffix("\n")
 
     def get_ids(self, content: str) -> list[tuple[str, int]]:
         """Get all header identifiers.
@@ -468,15 +460,11 @@ class Moire:
                 return result
 
             method: Callable | None = None
-            try:
+            with contextlib.suppress(AttributeError):
                 method = getattr(self, mode + key)
-            except AttributeError:
-                pass
             if method is None:
-                try:
+                with contextlib.suppress(AttributeError):
                     method = getattr(self, mode + key + "__")
-                except AttributeError:
-                    pass
 
             parsed: str
 

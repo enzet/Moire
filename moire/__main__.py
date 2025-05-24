@@ -1,6 +1,8 @@
-"""
-Command line Python tool for file conversion from Moire markup language to other
-formats, such as HTML, TeX, etc.
+#!/usr/bin/env python3
+
+"""Moire entry point.
+
+Converts code in Moire markup to other formats, such as HTML, TeX, etc.
 """
 
 import logging
@@ -18,7 +20,7 @@ __email__ = "me@enzet.ru"
 def main(
     arguments: list[str] | None = None, top_class: type[Moire] | None = None
 ) -> None:
-    """Converter entry point."""
+    """Convert Moire markup to other formats."""
 
     if not arguments:
         arguments = sys.argv[1:]

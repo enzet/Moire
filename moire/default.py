@@ -522,7 +522,7 @@ class DefaultMarkdown(Default):
 
     @override
     def body(self, arg: Arguments) -> str:
-        # FIXME: rewrite.
+        # TODO: rewrite.
         return (
             self.parse(arg[0], in_block=True)
             .replace("\n\n\n", "\n\n")
