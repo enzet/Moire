@@ -266,7 +266,8 @@ def get_intermediate(
             if tag:
                 result.append(tag)
             if item.content is None:
-                raise ValueError("No content in tag lexeme.")
+                message: str = "No content in tag lexeme."
+                raise ValueError(message)
             tag = Tag(item.content, [])
         elif item.type == "parameter_begin":
             level += 1
@@ -402,7 +403,8 @@ class Moire:
             else:
                 while int(part.id) <= int(tree.element.id):
                     if tree.parent is None:
-                        raise ValueError(f"No parent for {tree}.")
+                        message: str = f"No parent for {tree}."
+                        raise ValueError(message)
                     tree = tree.parent
                 tree.children.append(element)
                 element.number = len(tree.children) - 1
@@ -529,7 +531,8 @@ class Moire:
                 builder.write(self.process_inner_block(inner_block))
             return builder.getvalue()
 
-        raise ValueError(f"Part is of type {type(text)}")
+        message: str = f"Part is of type {type(text)}"
+        raise ValueError(message)
 
     def clear(self, text: str, *, escape: bool = True) -> str:
         """Get flattened element content."""
@@ -643,4 +646,5 @@ def serialize(object_: Any) -> str:
     if isinstance(object_, Tag):
         return object_.serialize()
 
-    raise ValueError(f"Unknown object type: {type(object_)}.")
+    message: str = f"Unknown object type: {type(object_)}."
+    raise ValueError(message)

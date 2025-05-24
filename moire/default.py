@@ -42,7 +42,7 @@ class Default(Moire, ABC):
     @abstractmethod
     def body(self, arg: Arguments) -> str:
         """Body of the document."""
-        raise TagNotImplementedError("body")
+        raise TagNotImplementedError(Default.body.__name__)
 
     # Metadata tags.
 
@@ -52,7 +52,7 @@ class Default(Moire, ABC):
 
         This is metadata tag and is not displayed in the document.
         """
-        raise TagNotImplementedError("title")
+        raise TagNotImplementedError(Default.title.__name__)
 
     @abstractmethod
     def author(self, arg: Arguments) -> str:
@@ -60,7 +60,7 @@ class Default(Moire, ABC):
 
         This is metadata tag and is not displayed in the document.
         """
-        raise TagNotImplementedError("author")
+        raise TagNotImplementedError(Default.author.__name__)
 
     @abstractmethod
     def date(self, arg: Arguments) -> str:
@@ -68,7 +68,7 @@ class Default(Moire, ABC):
 
         This is metadata tag and is not displayed in the document.
         """
-        raise TagNotImplementedError("date")
+        raise TagNotImplementedError(Default.date.__name__)
 
     # Hyperlinks.
 
@@ -89,7 +89,7 @@ class Default(Moire, ABC):
         header `\3 {Header} {test}` or label `\label {test}`, valid references
         for both of them will be `\ref {#test} {reference text}`.
         """
-        raise TagNotImplementedError("ref")
+        raise TagNotImplementedError(Default.ref.__name__)
 
     # Main formatting tags.
 
@@ -99,17 +99,17 @@ class Default(Moire, ABC):
 
         Arguments: <header text> <header identifier>?
         """
-        raise TagNotImplementedError("header")
+        raise TagNotImplementedError(Default.header.__name__)
 
     @abstractmethod
     def e(self, arg: Arguments) -> str:
         """Emphasize text."""
-        raise TagNotImplementedError("e")
+        raise TagNotImplementedError(Default.e.__name__)
 
     @abstractmethod
     def s(self, arg: Arguments) -> str:
         """Strongly emphasize text."""
-        raise TagNotImplementedError("s")
+        raise TagNotImplementedError(Default.s.__name__)
 
     def b(self, arg: Arguments) -> str:
         r"""Make text bold.
@@ -128,7 +128,7 @@ class Default(Moire, ABC):
     @abstractmethod
     def c(self, arg: Arguments) -> str:
         """Mark text as code."""
-        raise TagNotImplementedError("c")
+        raise TagNotImplementedError(Default.c.__name__)
 
     def m(self, arg: Arguments) -> str:
         r"""Make text monospaced.
@@ -140,24 +140,24 @@ class Default(Moire, ABC):
     @abstractmethod
     def del__(self, arg: Arguments) -> str:
         """Mark text as deleted."""
-        raise TagNotImplementedError("del")
+        raise TagNotImplementedError(Default.del__.__name__)
 
     @abstractmethod
     def sub(self, arg: Arguments) -> str:
         """Make text a subscript."""
-        raise TagNotImplementedError("sub")
+        raise TagNotImplementedError(Default.sub.__name__)
 
     @abstractmethod
     def super(self, arg: Arguments) -> str:
         """Make text a superscript."""
-        raise TagNotImplementedError("super")
+        raise TagNotImplementedError(Default.super.__name__)
 
     # Main block tags.
 
     @abstractmethod
     def list__(self, arg: Arguments) -> str:
         """Create a list of items."""
-        raise TagNotImplementedError("list")
+        raise TagNotImplementedError(Default.list__.__name__)
 
     @abstractmethod
     def table(self, arg: Arguments) -> str:
@@ -168,7 +168,7 @@ class Default(Moire, ABC):
         This simple table does not support header, border style, text alignment,
         or cell merging.
         """
-        raise TagNotImplementedError("table")
+        raise TagNotImplementedError(Default.table.__name__)
 
     @abstractmethod
     def image(self, arg: Arguments) -> str:
@@ -176,7 +176,7 @@ class Default(Moire, ABC):
 
         Format: \image {<image source>} {<image title>}?
         """
-        raise TagNotImplementedError("image")
+        raise TagNotImplementedError(Default.image.__name__)
 
     @abstractmethod
     def code(self, arg: Arguments) -> str:
@@ -187,7 +187,7 @@ class Default(Moire, ABC):
         Examples of language identifiers: `cpp` for C++, `python` for Python,
         `js` or `javascript` for JavaScript.
         """
-        raise TagNotImplementedError("code")
+        raise TagNotImplementedError(Default.code.__name__)
 
     def formal(self, arg: Arguments) -> str:
         """Formal argument inside code.
@@ -869,7 +869,7 @@ class DefaultTeX(Default):
 
     @override
     def del__(self, arg: Arguments) -> str:
-        raise TagNotImplementedError("del")
+        raise TagNotImplementedError(Default.del__.__name__)
 
     @override
     def sub(self, arg: Arguments) -> str:
@@ -987,13 +987,13 @@ class DefaultTeX(Default):
         return f"\\item{{{self.parse(arg[0])}}}"
 
     def size(self, arg: Arguments) -> str:
-        raise TagNotImplementedError("size")
+        raise TagNotImplementedError(DefaultTeX.size.__name__)
 
     def text(self, arg: Arguments) -> str:
         return self.parse(arg[0]) + "\n\n"
 
     def quote(self, arg: Arguments) -> str:
-        raise TagNotImplementedError("quote")
+        raise TagNotImplementedError(DefaultTeX.quote.__name__)
 
 
 if __name__ == "__main__":
