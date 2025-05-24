@@ -230,8 +230,6 @@ class DefaultHTML(Default):
 
     @override
     def body(self, arg: Arguments) -> str:
-        """Body of the document."""
-
         status["content"] = []
         s: str = dedent(
             """
@@ -343,19 +341,19 @@ class DefaultHTML(Default):
 
     @staticmethod
     def br(_: Arguments) -> str:
-        """Line break."""
+        """Add line break."""
         return "<br />"
 
     def size(self, arg: Arguments) -> str:
-        """Font size."""
+        """Set font size."""
         return f'<span style="font-size: {arg[0]}">{self.parse(arg[1])}</span>'
 
     def text(self, arg: Arguments) -> str:
-        """Paragraph."""
+        """Wrap text in a paragraph."""
         return f"<p>{self.parse(arg[0])}</p>"
 
     def quote(self, arg: Arguments) -> str:
-        """Block quote."""
+        """Mark text as a block quote."""
         return f"<blockquote>{self.parse(arg[0])}</blockquote>"
 
 
@@ -639,10 +637,8 @@ class DefaultMarkdown(Default):
         code_, language = self._parse_code_arguments(arg)
         return f"```{language}\n{code_}\n```"
 
-    def text(self, arg: Arguments) -> str:
-        return self.parse(arg[0]) + "\n\n"
-
     def quote(self, arg: Arguments) -> str:
+        """Mark text as a block quote."""
         return f"> {self.parse(arg[0])}"
 
 
@@ -761,10 +757,8 @@ class DefaultWiki(Default):
             )
         return f"<pre><tt>{code_}\n</tt></pre>"
 
-    def text(self, arg: Arguments) -> str:
-        return self.parse(arg[0]) + "\n\n"
-
     def quote(self, arg: Arguments) -> str:
+        """Mark text as a block quote."""
         return f">{self.parse(arg[0])}"
 
 
@@ -936,6 +930,7 @@ class DefaultTeX(Default):
         return rf"\begin{{verbatim}}{code_}\end{{verbatim}}"
 
     def ordered(self, arg: Arguments) -> str:
+        """Create an ordered list."""
         result: str = "\\begin{ordered}\n"
         for item in arg[0]:
             if isinstance(item, list):
@@ -944,6 +939,7 @@ class DefaultTeX(Default):
         return result
 
     def abstract(self, arg: Arguments) -> str:
+        """Create an abstract."""
         return (
             "\\begin{abstract}\n\n"
             + self.parse(arg[0], in_block=True)
@@ -951,6 +947,7 @@ class DefaultTeX(Default):
         )
 
     def books(self, arg: Arguments) -> str:
+        """Create a bibliography."""
         result: str = "\\begin{thebibliography}{0}\n\n"
         for item in arg[0]:
             if not isinstance(item, list):
@@ -963,32 +960,33 @@ class DefaultTeX(Default):
 
     @staticmethod
     def br(_: Arguments) -> str:
+        """Add line break."""
         return r"\\"
 
     def cite(self, arg: Arguments) -> str:
+        """Add a citation."""
         return rf"\cite{{{self.clear(arg[0])}}}"
 
     @staticmethod
     def math(arg: Arguments) -> str:
+        """Add inline math."""
         return f"${''.join(arg[0])}$"
 
     @staticmethod
     def mathblock(arg: Arguments) -> str:
+        """Add math block."""
         return rf"\[{''.join(arg[0])}\]"
 
-    def ignore(self, arg: Arguments) -> str:
-        return self.clear(arg[0])
-
     def item(self, arg: Arguments) -> str:
+        """Add an item to a list."""
         return rf"\item{{{self.parse(arg[0])}}}"
 
     def size(self, _: Arguments) -> str:
+        """Set font size."""
         raise TagNotImplementedError(DefaultTeX.size.__name__)
 
-    def text(self, arg: Arguments) -> str:
-        return self.parse(arg[0]) + "\n\n"
-
     def quote(self, _: Arguments) -> str:
+        """Mark text as a block quote."""
         raise TagNotImplementedError(DefaultTeX.quote.__name__)
 
 
