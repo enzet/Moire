@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+python_files="moire/ tests/"
+
+echo "Checking code format with Black..."
+if ! black --check ${python_files}; then
+    black --diff --color ${python_files}
+    echo "FAIL"
+    exit 1
+fi
+
+echo "Checking types with ty..."
+if ! ty check; then
+    echo "FAIL"
+    exit 1
+fi
+
+echo "Linting with Ruff..."
+if ! ruff check; then
+    echo "FAIL"
+    exit 1
+fi
+
+echo "Run pytest..."
+pytest -v || { echo "FAIL"; exit 1; }
+
+echo "OK"
