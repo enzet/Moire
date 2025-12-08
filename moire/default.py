@@ -73,9 +73,8 @@ class Default(Moire, ABC):
 
     # Hyperlinks.
 
-    @staticmethod
     @abstractmethod
-    def _get_ref(link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         """Get reference to a link."""
         raise NotImplementedError
 
@@ -268,14 +267,13 @@ class DefaultHTML(Default):
     # Hyperlinks.
 
     @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f'<a href="{link}">{text}</a>'
 
     @override
     def ref(self, arg: Arguments) -> str:
         link: str = self.parse(arg[0])
-        return DefaultHTML._get_ref(
+        return self._get_ref(
             link, link if len(arg) == 1 else self.parse(arg[1])
         )
 
@@ -392,13 +390,12 @@ class DefaultText(Default):
     # Hyperlinks.
 
     @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f"{text} ({link})"
 
     @override
     def ref(self, arg: Arguments) -> str:
-        return DefaultText._get_ref(self.clear(arg[0]), self.parse(arg[1]))
+        return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     # Main formatting tags.
 
@@ -537,13 +534,12 @@ class DefaultMarkdown(Default):
     # Hyperlinks.
 
     @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f"[{text}]({link})"
 
     @override
     def ref(self, arg: Arguments) -> str:
-        return DefaultMarkdown._get_ref(self.parse(arg[0]), self.parse(arg[1]))
+        return self._get_ref(self.parse(arg[0]), self.parse(arg[1]))
 
     # Main formatting tags.
 
@@ -685,13 +681,12 @@ class DefaultWiki(Default):
     # Hyperlinks.
 
     @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return f"[[{link}|{text}]]"
 
     @override
     def ref(self, arg: Arguments) -> str:
-        return DefaultWiki._get_ref(self.clear(arg[0]), self.parse(arg[1]))
+        return self._get_ref(self.clear(arg[0]), self.parse(arg[1]))
 
     # Main formatting tags.
 
@@ -717,11 +712,11 @@ class DefaultWiki(Default):
 
     @override
     def sub(self, arg: Arguments) -> str:
-        return DefaultHTML.sub(self, arg[0])  # type: ignore[arg-type]
+        return self.__class__.sub(self, arg[0])  # type: ignore[arg-type]
 
     @override
     def super(self, arg: Arguments) -> str:
-        return DefaultHTML.super(self, arg[0])  # type: ignore[arg-type]
+        return self.__class__.super(self, arg[0])  # type: ignore[arg-type]
 
     # Main block tags.
 
@@ -828,8 +823,7 @@ class DefaultTeX(Default):
     # Hyperlinks.
 
     @override
-    @staticmethod
-    def _get_ref(link: str, text: str) -> str:
+    def _get_ref(self, link: str, text: str) -> str:
         return rf"\href{{{link}}}{{{text}}}"
 
     @override
@@ -839,9 +833,9 @@ class DefaultTeX(Default):
         if link[0] == "#":
             link = link[1:]
         if len(arg) == 1:
-            result += DefaultTeX._get_ref(link, link)
+            result += self._get_ref(link, link)
         else:
-            result += DefaultTeX._get_ref(link, self.parse(arg[1]))
+            result += self._get_ref(link, self.parse(arg[1]))
         return result
 
     # Main formatting tags.
