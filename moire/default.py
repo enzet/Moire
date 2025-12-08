@@ -555,7 +555,7 @@ class DefaultMarkdown(Default):
         # TODO(enzet): add warning if level is greater than 6.
         level = min(level, 6)
 
-        return f"{level * '#'} {self.parse(arg[0])}"
+        return f"{level * '#'} {self.parse(arg[0])}" + "\n\n"
 
     @override
     def s(self, arg: Arguments) -> str:
@@ -606,7 +606,7 @@ class DefaultMarkdown(Default):
             for item in arg
         )
         self.list_level -= 1
-        return result
+        return result + "\n\n"
 
     @override
     def table(self, arg: Arguments) -> str:
@@ -629,13 +629,17 @@ class DefaultMarkdown(Default):
     @override
     def image(self, arg: Arguments) -> str:
         if len(arg) > 1:
-            return f"![{self.parse(arg[1])}]({self.parse(arg[0])})"
-        return f"![{self.parse(arg[0])}]({self.parse(arg[0])})"
+            return f"![{self.parse(arg[1])}]({self.parse(arg[0])})\n\n"
+        return f"![{self.parse(arg[0])}]({self.parse(arg[0])})\n\n"
 
     @override
     def code(self, arg: Arguments) -> str:
         code_, language = self._parse_code_arguments(arg)
-        return f"```{language}\n{code_}\n```"
+        return f"```{language}\n{code_}\n```\n\n"
+
+    @override
+    def text(self, arg: Arguments) -> str:
+        return self.parse(arg[0]) + "\n\n"
 
     def quote(self, arg: Arguments) -> str:
         """Mark text as a block quote."""
