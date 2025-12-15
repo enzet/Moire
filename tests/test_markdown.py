@@ -78,5 +78,6 @@ def test_markdown_list() -> None:
               * item 1,
               * item 2.
             """  # noqa: W291
-        ) + "\n",
+        )
+        + "\n",
     )
