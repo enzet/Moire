@@ -52,8 +52,11 @@ def main(
         sys.exit(1)
 
     with Path(options.input).open(encoding="utf-8") as input_file:
-        converter.file_name = options.input
-        output: str = converter.convert(input_file.read(), wrap=options.wrap)
+        if converter is not None:  # TODO(enzet): remove when ty is fixed.
+            converter.file_name = options.input
+            output: str = converter.convert(
+                input_file.read(), wrap=options.wrap
+            )
 
     if not output:
         logger.fatal("No output was produced.")

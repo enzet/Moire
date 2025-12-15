@@ -3,13 +3,15 @@
 See https://github.com/enzet/Moire
 """
 
+from __future__ import annotations
+
 import contextlib
 import logging
 import sys
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from io import StringIO
-from typing import TYPE_CHECKING, Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -85,6 +87,9 @@ class Tag:
                 return False
         return True
 
+    def __hash__(self) -> int:
+        return hash((self.id, tuple(self.parameters)))
+
     def is_header(self) -> bool:
         """Check if the tag is a header."""
         return self.id in "123456"
@@ -111,10 +116,10 @@ class Lexeme:
 class Tree:
     """Double-linked tree of elements."""
 
-    parent: Self | None
+    parent: Tree | None
     """Parent element."""
 
-    children: list["Tree"]
+    children: list[Tree]
     """Children elements."""
 
     element: Any
@@ -141,6 +146,7 @@ class Argument:
         return len(self.array)
 
     def get(self, key: int) -> Any:
+        """Get an argument by its identifier."""
         if key >= len(self.array):
             return None
         return self.array[key]

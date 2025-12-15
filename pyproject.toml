@@ -45,7 +45,6 @@ warn_return_any = true  # Warn if return type is inferred as `Any`.
 [tool.ruff]
 lint.select = ["ALL"]
 lint.ignore = [
-    "ANN101",  # Rule is deleted, type of `self` can be inferred.
     "C901",  # Too complex functions are allowed.
     "COM812",  # Trailing comma not in Black style.
     "D105",  # Missing docstring in magic method is allowed.

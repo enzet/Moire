@@ -633,8 +633,8 @@ class DefaultMarkdown(Default):
         code_, language = self._parse_code_arguments(arg)
         return f"```{language}\n{code_}\n```\n\n"
 
-    @override
     def text(self, arg: Arguments) -> str:
+        """Paragraph wrapper."""
         return self.parse(arg[0]) + "\n\n"
 
     def quote(self, arg: Arguments) -> str:
