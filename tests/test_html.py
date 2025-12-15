@@ -23,9 +23,9 @@ def check(code: str, result: str, message: str) -> None:
     :param result: expected result
     :param message: test explanation
     """
-    assert (
-        converter.convert(code, wrap=False, in_block=False) == result
-    ), message
+    assert converter.convert(code, wrap=False, in_block=False) == result, (
+        message
+    )
 
 
 def test_html_text() -> None:
@@ -236,7 +236,7 @@ def test_html_table_tag() -> None:
     """Test tag in tag with nested parameters."""
     check(
         "\\table{{\\i {td}}}",
-        "<table><tr><td><p><i>td</i></p></td></tr></table>",
+        "<table><tr><td><i>td</i></td></tr></table>",
         "Tag in tag with nested parameters",
     )
 

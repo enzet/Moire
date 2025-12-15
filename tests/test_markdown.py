@@ -19,8 +19,8 @@ def check(code: str, result: str, *, is_html: bool = True) -> None:
 
 def test_markdown_header() -> None:
     """Test headers."""
-    check("\\1 {Header}", "# Header")
-    check("\\6 {Header}", "###### Header")
+    check("\\1 {Header}", "# Header\n\n")
+    check("\\6 {Header}", "###### Header\n\n")
 
 
 def test_markdown_bold() -> None:
@@ -78,5 +78,5 @@ def test_markdown_list() -> None:
               * item 1,
               * item 2.
             """  # noqa: W291
-        )[:-1],
+        ) + "\n",
     )

@@ -140,6 +140,11 @@ class Argument:
     def __len__(self) -> int:
         return len(self.array)
 
+    def get(self, key: int) -> Any:
+        if key >= len(self.array):
+            return None
+        return self.array[key]
+
 
 def trim_inside(text: str) -> str:
     """Replace all space symbol sequences with one space character."""
@@ -479,6 +484,8 @@ class Moire:
                 return parsed
 
             if mode == "":
+                if "missing_tags" not in self.status:
+                    self.status["missing_tags"] = set()
                 self.status["missing_tags"].add(key)
                 raise ValueError(
                     f"Unknown tag `{mode}{key}`"
@@ -598,9 +605,22 @@ class Moire:
         for paragraph in paragraphs:
             if isinstance(paragraph[0], str):
                 paragraph[0] = paragraph[0].lstrip()
+                if paragraph[0] == "":
+                    paragraph.pop(0)
+            if len(paragraph) == 0:
+                continue
+
             if isinstance(paragraph[-1], str):
                 paragraph[-1] = paragraph[-1].rstrip()
-            result += str(self.parse(Tag("text", [paragraph])))
+                if paragraph[-1] == "":
+                    paragraph.pop(-1)
+            if len(paragraph) == 0:
+                continue
+
+            if isinstance(paragraph[0], str) or isinstance(paragraph[-1], str):
+                result += str(self.parse(Tag("text", [paragraph])))
+            else:
+                result += str(self.parse(paragraph))
         return result
 
     def define(self, arg: list[str]) -> str:
