@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
+if [ -d ".venv" ]; then
+    source .venv/bin/activate
+fi
+
+echo "Look for changes..."
 files=`git status --porcelain | wc -l`
 if [ ${files} == 0 ] ; then
-    echo "No changes detected. Running pre-push hooks..."
-    .githooks/pre-commit || { echo "FAIL"; exit 1; }
+    echo "OK"
 else
-    echo "Changes detected. Please commit or stash them."
+    echo "FAIL"
     git status
     exit 1
 fi
+
+.githooks/pre-commit || { echo "FAIL"; exit 1; }

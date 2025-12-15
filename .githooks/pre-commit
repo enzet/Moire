@@ -1,25 +1,23 @@
 #!/usr/bin/env bash
 
+if [ -d ".venv" ]; then
+    source .venv/bin/activate
+fi
+
 python_files="moire/ tests/"
 
-echo "Checking code format with Ruff..."
+echo "Check code format with Ruff..."
 if ! ruff format --check ${python_files}; then
-    ruff format --diff --color ${python_files}
+    ruff format --diff ${python_files}
     echo "FAIL"
     exit 1
 fi
 
-echo "Checking types with ty..."
-if ! ty check; then
-    echo "FAIL"
-    exit 1
-fi
+echo "Lint with Ruff..."
+ruff check || { echo "FAIL"; exit 1; }
 
-echo "Linting with Ruff..."
-if ! ruff check; then
-    echo "FAIL"
-    exit 1
-fi
+echo "Check with ty..."
+ty check || { echo "FAIL"; exit 1; }
 
 echo "Run pytest..."
 pytest -v || { echo "FAIL"; exit 1; }
