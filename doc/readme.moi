@@ -33,31 +33,31 @@ Why not other markup languages?
 
 \4 {Headers} {headers}
 
-There are 6 possible header levels: \m {\\1}, \m {\\2}, ..., \m {\\6} with
-syntax \m {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.:
-\m {\\2 \{Section 3\} \{section-3\}}.
+There are 6 possible header levels: \c {\\1}, \m {\\2}, ..., \m {\\6} with
+syntax \c {\\<header level> \{<header name>\} \{<header label>\}}.  E.g.:
+\c {\\2 \{Section 3\} \{section-3\}}.
 
 \4 {Formatting} {formatting}
 
 \table
     {{}                  {Example Moire code}    {Rendering}}
-    {{Emphasized}        {\m {\\e \{text\}}}     {\e {text}}}
-    {{Strong emphasized} {\m {\\s \{text\}}}     {\s {text}}}
-    {{Inline code}       {\m {\\c \{text\}}}     {\c {text}}}
-    {{Deleted}           {\m {\\del \{text\}}}   {\del {text}}}
-    {{Subscript}         {\m {\\sub \{text\}}}   {\sub {text}}}
-    {{Superscript}       {\m {\\super \{text\}}} {\super {text}}}
+    {{Emphasized}        {\c {\\e \{text\}}}     {\e {text}}}
+    {{Strong emphasized} {\c {\\s \{text\}}}     {\s {text}}}
+    {{Inline code}       {\c {\\c \{text\}}}     {\c {text}}}
+    {{Deleted}           {\c {\\del \{text\}}}   {\del {text}}}
+    {{Subscript}         {\c {\\sub \{text\}}}   {\sub {text}}}
+    {{Superscript}       {\c {\\super \{text\}}} {\super {text}}}
 
 \4 {Links} {links}
 
 \table
     {{Example Moire code} {Rendering}}
     {
-        {\m {\\ref \{http://example.com\} \{external link\}}}
+        {\c {\\ref \{http://example.com\} \{external link\}}}
         {\ref {http://example.com} {external link}}
     }
     {
-        {\m {\\ref \{#example-section\} \{internal link\}}}
+        {\c {\\ref \{#example-section\} \{internal link\}}}
         {\ref {#example-section} {internal link}}
     }
 
