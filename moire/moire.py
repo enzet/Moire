@@ -393,16 +393,17 @@ class Moire:
         Incorporate included files into the intermediate representation.
         """
         resolved_ir: list = []
+        message: str
 
         for element in ir:
             if isinstance(element, Tag) and element.id == "include":
                 if not path:
-                    message: str = r"No path to resolve `\include` tags."
+                    message = r"No path to resolve `\include` tags."
                     raise ValueError(message)
                 parameter: str = element.parameters[0][0]
                 include_path = path.parent / parameter
                 if not include_path.exists():
-                    message: str = (
+                    message = (
                         f"Include file `{parameter}` that was resolved to "
                         f"`{include_path}` not found."
                     )

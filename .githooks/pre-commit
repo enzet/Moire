@@ -22,4 +22,7 @@ ty check || { echo "FAIL"; exit 1; }
 echo "Run pytest..."
 pytest -v || { echo "FAIL"; exit 1; }
 
+echo "Check types with mypy..."
+mypy moire/ tests/ || { echo "FAIL"; exit 1; }
+
 echo "OK"
