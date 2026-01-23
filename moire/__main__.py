@@ -51,11 +51,13 @@ def main(
         )
         sys.exit(1)
 
-    with Path(options.input).open(encoding="utf-8") as input_file:
+    input_path: Path = Path(options.input)
+
+    with input_path.open(encoding="utf-8") as input_file:
         if converter is not None:  # TODO(enzet): remove when ty is fixed.
             converter.file_name = options.input
             output: str = converter.convert(
-                input_file.read(), wrap=options.wrap
+                input_file.read(), wrap=options.wrap, path=input_path
             )
 
     if not output:

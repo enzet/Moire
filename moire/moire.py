@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
@@ -386,15 +387,51 @@ class Moire:
                     ids.append((element.parameters[0][0], 0))
         return ids
 
+    def resolve_include(self, ir: list[Any], path: Path | None) -> list[Any]:
+        r"""Resolve `\include` tags.
+
+        Incorporate included files into the intermediate representation.
+        """
+        resolved_ir: list = []
+
+        for element in ir:
+            if isinstance(element, Tag) and element.id == "include":
+                if not path:
+                    message: str = r"No path to resolve `\include` tags."
+                    raise ValueError(message)
+                parameter: str = element.parameters[0][0]
+                include_path = path.parent / parameter
+                if not include_path.exists():
+                    message: str = (
+                        f"Include file `{parameter}` that was resolved to "
+                        f"`{include_path}` not found."
+                    )
+                    raise ValueError(message)
+                with include_path.open(encoding="utf-8") as file:
+                    include_data = file.read()
+                # Replace include tag with intermediate representation of
+                # included file content.
+                resolved_ir += self.get_ir(include_data)
+            else:
+                resolved_ir.append(element)
+
+        return resolved_ir
+
     def convert(
-        self, input_data: str, *, wrap: bool = True, in_block: bool = False
+        self,
+        input_data: str,
+        *,
+        wrap: bool = True,
+        in_block: bool = False,
+        path: Path | None = None,
     ) -> str:
         """Convert Moire code into selected format."""
 
         ir: list[Any] = self.get_ir(input_data)
 
-        # Construct content table
+        ir = self.resolve_include(ir, path)
 
+        # Construct content table.
         tree: Tree = Tree(None, [], Tag("0", ["_", "_"]))
         content_root: Tree = tree
         for part in ir:
@@ -417,7 +454,7 @@ class Moire:
                 tree = tree.children[-1]
         self.status["tree"] = content_root
 
-        # Wrap whole text with "body" tag
+        # Wrap whole text with `body` tag.
         wrapped_ir: list[Any] | Tag = ir
         if wrap:
             wrapped_ir = Tag("body", [ir, content_root])
