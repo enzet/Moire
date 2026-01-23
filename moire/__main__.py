@@ -11,6 +11,7 @@ from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from moire.default import Default
+from moire.extended import Extended
 from moire.moire import Moire
 
 __author__ = "Sergey Vartanov"
@@ -20,14 +21,15 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 def main(
-    arguments: list[str] | None = None, top_class: type[Moire] | None = None
+    arguments: list[str] | None = None,
+    top_classes: list[type[Moire]] | None = None,
 ) -> None:
     """Convert Moire markup to other formats."""
 
     if not arguments:
         arguments = sys.argv[1:]
-    if not top_class:
-        top_class = Default
+    if not top_classes:
+        top_classes = [Default, Extended]
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
@@ -41,9 +43,10 @@ def main(
     options: Namespace = parser.parse_args(arguments)
 
     converter: Moire | None = None
-    for class_ in top_class.__subclasses__():
-        if class_.id_ == options.format:
-            converter = class_()
+    for top_class in top_classes:
+        for class_ in top_class.__subclasses__():
+            if class_.id_ == options.format:
+                converter = class_()
 
     if not converter:
         logger.fatal(
@@ -73,4 +76,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:], Default)
+    main(sys.argv[1:], [Default, Extended])
