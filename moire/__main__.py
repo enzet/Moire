@@ -13,6 +13,7 @@ from pathlib import Path
 from moire.default import Default
 from moire.extended import Extended
 from moire.moire import Moire
+from moire.plugin import discover_plugins
 
 __author__ = "Sergey Vartanov"
 __email__ = "me@enzet.ru"
@@ -55,6 +56,7 @@ def main(
         sys.exit(1)
 
     input_path: Path = Path(options.input)
+    converter.plugins = discover_plugins()
 
     with input_path.open(encoding="utf-8") as input_file:
         if converter is not None:  # TODO(enzet): remove when ty is fixed.

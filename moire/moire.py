@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
+    from moire.plugin import MoirePlugin
+
 __author__: str = "Sergey Vartanov"
 __email__: str = "me@enzet.ru"
 
@@ -348,6 +350,9 @@ class Moire:
 
     definition_arguments: list[str] = field(default_factory=list)
 
+    plugins: list[MoirePlugin] = field(default_factory=list)
+    """List of loaded plugins."""
+
     def init(self) -> None:
         """Do some preliminary actions."""
 
@@ -526,6 +531,20 @@ class Moire:
                     return parsed
                 parsed = method(arg)
                 return parsed
+
+            # Check plugins.
+            if self.plugins:
+                from moire.plugin import get_plugin_method
+
+                result = get_plugin_method(
+                    self.plugins, mode + key, self.id_
+                )
+                if result is not None:
+                    _, plugin_method = result
+                    arg = Argument(text.parameters, spec)
+                    if key == "header":
+                        return plugin_method(self, arg, int(text.id))
+                    return plugin_method(self, arg)
 
             if mode == "":
                 if "missing_tags" not in self.status:
